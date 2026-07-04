@@ -240,7 +240,7 @@
 <header>
   <div>
     <div class="brand">Розмова<span class="dot">.</span> <span>Rozmova</span></div>
-    <div class="tagline">Speak Ukrainian out loud. Get corrected. Improve. <span style="opacity:.55">· v3</span></div>
+    <div class="tagline">Speak Ukrainian out loud. Get corrected. Improve. <span style="opacity:.55">· v4</span></div>
   </div>
   <div style="display:flex;gap:10px;align-items:center">
     <div class="streak" id="streakChip" title="Practice on consecutive days to grow your streak">🔥 0</div>
@@ -622,12 +622,15 @@ async function toggleMic(){
   const stopSoon = (ms)=>{ clearTimeout(idleTimer); idleTimer = setTimeout(()=>{ try{ recognition.stop(); }catch(e){} }, ms); };
   recognition.onstart = ()=> stopSoon(6000);          // up to 6s to start talking
   recognition.onresult = (e)=>{
-    let interim = '';
-    for (let i = e.resultIndex; i < e.results.length; i++){
-      if (e.results[i].isFinal) finalText += e.results[i][0].transcript;
+    // Rebuild the FULL transcript on every event (never append incrementally):
+    // Android sometimes re-delivers final results, which duplicated words.
+    let full = '', interim = '';
+    for (let i = 0; i < e.results.length; i++){
+      if (e.results[i].isFinal) full += e.results[i][0].transcript;
       else interim += e.results[i][0].transcript;
     }
-    setMicLabel('“' + (finalText || interim) + '”');
+    finalText = full;
+    setMicLabel('“' + ((finalText + ' ' + interim).trim()) + '”');
     stopSoon(3000);                                    // finishes ~3s after you stop speaking
   };
   recognition.onend = ()=>{

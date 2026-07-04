@@ -1,6 +1,6 @@
 /* Rozmova service worker — caches the app shell so it loads instantly and
    works offline (except AI tutoring and audio, which need the network). */
-const CACHE = 'rozmova-v3';
+const CACHE = 'rozmova-v4';
 const ASSETS = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png'];
 
 self.addEventListener('install', e => {
