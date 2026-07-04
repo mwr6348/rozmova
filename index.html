@@ -240,7 +240,7 @@
 <header>
   <div>
     <div class="brand">Розмова<span class="dot">.</span> <span>Rozmova</span></div>
-    <div class="tagline">Speak Ukrainian out loud. Get corrected. Improve. <span style="opacity:.55">· v4</span></div>
+    <div class="tagline">Speak Ukrainian out loud. Get corrected. Improve. <span style="opacity:.55">· v5</span></div>
   </div>
   <div style="display:flex;gap:10px;align-items:center">
     <div class="streak" id="streakChip" title="Practice on consecutive days to grow your streak">🔥 0</div>
@@ -622,14 +622,24 @@ async function toggleMic(){
   const stopSoon = (ms)=>{ clearTimeout(idleTimer); idleTimer = setTimeout(()=>{ try{ recognition.stop(); }catch(e){} }, ms); };
   recognition.onstart = ()=> stopSoon(6000);          // up to 6s to start talking
   recognition.onresult = (e)=>{
-    // Rebuild the FULL transcript on every event (never append incrementally):
-    // Android sometimes re-delivers final results, which duplicated words.
-    let full = '', interim = '';
+    // Android delivers finals as growing snapshots + repeats ("Доброго",
+    // "Доброго ранку", "Доброго ранку"). Collapse repeats/extensions of the
+    // previous final; keep genuinely new segments.
+    const finals = []; let interim = '';
     for (let i = 0; i < e.results.length; i++){
-      if (e.results[i].isFinal) full += e.results[i][0].transcript;
+      if (e.results[i].isFinal) finals.push(e.results[i][0].transcript.trim());
       else interim += e.results[i][0].transcript;
     }
-    finalText = full;
+    const lower = t => t.trim().toLowerCase();
+    const out = [];
+    for (const f of finals){
+      if (!f) continue;
+      const prev = out[out.length-1];
+      if (prev !== undefined && (lower(f) === lower(prev) || lower(f).startsWith(lower(prev)))) out[out.length-1] = f;
+      else if (prev !== undefined && lower(prev).startsWith(lower(f))) { /* shorter echo — drop */ }
+      else out.push(f);
+    }
+    finalText = out.join(' ');
     setMicLabel('“' + ((finalText + ' ' + interim).trim()) + '”');
     stopSoon(3000);                                    // finishes ~3s after you stop speaking
   };
