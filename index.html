@@ -190,6 +190,25 @@
   .quiz-opt.wrong{background:#fdeeea;border-color:var(--warn);color:var(--warn)}
   .quiz-score{font-family:'Unbounded',sans-serif;font-size:.8rem;color:var(--sky-deep)}
 
+  /* mobile layout */
+  @media (max-width:520px){
+    header{padding:12px 14px 8px}
+    .brand{font-size:1.05rem}
+    .tagline{font-size:.72rem}
+    main{padding:12px 12px 118px}
+    .card{padding:15px}
+    .ua-big{font-size:1.35rem}
+    .letter-grid{grid-template-columns:repeat(auto-fill,minmax(52px,1fr));gap:6px}
+    .letter-tile{padding:9px 2px;border-radius:10px}
+    .letter-tile .big{font-size:.95rem}
+    .letter-tile .snd{display:none}
+    .lesson-grid{grid-template-columns:repeat(2,1fr)}
+    .stat .n{font-size:1.05rem}
+    .mic{width:70px;height:70px}
+    .mic svg{width:28px;height:28px}
+    .msg{max-width:92%}
+  }
+
   /* chat */
   .chat-log{display:flex;flex-direction:column;gap:12px;margin-bottom:14px}
   .msg{max-width:85%;padding:13px 15px;border-radius:var(--radius);line-height:1.5}
@@ -221,7 +240,7 @@
 <header>
   <div>
     <div class="brand">Розмова<span class="dot">.</span> <span>Rozmova</span></div>
-    <div class="tagline">Speak Ukrainian out loud. Get corrected. Improve.</div>
+    <div class="tagline">Speak Ukrainian out loud. Get corrected. Improve. <span style="opacity:.55">· v3</span></div>
   </div>
   <div style="display:flex;gap:10px;align-items:center">
     <div class="streak" id="streakChip" title="Practice on consecutive days to grow your streak">🔥 0</div>
@@ -244,9 +263,14 @@
 </div>
 
 <main>
-  <div id="voiceStatus" class="status"></div>
-  <div id="envStatus" class="status hidden"></div>
-  <div id="voiceDebug" class="status hidden" style="max-height:240px;overflow-y:auto"></div>
+  <div class="row" style="margin-bottom:10px">
+    <button class="btn" style="font-size:.8rem;padding:7px 12px" onclick="toggleSetup()">⚙ Setup &amp; voice <span id="setupHint" style="color:var(--warn)"></span></button>
+  </div>
+  <div id="setupPanel" class="hidden">
+    <div id="voiceStatus" class="status"></div>
+    <div id="envStatus" class="status hidden"></div>
+    <div id="voiceDebug" class="status hidden" style="max-height:240px;overflow-y:auto"></div>
+  </div>
 
   <!-- ============ LESSONS ============ -->
   <section id="lessonsPane">
@@ -360,6 +384,7 @@ let mode = 'lessons';
 let speakLang = 'uk-UA';
 let listening = false, recognition = null, uaVoice = null;
 let chatHistory = [], chatSaves = [];
+let remoteAudio = null, remoteBlocked = false;   // Google Translate audio streaming state
 let currentPhrase = null;           // phrase object currently on screen (practice or lesson)
 let lesson = null;                  // {theme, phrases:[], idx, scores:[]}
 let review = null;                  // {cards:[], idx}
@@ -381,6 +406,7 @@ async function loadDB(){
   document.getElementById('level').value = DB.level || 'absolute beginner';
   if (!DB.streak) DB.streak = {count:0, last:null};
   renderLessonGrid(); renderStats(); renderWords(); renderStreak(); renderAlphabet(); pickVoice(); renderEnvStatus();
+  if (!inArtifact() && !DB.apiKey && !DB.setupSeen) document.getElementById('setupPanel').classList.remove('hidden');
 }
 let saveTimer = null;
 function saveDB(){
@@ -474,8 +500,14 @@ function clearVoiceChoice(){
 }
 
 /* ================= environment / standalone mode ================= */
+function toggleSetup(){
+  document.getElementById('setupPanel').classList.toggle('hidden');
+  if (!DB.setupSeen){ DB.setupSeen = true; saveDB(); }
+}
 function renderEnvStatus(){
   const d = document.getElementById('envStatus');
+  const hint = document.getElementById('setupHint');
+  hint.textContent = (!inArtifact() && !DB.apiKey) ? '· add AI key' : '';
   if (inArtifact()){ d.classList.add('hidden'); return; }
   d.classList.remove('hidden');
   if (DB.apiKey){
@@ -498,14 +530,16 @@ function saveApiKey(){
 function removeApiKey(){ DB.apiKey = null; saveDB(); renderEnvStatus(); }
 function tutorErrorMsg(){
   return (!inArtifact() && !DB.apiKey)
-    ? 'Standalone mode: the AI tutor needs an API key — see the note at the top of the page.'
+    ? 'The AI tutor needs an Anthropic API key — tap \u201c\u2699 Setup & voice\u201d at the top to add it (one-time).'
     : 'Could not reach the tutor — check your connection and try again.';
 }
 
 /* Hold the mic stream open after the first grant so the browser stops
    re-asking permission on every attempt (esp. when opened as a local file). */
 let micStream = null;
+const IS_ANDROID = /android/i.test(navigator.userAgent);
 async function ensureMicPermission(){
+  if (IS_ANDROID) return;   // Android remembers permission AND a held stream blocks recognition there
   if (micStream && micStream.active) return;
   try{
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia)
@@ -537,9 +571,6 @@ function rescanVoices(){
   setMicLabel('Re-scanning voices…');
   setTimeout(()=>{ setMicLabel('Tap to speak'); }, 2600);
 }
-speechSynthesis.onvoiceschanged = pickVoice;
-pickVoice();
-
 function speakUa(text, rate){
   if (!uaVoice){ playRemote(text, rate); return; }
   try{
@@ -553,7 +584,6 @@ function speakUa(text, rate){
 }
 /* No Ukrainian voice in the browser: stream native audio from Google Translate
    and play it in-app. If streaming is blocked, fall back to opening the tab. */
-let remoteAudio = null, remoteBlocked = false;
 function playRemote(text, rate){
   if (remoteBlocked){ openGT(text); return; }
   try{
@@ -585,9 +615,12 @@ async function toggleMic(){
   recognition = new SR();
   recognition.lang = lang;
   recognition.interimResults = true;
-  recognition.continuous = false;
+  recognition.continuous = true;    // keep listening through natural pauses
   recognition.maxAlternatives = 1;
   let finalText = '';
+  let idleTimer = null;
+  const stopSoon = (ms)=>{ clearTimeout(idleTimer); idleTimer = setTimeout(()=>{ try{ recognition.stop(); }catch(e){} }, ms); };
+  recognition.onstart = ()=> stopSoon(6000);          // up to 6s to start talking
   recognition.onresult = (e)=>{
     let interim = '';
     for (let i = e.resultIndex; i < e.results.length; i++){
@@ -595,14 +628,17 @@ async function toggleMic(){
       else interim += e.results[i][0].transcript;
     }
     setMicLabel('“' + (finalText || interim) + '”');
+    stopSoon(3000);                                    // finishes ~3s after you stop speaking
   };
   recognition.onend = ()=>{
+    clearTimeout(idleTimer);
     listening = false;
     document.getElementById('micBtn').classList.remove('listening');
     if (finalText.trim()){ setMicLabel('Tap to speak'); handleSpeech(finalText.trim()); }
     else setMicLabel("Didn't catch that — tap and try again.");
   };
   recognition.onerror = (e)=>{
+    clearTimeout(idleTimer);
     listening = false;
     document.getElementById('micBtn').classList.remove('listening');
     setMicLabel(e.error === 'not-allowed'
@@ -613,7 +649,7 @@ async function toggleMic(){
     recognition.start();
     listening = true;
     document.getElementById('micBtn').classList.add('listening');
-    setMicLabel(lang === 'uk-UA' ? 'Listening… speak Ukrainian' : 'Listening… speak English');
+    setMicLabel(lang === 'uk-UA' ? 'Listening… speak Ukrainian (tap again to finish)' : 'Listening… speak English (tap again to finish)');
   }catch(e){ console.error(e); }
 }
 function setMicLabel(t){ document.getElementById('micLabel').textContent = t; }
@@ -1194,6 +1230,7 @@ async function copyCSV(){
   }catch(e){ setMicLabel('Clipboard blocked — try ⬇ Export CSV.'); }
 }
 
+try{ speechSynthesis.onvoiceschanged = pickVoice; }catch(e){}
 loadDB();
 
 /* PWA: register service worker when served over http(s) — skipped in the
