@@ -240,10 +240,14 @@
 <header>
   <div>
     <div class="brand">Розмова<span class="dot">.</span> <span>Rozmova</span></div>
-    <div class="tagline">Speak Ukrainian out loud. Get corrected. Improve. <span style="opacity:.55">· v5</span></div>
+    <div class="tagline" id="tagline">Speak Ukrainian out loud. Get corrected. Improve. <span style="opacity:.55">· v6</span></div>
   </div>
-  <div style="display:flex;gap:10px;align-items:center">
+  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
     <div class="streak" id="streakChip" title="Practice on consecutive days to grow your streak">🔥 0</div>
+    <select id="dirSel" aria-label="Language direction" onchange="setDir(this.value)">
+      <option value="uk">🇬🇧→🇺🇦 Learning Ukrainian</option>
+      <option value="en">🇺🇦→🇬🇧 Вивчаю англійську</option>
+    </select>
     <select id="level" aria-label="Difficulty level" onchange="saveDB()">
       <option value="absolute beginner">🌱 Absolute beginner</option>
       <option value="beginner">🌿 Beginner</option>
@@ -279,7 +283,7 @@
     </div>
     <div id="lessonActive" class="hidden">
       <div class="lesson-head">
-        <button class="btn" onclick="exitLesson()">← All lessons</button>
+        <button class="btn" id="lessonBackBtn" onclick="exitLesson()">← All lessons</button>
         <div class="lesson-count" id="lessonCount"></div>
       </div>
       <div id="lessonLoading" class="empty hidden">Leya is preparing your lesson…</div>
@@ -290,8 +294,8 @@
   <!-- ============ ALPHABET ============ -->
   <section id="alphabetPane" class="hidden">
     <div class="row">
-      <span class="small-label">All 33 letters. Tap one to hear it and practice a word that uses it.</span>
-      <button class="btn primary" onclick="startAlphaQuiz()">🎧 Sound quiz</button>
+      <span class="small-label" id="alphaNote">All 33 letters. Tap one to hear it and practice a word that uses it.</span>
+      <button class="btn primary" id="alphaQuizBtn" onclick="startAlphaQuiz()">🎧 Sound quiz</button>
     </div>
     <div id="alphaQuiz" class="hidden"></div>
     <div id="alphaDetail"></div>
@@ -302,7 +306,7 @@
   <section id="practicePane" class="hidden">
     <div class="row">
       <button class="btn primary" id="newPhraseBtn" onclick="newPhrase()">New phrase</button>
-      <span class="small-label">Random phrase at your level. Every attempt is saved for review.</span>
+      <span class="small-label" id="practiceNote">Random phrase at your level. Every attempt is saved for review.</span>
     </div>
     <div id="practicePhraseWrap"></div>
   </section>
@@ -310,9 +314,9 @@
   <!-- ============ CHAT ============ -->
   <section id="chatPane" class="hidden">
     <div class="lang-toggle">
-      <span class="small-label">I'll speak in:</span>
-      <button class="pill" id="pillUa" aria-pressed="true" onclick="setSpeakLang('uk-UA')">🇺🇦 Ukrainian</button>
-      <button class="pill" id="pillEn" aria-pressed="false" onclick="setSpeakLang('en-US')">🇺🇸 English (ask questions)</button>
+      <span class="small-label" id="speakInLabel">I'll speak in:</span>
+      <button class="pill" id="pillUa" aria-pressed="true" onclick="setSpeakLang(LC().target)">🇺🇦 Ukrainian</button>
+      <button class="pill" id="pillEn" aria-pressed="false" onclick="setSpeakLang(LC().helper)">🇺🇸 English (ask questions)</button>
     </div>
     <div class="chat-log" id="chatLog">
       <div class="msg tutor">
@@ -327,32 +331,28 @@
     <div class="typing hidden" id="typing">Leya is thinking…</div>
     <div class="text-row">
       <input id="textInput" placeholder="Or type here (Ukrainian or English)…" onkeydown="if(event.key==='Enter')sendTyped()">
-      <button class="btn primary" onclick="sendTyped()">Send</button>
+      <button class="btn primary" id="sendBtn" onclick="sendTyped()">Send</button>
     </div>
   </section>
 
   <!-- ============ REVIEW ============ -->
   <section id="reviewPane" class="hidden">
     <div class="stat-row">
-      <div class="stat"><div class="n" id="stWords">0</div><div class="l">saved words</div></div>
-      <div class="stat"><div class="n" id="stMastered">0</div><div class="l">mastered</div></div>
-      <div class="stat"><div class="n" id="stDue">0</div><div class="l">due now</div></div>
-      <div class="stat"><div class="n" id="stAvg">–</div><div class="l">avg score</div></div>
+      <div class="stat"><div class="n" id="stWords">0</div><div class="l" id="stWordsL">saved words</div></div>
+      <div class="stat"><div class="n" id="stMastered">0</div><div class="l" id="stMasteredL">mastered</div></div>
+      <div class="stat"><div class="n" id="stDue">0</div><div class="l" id="stDueL">due now</div></div>
+      <div class="stat"><div class="n" id="stAvg">–</div><div class="l" id="stAvgL">avg score</div></div>
     </div>
     <div id="reviewIdle">
       <div class="card">
-        <div class="eyebrow">Spaced repetition</div>
-        <p style="font-size:.92rem;line-height:1.55;margin-bottom:14px">
-          Recall practice, not recognition: you'll see the <b>English meaning</b> and must say the
-          Ukrainian <b>from memory</b>. Phrases you nail come back less often; phrases you miss come back sooner.
-          This is the engine that gets you to fluency.
-        </p>
+        <div class="eyebrow" id="reviewTitle">Spaced repetition</div>
+        <p style="font-size:.92rem;line-height:1.55;margin-bottom:14px" id="reviewText"></p>
         <button class="btn primary" id="startReviewBtn" onclick="startReview()">Start review</button>
       </div>
     </div>
     <div id="reviewActive" class="hidden">
       <div class="lesson-head">
-        <button class="btn" onclick="endReview()">← Stop</button>
+        <button class="btn" id="reviewStopBtn" onclick="endReview()">← Stop</button>
         <div class="lesson-count" id="reviewCount"></div>
       </div>
       <div id="reviewCardWrap"></div>
@@ -364,7 +364,7 @@
     <div class="row">
       <button class="btn" onclick="exportCSV()">⬇ Export CSV</button>
       <button class="btn" id="copyCsvBtn" onclick="copyCSV()">📋 Copy CSV</button>
-      <span class="small-label">🌱 new → 🌿 learning → 🌻 growing → 🌾 mastered. Tap 🔊 to hear, ✕ to remove.</span>
+      <span class="small-label" id="wordsNote"></span>
     </div>
     <div id="wordList"></div>
   </section>
@@ -379,9 +379,148 @@
 
 <script>
 /* ================= state & persistence ================= */
-let DB = { deck: [], usedPhrases: [], lessons: {}, stats: {attempts:0, sumScore:0}, streak: {count:0, last:null}, level: 'absolute beginner' };
+let DB = { profiles: null, dir: 'uk', streak: {count:0, last:null} };
+const LANGS = {
+  uk: { target:'uk-UA', t2:'uk', targetName:'Ukrainian', helper:'en-US', h2:'en', helperName:'English' },
+  en: { target:'en-US', t2:'en', targetName:'English',  helper:'uk-UA', h2:'uk', helperName:'Ukrainian' }
+};
+function LC(){ return LANGS[DB.dir] || LANGS.uk; }
+function uiLang(){ return DB.dir === 'en' ? 'uk' : 'en'; }
+function P(){ return DB.profiles[DB.dir]; }
+function migrateDB(){
+  if (!DB.dir) DB.dir = 'uk';
+  if (!DB.profiles){
+    DB.profiles = {
+      uk: { deck: DB.deck||[], usedPhrases: DB.usedPhrases||[], lessons: DB.lessons||{}, stats: DB.stats||{attempts:0,sumScore:0}, level: DB.level||'absolute beginner' },
+      en: { deck: [], usedPhrases: [], lessons: {}, stats: {attempts:0,sumScore:0}, level: 'intermediate' }
+    };
+    delete DB.deck; delete DB.usedPhrases; delete DB.lessons; delete DB.stats; delete DB.level;
+  }
+}
+const APP_V = 'v6';
+const STR = {
+en: {
+  tagline:'Speak Ukrainian out loud. Get corrected. Improve.',
+  tabLessons:'\ud83d\udcd6 Lessons', tabAlpha:'\ud83d\udd24 Alphabet', tabPractice:'\ud83c\udfaf Practice', tabChat:'\ud83d\udcac Chat', tabReview:'\ud83d\udd01 Review', tabWords:'\u2b50 My words',
+  newPhrase:'New phrase', practiceNote:'Random phrase at your level. Every attempt is saved for review.',
+  sayThis:'Say this phrase', attempt:'Your attempt', outOf:'out of 100', heard:'I heard:', tipLabel:'Tip:',
+  listen:'\ud83d\udd0a Listen', slow:'\ud83d\udc22 Slow', next:'Next \u2192', finish:'Finish \u2713', reveal:'\ud83d\udc41 Reveal',
+  fromMemory:'From memory \u2014 say this in Ukrainian',
+  tapToSpeak:'Tap to speak', listening:'Listening\u2026 speak Ukrainian (tap again to finish)', listeningHelper:'Listening\u2026 speak English (tap again to finish)',
+  noCatch:"Didn't catch that \u2014 tap and try again.",
+  micChat:'Tap to speak to Leya', micReview:'Tap to speak \u2014 recall the Ukrainian from memory', micAlpha:'Tap a letter, then tap to say its word',
+  checking:'Checking your pronunciation\u2026',
+  stWords:'saved words', stMastered:'mastered', stDue:'due now', stAvg:'avg score',
+  reviewTitle:'Spaced repetition',
+  reviewText:"Recall practice, not recognition: you'll see the <b>English meaning</b> and must say the Ukrainian <b>from memory</b>. Phrases you nail come back less often; phrases you miss come back sooner.",
+  startReview:'Start review', nothingDue:'Nothing due \u2014 come back later \ud83c\udf3b', reviewDone:'\ud83c\udf3e Review complete! Words you struggled with will come back sooner.',
+  stop:'\u2190 Stop', allLessons:'\u2190 All lessons',
+  wordsNote:'\ud83c\udf31 new \u2192 \ud83c\udf3f learning \u2192 \ud83c\udf3b growing \u2192 \ud83c\udf3e mastered. Tap \ud83d\udd0a to hear, \u2715 to remove.',
+  emptyWords:'No saved words yet. Do a lesson, practice a phrase, or tap \u2b50 Save on anything Leya says in Chat.',
+  lastScore:'last score', dueWord:'due',
+  speakIn:"I'll speak in:", pillTarget:'\ud83c\uddfa\ud83c\udde6 Ukrainian', pillHelper:'\ud83c\uddfa\ud83c\uddf8 English (ask questions)',
+  typedPh:'Or type here (Ukrainian or English)\u2026', send:'Send', replay:'\ud83d\udd0a Replay', saveWord:'\u2b50 Save to my words', saved:'\u2713 Saved', thinking:'Leya is thinking\u2026',
+  introUa:'\u041f\u0440\u0438\u0432\u0456\u0442! \u042f \u041b\u0435\u044f, \u0442\u0432\u043e\u044f \u0432\u0447\u0438\u0442\u0435\u043b\u044c\u043a\u0430. \u042f\u043a \u0441\u043f\u0440\u0430\u0432\u0438?', introTr:'pry-VIT! ya LE-ya, tvo-YA vchy-TEL-ka. yak SPRA-vy?', introEn:"Hi! I'm Leya, your teacher. How are you?",
+  alphaNote:'All 33 letters. Tap one to hear it and practice a word that uses it.', soundQuiz:'\ud83c\udfa7 Sound quiz', soundQuizTitle:'Sound quiz',
+  quizQ:'Listen \u2014 which letter does this word <b>start</b> with?', playAgain:'\ud83d\udd0a Play again', doneBtn:'Done', quizDone:'Quiz done:', correct:'correct', startsWith:'starts with',
+  bigWork:'\u0427\u0443\u0434\u043e\u0432\u0430 \u0440\u043e\u0431\u043e\u0442\u0430!', subWork:'Great work!', avgScore:'Average score:', addedDeck:'phrases were added to your review deck.',
+  anotherRound:'Another round', backLessons:'All lessons', notStarted:'Not started', phrasesW:'phrases', avgW:'avg',
+  nowSay:'now say', intoMic:'into the mic \ud83d\udc47', soundBtn:'Sound', letterNameBtn:'Letter name', wordBtn:'\ud83d\udd0a Word',
+  errKey:'The AI tutor needs an Anthropic API key \u2014 tap \u201c\u2699 Setup & voice\u201d at the top to add it (one-time).',
+  errNet:'Could not reach the tutor \u2014 check your connection and try again.',
+  levels:['\ud83c\udf31 Absolute beginner','\ud83c\udf3f Beginner','\ud83c\udf3b Intermediate','\ud83c\udf3e Upper intermediate']
+},
+uk: {
+  tagline:'\u0413\u043e\u0432\u043e\u0440\u0438 \u0430\u043d\u0433\u043b\u0456\u0439\u0441\u044c\u043a\u043e\u044e \u0432\u0433\u043e\u043b\u043e\u0441. \u041e\u0442\u0440\u0438\u043c\u0443\u0439 \u0432\u0438\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u043d\u044f. \u041f\u0440\u043e\u0433\u0440\u0435\u0441\u0443\u0439.',
+  tabLessons:'\ud83d\udcd6 \u0423\u0440\u043e\u043a\u0438', tabAlpha:'\ud83d\udd24 \u0417\u0432\u0443\u043a\u0438', tabPractice:'\ud83c\udfaf \u041f\u0440\u0430\u043a\u0442\u0438\u043a\u0430', tabChat:'\ud83d\udcac \u0427\u0430\u0442', tabReview:'\ud83d\udd01 \u041f\u043e\u0432\u0442\u043e\u0440\u0435\u043d\u043d\u044f', tabWords:'\u2b50 \u041c\u043e\u0457 \u0441\u043b\u043e\u0432\u0430',
+  newPhrase:'\u041d\u043e\u0432\u0430 \u0444\u0440\u0430\u0437\u0430', practiceNote:'\u0412\u0438\u043f\u0430\u0434\u043a\u043e\u0432\u0430 \u0444\u0440\u0430\u0437\u0430 \u0442\u0432\u043e\u0433\u043e \u0440\u0456\u0432\u043d\u044f. \u041a\u043e\u0436\u043d\u0430 \u0441\u043f\u0440\u043e\u0431\u0430 \u0437\u0431\u0435\u0440\u0456\u0433\u0430\u0454\u0442\u044c\u0441\u044f \u0434\u043b\u044f \u043f\u043e\u0432\u0442\u043e\u0440\u0435\u043d\u043d\u044f.',
+  sayThis:'\u0421\u043a\u0430\u0436\u0438 \u0446\u044e \u0444\u0440\u0430\u0437\u0443', attempt:'\u0422\u0432\u043e\u044f \u0441\u043f\u0440\u043e\u0431\u0430', outOf:'\u0437\u0456 100', heard:'\u042f \u043f\u043e\u0447\u0443\u0432:', tipLabel:'\u041f\u043e\u0440\u0430\u0434\u0430:',
+  listen:'\ud83d\udd0a \u041f\u0440\u043e\u0441\u043b\u0443\u0445\u0430\u0442\u0438', slow:'\ud83d\udc22 \u041f\u043e\u0432\u0456\u043b\u044c\u043d\u043e', next:'\u0414\u0430\u043b\u0456 \u2192', finish:'\u0413\u043e\u0442\u043e\u0432\u043e \u2713', reveal:'\ud83d\udc41 \u041f\u043e\u043a\u0430\u0437\u0430\u0442\u0438',
+  fromMemory:'\u0417 \u043f\u0430\u043c\u2019\u044f\u0442\u0456 \u2014 \u0441\u043a\u0430\u0436\u0438 \u0446\u0435 \u0430\u043d\u0433\u043b\u0456\u0439\u0441\u044c\u043a\u043e\u044e',
+  tapToSpeak:'\u041d\u0430\u0442\u0438\u0441\u043d\u0438 \u0442\u0430 \u0433\u043e\u0432\u043e\u0440\u0438', listening:'\u0421\u043b\u0443\u0445\u0430\u044e\u2026 \u0433\u043e\u0432\u043e\u0440\u0438 \u0430\u043d\u0433\u043b\u0456\u0439\u0441\u044c\u043a\u043e\u044e (\u043d\u0430\u0442\u0438\u0441\u043d\u0438 \u0449\u0435 \u0440\u0430\u0437, \u0449\u043e\u0431 \u0437\u0430\u0432\u0435\u0440\u0448\u0438\u0442\u0438)', listeningHelper:'\u0421\u043b\u0443\u0445\u0430\u044e\u2026 \u0433\u043e\u0432\u043e\u0440\u0438 \u0443\u043a\u0440\u0430\u0457\u043d\u0441\u044c\u043a\u043e\u044e (\u043d\u0430\u0442\u0438\u0441\u043d\u0438 \u0449\u0435 \u0440\u0430\u0437, \u0449\u043e\u0431 \u0437\u0430\u0432\u0435\u0440\u0448\u0438\u0442\u0438)',
+  noCatch:'\u041d\u0435 \u0440\u043e\u0437\u0447\u0443\u0432 \u2014 \u043d\u0430\u0442\u0438\u0441\u043d\u0438 \u0442\u0430 \u0441\u043f\u0440\u043e\u0431\u0443\u0439 \u0449\u0435.',
+  micChat:'\u041d\u0430\u0442\u0438\u0441\u043d\u0438 \u0442\u0430 \u0433\u043e\u0432\u043e\u0440\u0438 \u0437 \u041b\u0435\u0454\u044e', micReview:'\u041d\u0430\u0442\u0438\u0441\u043d\u0438 \u0442\u0430 \u0441\u043a\u0430\u0436\u0438 \u0430\u043d\u0433\u043b\u0456\u0439\u0441\u044c\u043a\u043e\u044e \u0437 \u043f\u0430\u043c\u2019\u044f\u0442\u0456', micAlpha:'\u041e\u0431\u0435\u0440\u0438 \u0437\u0432\u0443\u043a, \u0442\u043e\u0434\u0456 \u043d\u0430\u0442\u0438\u0441\u043d\u0438 \u0442\u0430 \u0441\u043a\u0430\u0436\u0438 \u0441\u043b\u043e\u0432\u043e',
+  checking:'\u041f\u0435\u0440\u0435\u0432\u0456\u0440\u044f\u044e \u0432\u0438\u043c\u043e\u0432\u0443\u2026',
+  stWords:'\u0437\u0431\u0435\u0440\u0435\u0436\u0435\u043d\u043e', stMastered:'\u0437\u0430\u0441\u0432\u043e\u0454\u043d\u043e', stDue:'\u043d\u0430 \u043f\u043e\u0432\u0442\u043e\u0440\u0435\u043d\u043d\u044f', stAvg:'\u0441\u0435\u0440\u0435\u0434\u043d\u0456\u0439 \u0431\u0430\u043b',
+  reviewTitle:'\u0406\u043d\u0442\u0435\u0440\u0432\u0430\u043b\u044c\u043d\u0456 \u043f\u043e\u0432\u0442\u043e\u0440\u0435\u043d\u043d\u044f',
+  reviewText:'\u041f\u0440\u0438\u0433\u0430\u0434\u0443\u0432\u0430\u043d\u043d\u044f, \u0430 \u043d\u0435 \u0432\u043f\u0456\u0437\u043d\u0430\u0432\u0430\u043d\u043d\u044f: \u0442\u0438 \u0431\u0430\u0447\u0438\u0448 <b>\u0443\u043a\u0440\u0430\u0457\u043d\u0441\u044c\u043a\u0438\u0439 \u043f\u0435\u0440\u0435\u043a\u043b\u0430\u0434</b> \u0456 \u043c\u0430\u0454\u0448 \u0441\u043a\u0430\u0437\u0430\u0442\u0438 \u0430\u043d\u0433\u043b\u0456\u0439\u0441\u044c\u043a\u0443 \u0444\u0440\u0430\u0437\u0443 <b>\u0437 \u043f\u0430\u043c\u2019\u044f\u0442\u0456</b>. \u0429\u043e \u043a\u0440\u0430\u0449\u0435 \u0437\u043d\u0430\u0454\u0448 \u2014 \u0442\u0438\u043c \u0440\u0456\u0434\u0448\u0435 \u043f\u043e\u0432\u0442\u043e\u0440\u044e\u0454\u0448.',
+  startReview:'\u041f\u043e\u0447\u0430\u0442\u0438 \u043f\u043e\u0432\u0442\u043e\u0440\u0435\u043d\u043d\u044f', nothingDue:'\u041f\u043e\u043a\u0438 \u043d\u0456\u0447\u043e\u0433\u043e \u2014 \u043f\u043e\u0432\u0435\u0440\u0442\u0430\u0439\u0441\u044f \u043f\u0456\u0437\u043d\u0456\u0448\u0435 \ud83c\udf3e', reviewDone:'\ud83c\udf3e \u0413\u043e\u0442\u043e\u0432\u043e! \u0421\u043a\u043b\u0430\u0434\u043d\u0456 \u0441\u043b\u043e\u0432\u0430 \u043f\u043e\u0432\u0435\u0440\u043d\u0443\u0442\u044c\u0441\u044f \u0448\u0432\u0438\u0434\u0448\u0435.',
+  stop:'\u2190 \u0421\u0442\u043e\u043f', allLessons:'\u2190 \u0423\u0441\u0456 \u0443\u0440\u043e\u043a\u0438',
+  wordsNote:'\ud83c\udf31 \u043d\u043e\u0432\u0435 \u2192 \ud83c\udf3f \u0432\u0438\u0432\u0447\u0430\u044e \u2192 \ud83c\udf3b \u0440\u043e\u0441\u0442\u0435 \u2192 \ud83c\udf3e \u0437\u0430\u0441\u0432\u043e\u0454\u043d\u043e. \ud83d\udd0a \u2014 \u043f\u0440\u043e\u0441\u043b\u0443\u0445\u0430\u0442\u0438, \u2715 \u2014 \u0432\u0438\u0434\u0430\u043b\u0438\u0442\u0438.',
+  emptyWords:'\u041f\u043e\u043a\u0438 \u043d\u0435\u043c\u0430\u0454 \u0437\u0431\u0435\u0440\u0435\u0436\u0435\u043d\u0438\u0445 \u0441\u043b\u0456\u0432. \u041f\u0440\u043e\u0439\u0434\u0438 \u0443\u0440\u043e\u043a, \u043f\u043e\u0442\u0440\u0435\u043d\u0443\u0439 \u0444\u0440\u0430\u0437\u0443 \u0430\u0431\u043e \u043d\u0430\u0442\u0438\u0441\u043d\u0438 \u2b50 \u0443 \u0447\u0430\u0442\u0456 \u0437 \u041b\u0435\u0454\u044e.',
+  lastScore:'\u043e\u0441\u0442\u0430\u043d\u043d\u0456\u0439 \u0431\u0430\u043b', dueWord:'\u043f\u043e\u0432\u0442\u043e\u0440\u0438\u0442\u0438',
+  speakIn:'\u042f \u0433\u043e\u0432\u043e\u0440\u0438\u0442\u0438\u043c\u0443:', pillTarget:'\ud83c\uddec\ud83c\udde7 English', pillHelper:'\ud83c\uddfa\ud83c\udde6 \u0423\u043a\u0440\u0430\u0457\u043d\u0441\u044c\u043a\u043e\u044e (\u0437\u0430\u043f\u0438\u0442\u0430\u0442\u0438)',
+  typedPh:'\u0410\u0431\u043e \u043d\u0430\u043f\u0438\u0448\u0438 \u0442\u0443\u0442 (\u0430\u043d\u0433\u043b\u0456\u0439\u0441\u044c\u043a\u043e\u044e \u0447\u0438 \u0443\u043a\u0440\u0430\u0457\u043d\u0441\u044c\u043a\u043e\u044e)\u2026', send:'\u041d\u0430\u0434\u0456\u0441\u043b\u0430\u0442\u0438', replay:'\ud83d\udd0a \u0429\u0435 \u0440\u0430\u0437', saveWord:'\u2b50 \u0417\u0431\u0435\u0440\u0435\u0433\u0442\u0438', saved:'\u2713 \u0417\u0431\u0435\u0440\u0435\u0436\u0435\u043d\u043e', thinking:'\u041b\u0435\u044f \u0434\u0443\u043c\u0430\u0454\u2026',
+  introUa:"Hi! I'm Leya, your English teacher. How's your day going?", introTr:'\u0445\u0430\u0439! \u0430\u0439\u043c \u041b\u0415\u044f, \u0439\u043e\u0440 \u0406\u043d\u0433\u043b\u0456\u0448 \u0422\u0406\u0447\u0435\u0440. \u0445\u0430\u0443\u0437 \u0439\u043e\u0440 \u0434\u0435\u0439 \u0413\u041e\u0443\u0456\u043d\u0433?', introEn:'\u041f\u0440\u0438\u0432\u0456\u0442! \u042f \u041b\u0435\u044f, \u0442\u0432\u043e\u044f \u0432\u0447\u0438\u0442\u0435\u043b\u044c\u043a\u0430 \u0430\u043d\u0433\u043b\u0456\u0439\u0441\u044c\u043a\u043e\u0457. \u042f\u043a \u043c\u0438\u043d\u0430\u0454 \u0434\u0435\u043d\u044c?',
+  alphaNote:'\u0417\u0432\u0443\u043a\u0438, \u044f\u043a\u0456 \u0432\u0438\u0434\u0430\u044e\u0442\u044c \u0443\u043a\u0440\u0430\u0457\u043d\u0446\u0456\u0432 \u0432 \u0430\u043d\u0433\u043b\u0456\u0439\u0441\u044c\u043a\u0456\u0439. \u041e\u0431\u0435\u0440\u0438 \u0437\u0432\u0443\u043a \u0456 \u043f\u043e\u0442\u0440\u0435\u043d\u0443\u0439 \u0441\u043b\u043e\u0432\u043e.', soundQuiz:'\ud83c\udfa7 \u0417\u0432\u0443\u043a\u043e\u0432\u0438\u0439 \u0442\u0435\u0441\u0442', soundQuizTitle:'\u0417\u0432\u0443\u043a\u043e\u0432\u0438\u0439 \u0442\u0435\u0441\u0442',
+  quizQ:'\u041f\u043e\u0441\u043b\u0443\u0445\u0430\u0439 \u2014 \u0437 \u044f\u043a\u043e\u0433\u043e \u0437\u0432\u0443\u043a\u0443 <b>\u043f\u043e\u0447\u0438\u043d\u0430\u0454\u0442\u044c\u0441\u044f</b> \u0441\u043b\u043e\u0432\u043e?', playAgain:'\ud83d\udd0a \u0429\u0435 \u0440\u0430\u0437', doneBtn:'\u0413\u043e\u0442\u043e\u0432\u043e', quizDone:'\u0422\u0435\u0441\u0442 \u0437\u0430\u0432\u0435\u0440\u0448\u0435\u043d\u043e:', correct:'\u043f\u0440\u0430\u0432\u0438\u043b\u044c\u043d\u043e', startsWith:'\u043f\u043e\u0447\u0438\u043d\u0430\u0454\u0442\u044c\u0441\u044f \u0437',
+  bigWork:'Great work!', subWork:'\u0427\u0443\u0434\u043e\u0432\u0430 \u0440\u043e\u0431\u043e\u0442\u0430!', avgScore:'\u0421\u0435\u0440\u0435\u0434\u043d\u0456\u0439 \u0431\u0430\u043b:', addedDeck:'\u0444\u0440\u0430\u0437 \u0434\u043e\u0434\u0430\u043d\u043e \u0434\u043e \u043f\u043e\u0432\u0442\u043e\u0440\u0435\u043d\u043d\u044f.',
+  anotherRound:'\u0429\u0435 \u0440\u0430\u0437', backLessons:'\u0423\u0441\u0456 \u0443\u0440\u043e\u043a\u0438', notStarted:'\u041d\u0435 \u0440\u043e\u0437\u043f\u043e\u0447\u0430\u0442\u043e', phrasesW:'\u0444\u0440\u0430\u0437', avgW:'\u0441\u0435\u0440.',
+  nowSay:'\u0442\u0435\u043f\u0435\u0440 \u0441\u043a\u0430\u0436\u0438', intoMic:'\u0443 \u043c\u0456\u043a\u0440\u043e\u0444\u043e\u043d \ud83d\udc47', soundBtn:'\u0417\u0432\u0443\u043a', letterNameBtn:'\u041d\u0430\u0437\u0432\u0430 \u043b\u0456\u0442\u0435\u0440\u0438', wordBtn:'\ud83d\udd0a \u0421\u043b\u043e\u0432\u043e',
+  errKey:'\u0414\u043b\u044f \u0428\u0406-\u0440\u0435\u043f\u0435\u0442\u0438\u0442\u043e\u0440\u0430 \u043f\u043e\u0442\u0440\u0456\u0431\u0435\u043d \u043a\u043b\u044e\u0447 Anthropic API \u2014 \u043d\u0430\u0442\u0438\u0441\u043d\u0438 \u00ab\u2699 Setup & voice\u00bb \u0432\u0433\u043e\u0440\u0456 (\u043e\u0434\u0438\u043d \u0440\u0430\u0437).',
+  errNet:'\u041d\u0435 \u0432\u0434\u0430\u043b\u043e\u0441\u044f \u0437\u2019\u0454\u0434\u043d\u0430\u0442\u0438\u0441\u044f \u0437 \u0440\u0435\u043f\u0435\u0442\u0438\u0442\u043e\u0440\u043e\u043c \u2014 \u043f\u0435\u0440\u0435\u0432\u0456\u0440 \u0456\u043d\u0442\u0435\u0440\u043d\u0435\u0442 \u0456 \u0441\u043f\u0440\u043e\u0431\u0443\u0439 \u0449\u0435.',
+  levels:['\ud83c\udf31 \u041f\u043e\u0447\u0430\u0442\u043a\u043e\u0432\u0438\u0439','\ud83c\udf3f \u0411\u0430\u0437\u043e\u0432\u0438\u0439','\ud83c\udf3b \u0421\u0435\u0440\u0435\u0434\u043d\u0456\u0439','\ud83c\udf3e \u0412\u0438\u0449\u0435 \u0441\u0435\u0440\u0435\u0434\u043d\u044c\u043e\u0433\u043e']
+}
+};
+function T(k){ const u = STR[uiLang()]; return (u && u[k] !== undefined) ? u[k] : STR.en[k]; }
+function applyLang(){
+  document.getElementById('tagline').innerHTML = esc(T('tagline')) + ' <span style="opacity:.55">\u00b7 ' + APP_V + '</span>';
+  document.getElementById('tab-lessons').textContent = T('tabLessons');
+  document.getElementById('tab-alphabet').textContent = T('tabAlpha');
+  document.getElementById('tab-practice').textContent = T('tabPractice');
+  document.getElementById('tab-chat').textContent = T('tabChat');
+  document.getElementById('tab-review').innerHTML = esc(T('tabReview')) + '<span class="badge zero" id="dueBadge">0</span>';
+  document.getElementById('tab-words').textContent = T('tabWords');
+  const lv = document.getElementById('level');
+  T('levels').forEach((label,i)=>{ if (lv.options[i]) lv.options[i].textContent = label; });
+  document.getElementById('practiceNote').textContent = T('practiceNote');
+  document.getElementById('newPhraseBtn').textContent = T('newPhrase');
+  document.getElementById('reviewTitle').textContent = T('reviewTitle');
+  document.getElementById('reviewText').innerHTML = T('reviewText');
+  document.getElementById('lessonBackBtn').textContent = T('allLessons');
+  document.getElementById('reviewStopBtn').textContent = T('stop');
+  document.getElementById('wordsNote').textContent = T('wordsNote');
+  document.getElementById('alphaNote').textContent = T('alphaNote');
+  document.getElementById('alphaQuizBtn').textContent = T('soundQuiz');
+  document.getElementById('speakInLabel').textContent = T('speakIn');
+  document.getElementById('pillUa').textContent = T('pillTarget');
+  document.getElementById('pillEn').textContent = T('pillHelper');
+  document.getElementById('textInput').placeholder = T('typedPh');
+  document.getElementById('sendBtn').textContent = T('send');
+  document.getElementById('typing').textContent = T('thinking');
+  setMicLabel(T('tapToSpeak'));
+  resetChatIntro();
+}
+function resetChatIntro(){
+  chatHistory = []; chatSaves = [];
+  document.getElementById('chatLog').innerHTML =
+    '<div class="msg tutor">' +
+    '<div class="m-ua">' + esc(T('introUa')) + '</div>' +
+    '<div class="m-translit">' + esc(T('introTr')) + '</div>' +
+    '<div class="m-en">' + esc(T('introEn')) + '</div>' +
+    '<div class="msg-actions"><button class="btn ghost" onclick="speakUa(this.dataset.ua,0.85)" data-ua="' + esc(T('introUa')) + '">' + esc(T('replay')) + '</button></div>' +
+    '</div>';
+}
+function setDir(d){
+  if (!LANGS[d]) return;
+  DB.dir = d;
+  lesson = null; review = null; currentPhrase = null; quiz = null;
+  speakLang = LC().target;
+  document.getElementById('level').value = P().level || 'absolute beginner';
+  saveDB();
+  applyLang();
+  setSpeakLang(LC().target);
+  document.getElementById('lessonActive').classList.add('hidden');
+  document.getElementById('lessonPicker').classList.remove('hidden');
+  document.getElementById('reviewActive').classList.add('hidden');
+  document.getElementById('reviewIdle').classList.remove('hidden');
+  document.getElementById('alphaQuiz').classList.add('hidden');
+  document.getElementById('alphaDetail').innerHTML = '';
+  renderLessonGrid(); renderAlphabet(); renderStats(); renderWords(); pickVoice(); renderEnvStatus();
+  setMode('lessons');
+}
 let mode = 'lessons';
-let speakLang = 'uk-UA';
+let speakLang = null;   // set from LC().target at load / direction change
 let listening = false, recognition = null, uaVoice = null;
 let chatHistory = [], chatSaves = [];
 let remoteAudio = null, remoteBlocked = false;   // Google Translate audio streaming state
@@ -403,14 +542,18 @@ async function loadDB(){
       if (v) DB = Object.assign(DB, JSON.parse(v));
     }
   }catch(e){ /* first run: key doesn't exist yet */ }
-  document.getElementById('level').value = DB.level || 'absolute beginner';
+  migrateDB();
+  document.getElementById('dirSel').value = DB.dir;
+  document.getElementById('level').value = P().level || 'absolute beginner';
   if (!DB.streak) DB.streak = {count:0, last:null};
+  speakLang = LC().target;
+  applyLang();
   renderLessonGrid(); renderStats(); renderWords(); renderStreak(); renderAlphabet(); pickVoice(); renderEnvStatus();
   if (!inArtifact() && !DB.apiKey && !DB.setupSeen) document.getElementById('setupPanel').classList.remove('hidden');
 }
 let saveTimer = null;
 function saveDB(){
-  DB.level = document.getElementById('level').value;
+  if (DB.profiles) P().level = document.getElementById('level').value;
   clearTimeout(saveTimer);
   saveTimer = setTimeout(async ()=>{
     try{
@@ -426,27 +569,30 @@ function getLevel(){ return document.getElementById('level').value; }
 let uaVoices = [], allVoices = [];
 function pickVoice(){
   allVoices = speechSynthesis.getVoices();
+  const t2 = LC().t2, tName = LC().targetName;
+  const nameRx = new RegExp(tName.slice(0,6), 'i');
   uaVoices = allVoices.filter(v =>
-    ((v.lang || '').toLowerCase().replace('_','-').startsWith('uk')) || /ukrain/i.test(v.name || ''));
+    ((v.lang || '').toLowerCase().replace('_','-').startsWith(t2)) || nameRx.test(v.name || ''));
   uaVoices.sort((a,b)=> (/natural/i.test(b.name)?1:0) - (/natural/i.test(a.name)?1:0));
   // Priority fix: a real Ukrainian voice ALWAYS wins. A manual non-Ukrainian override
   // is only a stopgap and is replaced the moment a Ukrainian voice appears.
-  const saved = DB.voiceName ? allVoices.find(v=>v.name===DB.voiceName) : null;
-  const savedIsUk = !!(saved && (((saved.lang||'').toLowerCase().replace('_','-')).startsWith('uk') || /ukrain/i.test(saved.name||'')));
+  const vKey = 'voiceName_' + DB.dir;
+  const saved = DB[vKey] ? allVoices.find(v=>v.name===DB[vKey]) : null;
+  const savedIsUk = !!(saved && (((saved.lang||'').toLowerCase().replace('_','-')).startsWith(t2) || nameRx.test(saved.name||'')));
   uaVoice = (savedIsUk ? saved : null) || uaVoices[0] || saved || null;
-  if (uaVoice && uaVoices.includes(uaVoice) && DB.voiceName !== uaVoice.name){ DB.voiceName = uaVoice.name; saveDB(); }
-  const isUk = uaVoice && (((uaVoice.lang||'').toLowerCase().replace('_','-').startsWith('uk')) || /ukrain/i.test(uaVoice.name||''));
+  if (uaVoice && uaVoices.includes(uaVoice) && DB[vKey] !== uaVoice.name){ DB[vKey] = uaVoice.name; saveDB(); }
+  const isUk = uaVoice && (((uaVoice.lang||'').toLowerCase().replace('_','-').startsWith(t2)) || nameRx.test(uaVoice.name||''));
 
   const s = document.getElementById('voiceStatus');
   const srOk = !!(window.SpeechRecognition || window.webkitSpeechRecognition);
   let html = '';
   if (uaVoice && isUk){
     if (uaVoices.length > 1){
-      html += '🔊 Ukrainian voice: <select id="voiceSel" style="font-size:.78rem;padding:3px 6px;border-radius:8px;border:1px solid var(--line)">' +
+      html += '🔊 ' + LC().targetName + ' voice: <select id="voiceSel" style="font-size:.78rem;padding:3px 6px;border-radius:8px;border:1px solid var(--line)">' +
         uaVoices.map(v=>`<option ${v.name===uaVoice.name?'selected':''}>${esc(v.name)}</option>`).join('') +
         '</select>';
     } else {
-      html += '🔊 Ukrainian voice: ' + esc(uaVoice.name) + '.';
+      html += '🔊 ' + LC().targetName + ' voice: ' + esc(uaVoice.name) + '.';
     }
   } else if (uaVoice){
     html += '🔊 Using <b>' + esc(uaVoice.name) + '</b> (manual choice — not a dedicated Ukrainian voice, pronunciation may be off). ' +
@@ -478,7 +624,7 @@ function renderVoiceDebug(){
     d.innerHTML = '<b>No voices reported at all.</b> This environment likely blocks speechSynthesis. Open claude.ai in the Microsoft Edge browser on Windows and reopen this app.';
     return;
   }
-  const isUkV = v => ((v.lang||'').toLowerCase().replace('_','-').startsWith('uk')) || /ukrain/i.test(v.name||'');
+  const isUkV = v => ((v.lang||'').toLowerCase().replace('_','-').startsWith(LC().t2));
   const sorted = [...allVoices].sort((a,b)=>
     (isUkV(b)?1:0)-(isUkV(a)?1:0) || (a.lang||'').localeCompare(b.lang||'') || a.name.localeCompare(b.name));
   d.innerHTML = '<b>Every voice this browser reports</b> — tap “Use” to force one (Multilingual voices usually handle Ukrainian):<br>' +
@@ -489,12 +635,12 @@ function renderVoiceDebug(){
       </div>`).join('');
 }
 function useVoice(name){
-  DB.voiceName = name; saveDB();
+  DB['voiceName_' + DB.dir] = name; saveDB();
   pickVoice();
   speakUa('Привіт! Я твоя вчителька. Як справи?', 0.9);
 }
 function clearVoiceChoice(){
-  DB.voiceName = null; saveDB();
+  DB['voiceName_' + DB.dir] = null; saveDB();
   pickVoice();
   speakUa('Привіт! Я твоя вчителька. Як справи?', 0.9);
 }
@@ -529,9 +675,7 @@ function saveApiKey(){
 }
 function removeApiKey(){ DB.apiKey = null; saveDB(); renderEnvStatus(); }
 function tutorErrorMsg(){
-  return (!inArtifact() && !DB.apiKey)
-    ? 'The AI tutor needs an Anthropic API key — tap \u201c\u2699 Setup & voice\u201d at the top to add it (one-time).'
-    : 'Could not reach the tutor — check your connection and try again.';
+  return (!inArtifact() && !DB.apiKey) ? T('errKey') : T('errNet');
 }
 
 /* Hold the mic stream open after the first grant so the browser stops
@@ -576,7 +720,7 @@ function speakUa(text, rate){
   try{
     speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(text);
-    u.lang = 'uk-UA';
+    u.lang = LC().target;
     if (uaVoice) u.voice = uaVoice;
     u.rate = rate || 0.9;
     speechSynthesis.speak(u);
@@ -588,7 +732,7 @@ function playRemote(text, rate){
   if (remoteBlocked){ openGT(text); return; }
   try{
     if (remoteAudio){ remoteAudio.pause(); remoteAudio = null; }
-    const url = 'https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=uk&q=' + encodeURIComponent(text);
+    const url = 'https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=' + LC().t2 + '&q=' + encodeURIComponent(text);
     remoteAudio = new Audio(url);
     remoteAudio.playbackRate = (rate && rate < 0.8) ? 0.65 : 1;   // 🐢 Slow support
     remoteAudio.onerror = ()=>{ remoteBlocked = true; pickVoice(); openGT(text); };
@@ -598,7 +742,7 @@ function playRemote(text, rate){
 function openGT(text){
   if (Date.now() - lastGesture < 2500){
     // Named window: reuses ONE Google Translate window instead of endless new tabs.
-    window.open('https://translate.google.com/?sl=uk&tl=en&text=' + encodeURIComponent(text) + '&op=translate', 'rozmova_audio');
+    window.open('https://translate.google.com/?sl=' + LC().t2 + '&tl=' + LC().h2 + '&text=' + encodeURIComponent(text) + '&op=translate', 'rozmova_audio');
     setMicLabel('Updated the Google Translate window — tap 🔊 there. Tip: snap it beside the app.');
   }
 }
@@ -609,7 +753,7 @@ document.addEventListener('pointerdown', ()=>{ lastGesture = Date.now(); }, true
 async function toggleMic(){
   if (listening){ try{recognition && recognition.stop();}catch(e){} return; }
   await ensureMicPermission();
-  const lang = (mode === 'chat') ? speakLang : 'uk-UA';
+  const lang = (mode === 'chat') ? speakLang : LC().target;
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SR){ setMicLabel('Speech recognition unavailable — use Chrome/Edge, or type in Chat.'); return; }
   recognition = new SR();
@@ -647,8 +791,8 @@ async function toggleMic(){
     clearTimeout(idleTimer);
     listening = false;
     document.getElementById('micBtn').classList.remove('listening');
-    if (finalText.trim()){ setMicLabel('Tap to speak'); handleSpeech(finalText.trim()); }
-    else setMicLabel("Didn't catch that — tap and try again.");
+    if (finalText.trim()){ setMicLabel(T('tapToSpeak')); handleSpeech(finalText.trim()); }
+    else setMicLabel(T('noCatch'));
   };
   recognition.onerror = (e)=>{
     clearTimeout(idleTimer);
@@ -656,13 +800,13 @@ async function toggleMic(){
     document.getElementById('micBtn').classList.remove('listening');
     setMicLabel(e.error === 'not-allowed'
       ? 'Microphone blocked — allow mic access in your browser.'
-      : "Didn't catch that — tap and try again.");
+      : T('noCatch'));
   };
   try{
     recognition.start();
     listening = true;
     document.getElementById('micBtn').classList.add('listening');
-    setMicLabel(lang === 'uk-UA' ? 'Listening… speak Ukrainian (tap again to finish)' : 'Listening… speak English (tap again to finish)');
+    setMicLabel(lang === LC().target ? T('listening') : T('listeningHelper'));
   }catch(e){ console.error(e); }
 }
 function setMicLabel(t){ document.getElementById('micLabel').textContent = t; }
@@ -700,7 +844,7 @@ async function callClaude(system, messages){
 }
 
 /* ================= SRS deck ================= */
-function findCard(ua){ return DB.deck.find(c => c.ua === ua); }
+function findCard(ua){ return P().deck.find(c => c.ua === ua); }
 function upsertCard(p, theme){
   let c = findCard(p.ua);
   if (!c){
@@ -708,7 +852,7 @@ function upsertCard(p, theme){
           ua: p.ua, translit: p.translit || '', en: p.en || '', hint: p.hint || '',
           theme: theme || null, box: 0, due: Date.now(), attempts: 0, last: null, best: 0,
           added: Date.now() };
-    DB.deck.push(c);
+    P().deck.push(c);
   }
   return c;
 }
@@ -717,22 +861,26 @@ function applyScore(card, score){
   if (score >= 80) card.box = Math.min(5, (card.box || 0) + 1);
   else if (score < 55) card.box = Math.max(0, (card.box || 0) - 1);
   card.due = Date.now() + INTERVALS[card.box] * DAY;
-  DB.stats.attempts++; DB.stats.sumScore += score;
+  P().stats.attempts++; P().stats.sumScore += score;
   bumpStreak();
   saveDB(); renderStats();
 }
-function dueCards(){ const now = Date.now(); return DB.deck.filter(c => c.due <= now); }
+function dueCards(){ const now = Date.now(); return P().deck.filter(c => c.due <= now); }
 function renderStats(){
   const due = dueCards().length;
   const badge = document.getElementById('dueBadge');
   badge.textContent = due;
   badge.className = 'badge' + (due === 0 ? ' zero' : '');
-  document.getElementById('stWords').textContent = DB.deck.length;
-  document.getElementById('stMastered').textContent = DB.deck.filter(c=>c.box>=4).length;
+  document.getElementById('stWords').textContent = P().deck.length;
+  document.getElementById('stMastered').textContent = P().deck.filter(c=>c.box>=4).length;
   document.getElementById('stDue').textContent = due;
-  document.getElementById('stAvg').textContent = DB.stats.attempts ? Math.round(DB.stats.sumScore / DB.stats.attempts) : '–';
+  document.getElementById('stAvg').textContent = P().stats.attempts ? Math.round(P().stats.sumScore / P().stats.attempts) : '–';
+  document.getElementById('stWordsL').textContent = T('stWords');
+  document.getElementById('stMasteredL').textContent = T('stMastered');
+  document.getElementById('stDueL').textContent = T('stDue');
+  document.getElementById('stAvgL').textContent = T('stAvg');
   document.getElementById('startReviewBtn').disabled = due === 0;
-  document.getElementById('startReviewBtn').textContent = due ? `Start review (${due} due)` : 'Nothing due — come back later 🌻';
+  document.getElementById('startReviewBtn').textContent = due ? `${T('startReview')} (${due})` : T('nothingDue');
 }
 
 /* ================= phrase card rendering ================= */
@@ -742,7 +890,7 @@ function phraseCardHtml(p, fbId, opts){
   opts = opts || {};
   return `
   <div class="card">
-    <div class="eyebrow">${opts.eyebrow || 'Say this phrase'}</div>
+    <div class="eyebrow">${opts.eyebrow || T('sayThis')}</div>
     ${opts.hideUa
       ? `<div class="ua-big ua-blur" id="revealUa" onclick="revealAnswer()" title="Tap to reveal">${esc(p.ua)}</div>`
       : `<div class="ua-big">${esc(p.ua)}</div>`}
@@ -750,18 +898,18 @@ function phraseCardHtml(p, fbId, opts){
       ? `<div class="translit ua-blur" id="revealTr">${esc(p.translit)}</div>`
       : `<div class="translit">${esc(p.translit)}</div>`}
     <div class="en">${esc(p.en)}</div>
-    ${p.hint ? `<div class="hint"><b>Tip:</b> ${esc(p.hint)}</div>` : ''}
+    ${p.hint ? `<div class="hint"><b>${T('tipLabel')}</b> ${esc(p.hint)}</div>` : ''}
     <div class="row" style="margin-top:16px;margin-bottom:0">
-      ${opts.hideUa ? `<button class="btn" onclick="revealAnswer()">👁 Reveal</button>` : ''}
-      <button class="btn" onclick="speakUa(currentPhrase.ua, 0.9)">🔊 Listen</button>
-      <button class="btn" onclick="speakUa(currentPhrase.ua, 0.6)">🐢 Slow</button>
+      ${opts.hideUa ? `<button class="btn" onclick="revealAnswer()">${T('reveal')}</button>` : ''}
+      <button class="btn" onclick="speakUa(currentPhrase.ua, 0.9)">${T('listen')}</button>
+      <button class="btn" onclick="speakUa(currentPhrase.ua, 0.6)">${T('slow')}</button>
       ${opts.nextBtn || ''}
     </div>
   </div>
   <div class="card feedback hidden" id="${fbId}">
-    <div class="eyebrow">Your attempt</div>
-    <div class="score-line"><div class="score-num" id="${fbId}Score">–</div><div class="small-label">out of 100</div></div>
-    <div class="heard">I heard: <b id="${fbId}Heard"></b></div>
+    <div class="eyebrow">${T('attempt')}</div>
+    <div class="score-line"><div class="score-num" id="${fbId}Score">–</div><div class="small-label">${T('outOf')}</div></div>
+    <div class="heard">${T('heard')} <b id="${fbId}Heard"></b></div>
     <div class="fb-text" id="${fbId}Text"></div>
   </div>`;
 }
@@ -778,16 +926,16 @@ async function gradeCurrent(heard, fbId){
   document.getElementById(fbId+'Heard').textContent = heard;
   const scoreEl = document.getElementById(fbId+'Score');
   scoreEl.textContent = '…'; scoreEl.className = 'score-num';
-  document.getElementById(fbId+'Text').textContent = 'Checking your pronunciation…';
+  document.getElementById(fbId+'Text').textContent = T('checking');
   fb.scrollIntoView({behavior:'smooth', block:'nearest'});
   revealAnswer();
   try{
     const r = await callClaude(
-      'You are an expert, encouraging Ukrainian pronunciation coach. Speech-recognition transcripts of the learner are your only signal: transcript differences from the target suggest mispronunciation; a match suggests good pronunciation. Respond ONLY with minified JSON, no markdown.',
+      `You are an expert, encouraging ${LC().targetName} pronunciation coach for a native ${LC().helperName} speaker. Speech-recognition transcripts of the learner are your only signal: transcript differences from the target suggest mispronunciation; a match suggests good pronunciation. Respond ONLY with minified JSON, no markdown.`,
       [{role:'user', content:
-        `Target phrase: "${currentPhrase.ua}" (meaning: "${currentPhrase.en}"). ` +
-        `Ukrainian speech recognition heard the learner say: "${heard}". ` +
-        `Return JSON exactly: {"score": <0-100 integer>, "feedback":"2-3 sentences in English: what matched, what to fix, referencing specific Ukrainian sounds","tip":"one concrete drill or mouth-position tip in English"}`
+        `Target ${LC().targetName} phrase: "${currentPhrase.ua}" (meaning: "${currentPhrase.en}"). ` +
+        `${LC().targetName} speech recognition heard the learner say: "${heard}". ` +
+        `Return JSON exactly: {"score": <0-100 integer>, "feedback":"2-3 sentences written in ${LC().helperName}: what matched, what to fix, referencing specific ${LC().targetName} sounds","tip":"one concrete drill or mouth-position tip written in ${LC().helperName}"}`
       }]
     );
     scoreEl.textContent = r.score;
@@ -809,6 +957,19 @@ async function gradeCurrent(heard, fbId){
 }
 
 /* ================= LESSONS ================= */
+const THEMES_EN = [
+  {id:'idioms', emo:'💬', name:'Ідіоми та розмовні вирази'},
+  {id:'phrasal', emo:'🔗', name:'Фразові дієслова'},
+  {id:'work', emo:'💼', name:'Робота та кар\'єра'},
+  {id:'smalltalk_en', emo:'🗣️', name:'Світська бесіда'},
+  {id:'phone', emo:'📞', name:'Телефон та листування'},
+  {id:'travel', emo:'✈️', name:'Подорожі та аеропорт'},
+  {id:'opinions', emo:'🤔', name:'Думки та дискусії'},
+  {id:'daily_en', emo:'🏙️', name:'Повсякденне життя'},
+  {id:'interview', emo:'🤝', name:'Співбесіда'},
+  {id:'slang', emo:'😎', name:'Сленг та неформальність'}
+];
+function themes(){ return DB.dir === 'en' ? THEMES_EN : THEMES; }
 const THEMES = [
   {id:'greetings', emo:'👋', name:'Greetings & introductions'},
   {id:'cafe', emo:'☕', name:'At the café'},
@@ -825,36 +986,36 @@ const LESSON_LEN = 6;
 
 function renderLessonGrid(){
   const g = document.getElementById('lessonGrid');
-  g.innerHTML = THEMES.map(t=>{
-    const p = DB.lessons[t.id] || {done:0, best:0};
+  g.innerHTML = themes().map(t=>{
+    const p = P().lessons[t.id] || {done:0, best:0};
     const pct = Math.min(100, Math.round((p.done||0) / LESSON_LEN * 100));
     return `<button class="lesson-tile" onclick="startLesson('${t.id}')">
       <div class="emo">${t.emo}</div>
       <div class="t">${t.name}</div>
-      <div class="p">${p.done ? (p.done + ' phrases · avg ' + p.best) : 'Not started'}</div>
+      <div class="p">${p.done ? (p.done + ' ' + T('phrasesW') + ' · ' + T('avgW') + ' ' + p.best) : T('notStarted')}</div>
       <div class="prog-bar"><i style="width:${pct}%"></i></div>
     </button>`;
   }).join('');
 }
 
 async function startLesson(themeId){
-  const theme = THEMES.find(t=>t.id===themeId);
+  const theme = themes().find(t=>t.id===themeId);
   document.getElementById('lessonPicker').classList.add('hidden');
   document.getElementById('lessonActive').classList.remove('hidden');
   document.getElementById('lessonLoading').classList.remove('hidden');
   document.getElementById('lessonPhraseWrap').innerHTML = '';
   document.getElementById('lessonCount').textContent = theme.emo + ' ' + theme.name;
   currentPhrase = null;
-  const known = DB.deck.filter(c=>c.theme===themeId).map(c=>c.ua).slice(-20);
+  const known = P().deck.filter(c=>c.theme===themeId).map(c=>c.ua).slice(-20);
   try{
     const arr = await callClaude(
-      'You are a Ukrainian language curriculum designer building lessons toward conversational fluency. Respond ONLY with minified JSON (an array), no markdown, no commentary.',
+      `You are a ${LC().targetName} language curriculum designer building lessons toward fluency for ${LC().helperName} speakers. Respond ONLY with minified JSON (an array), no markdown, no commentary.`,
       [{role:'user', content:
-        `Create ${LESSON_LEN} short, useful, connected Ukrainian phrases for the theme "${theme.name}" at level "${getLevel()}", ` +
+        `Create ${LESSON_LEN} short, useful, connected ${LC().targetName} phrases for the theme "${theme.name}" for a native ${LC().helperName} speaker at level "${getLevel()}", ` +
         `ordered easiest to hardest, that a learner could realistically use in one real-life scenario. ` +
         `Avoid these already-learned phrases: ${JSON.stringify(known)}. ` +
         `Return a JSON array of exactly ${LESSON_LEN} objects like: ` +
-        `[{"ua":"Ukrainian text","translit":"syllable-by-syllable transliteration with STRESSED syllables in caps","en":"English meaning","hint":"one short pronunciation or grammar tip in English"}]`
+        `[{"ua":"${LC().targetName} text","translit":"${translitSpec()}","en":"${LC().helperName} meaning","hint":"one short pronunciation or grammar tip written in ${LC().helperName}"}]`
       }]
     );
     lesson = { theme: themeId, phrases: arr, idx: 0, scores: [] };
@@ -866,15 +1027,15 @@ async function startLesson(themeId){
 
 function showLessonPhrase(){
   document.getElementById('lessonLoading').classList.add('hidden');
-  const theme = THEMES.find(t=>t.id===lesson.theme);
+  const theme = themes().find(t=>t.id===lesson.theme);
   if (lesson.idx >= lesson.phrases.length){ finishLesson(); return; }
   const p = lesson.phrases[lesson.idx];
   p.theme = lesson.theme;
   currentPhrase = p;
   document.getElementById('lessonCount').textContent = `${theme.emo} ${lesson.idx+1} / ${lesson.phrases.length}`;
   document.getElementById('lessonPhraseWrap').innerHTML = phraseCardHtml(p, 'lessonFb', {
-    eyebrow: theme.name + ' — say this phrase',
-    nextBtn: `<button class="btn primary" onclick="nextLessonPhrase()">${lesson.idx+1===lesson.phrases.length?'Finish ✓':'Next →'}</button>`
+    eyebrow: theme.name + ' — ' + T('sayThis').toLowerCase(),
+    nextBtn: `<button class="btn primary" onclick="nextLessonPhrase()">${lesson.idx+1===lesson.phrases.length?T('finish'):T('next')}</button>`
   });
   speakUa(p.ua, 0.85);
 }
@@ -882,17 +1043,17 @@ function nextLessonPhrase(){ lesson.idx++; showLessonPhrase(); }
 function finishLesson(){
   const scores = lesson.scores.filter(s=>typeof s==='number');
   const avg = scores.length ? Math.round(scores.reduce((a,b)=>a+b,0)/scores.length) : 0;
-  const prev = DB.lessons[lesson.theme] || {done:0, best:0};
-  DB.lessons[lesson.theme] = { done: prev.done + lesson.phrases.length, best: Math.max(prev.best, avg) };
+  const prev = P().lessons[lesson.theme] || {done:0, best:0};
+  P().lessons[lesson.theme] = { done: prev.done + lesson.phrases.length, best: Math.max(prev.best, avg) };
   saveDB(); renderLessonGrid();
   document.getElementById('lessonPhraseWrap').innerHTML = `
     <div class="card" style="text-align:center">
       <div style="font-size:2rem">🌻</div>
-      <div class="ua-big" style="font-size:1.3rem">Чудова робота!</div>
-      <div class="en">Great work! ${scores.length ? 'Average score: <b>'+avg+'</b>. ' : ''}All ${lesson.phrases.length} phrases were added to your review deck.</div>
+      <div class="ua-big" style="font-size:1.3rem">${T('bigWork')}</div>
+      <div class="en">${T('subWork')} ${scores.length ? T('avgScore')+' <b>'+avg+'</b>. ' : ''}${lesson.phrases.length} ${T('addedDeck')}</div>
       <div class="row" style="justify-content:center;margin-top:16px;margin-bottom:0">
-        <button class="btn primary" onclick="startLesson('${lesson.theme}')">Another round</button>
-        <button class="btn" onclick="exitLesson()">All lessons</button>
+        <button class="btn primary" onclick="startLesson('${lesson.theme}')">${T('anotherRound')}</button>
+        <button class="btn" onclick="exitLesson()">${T('backLessons')}</button>
       </div>
     </div>`;
   currentPhrase = null;
@@ -909,14 +1070,14 @@ async function newPhrase(){
   btn.disabled = true; btn.textContent = '…';
   try{
     const p = await callClaude(
-      'You are a Ukrainian language curriculum designer. Respond ONLY with minified JSON, no markdown, no commentary.',
+      `You are a ${LC().targetName} language curriculum designer. Respond ONLY with minified JSON, no markdown, no commentary.`,
       [{role:'user', content:
-        `Give me ONE short useful Ukrainian phrase for a learner at level: "${getLevel()}". ` +
-        `Avoid these: ${JSON.stringify((DB.usedPhrases||[]).slice(-20))}. ` +
-        `Return JSON exactly: {"ua":"Ukrainian text","translit":"syllable-by-syllable transliteration with STRESSED syllables in caps","en":"English meaning","hint":"one short pronunciation or grammar tip in English"}`
+        `Give me ONE short useful ${LC().targetName} phrase for a native ${LC().helperName} speaker at level: "${getLevel()}". ` +
+        `Avoid these: ${JSON.stringify((P().usedPhrases||[]).slice(-20))}. ` +
+        `Return JSON exactly: {"ua":"${LC().targetName} text","translit":"${translitSpec()}","en":"${LC().helperName} meaning","hint":"one short pronunciation or grammar tip written in ${LC().helperName}"}`
       }]
     );
-    DB.usedPhrases.push(p.ua); saveDB();
+    P().usedPhrases.push(p.ua); saveDB();
     currentPhrase = p;
     document.getElementById('practicePhraseWrap').innerHTML = phraseCardHtml(p, 'practiceFb');
     speakUa(p.ua, 0.85);
@@ -943,9 +1104,9 @@ function showReviewCard(){
   currentPhrase = c;
   document.getElementById('reviewCount').textContent = `${review.idx+1} / ${review.cards.length}`;
   document.getElementById('reviewCardWrap').innerHTML = phraseCardHtml(c, 'reviewFb', {
-    eyebrow: 'From memory — say this in Ukrainian',
+    eyebrow: T('fromMemory'),
     hideUa: true,
-    nextBtn: `<button class="btn primary hidden" id="reviewNextBtn" onclick="nextReviewCard()">Next →</button>`
+    nextBtn: `<button class="btn primary hidden" id="reviewNextBtn" onclick="nextReviewCard()">${T('next')}</button>`
   });
 }
 function nextReviewCard(){ review.idx++; showReviewCard(); }
@@ -954,7 +1115,7 @@ function endReview(done){
   document.getElementById('reviewIdle').classList.remove('hidden');
   if (done){
     document.getElementById('reviewIdle').insertAdjacentHTML('afterbegin',
-      '<div class="status" id="reviewDoneMsg">🌾 Review complete! Words you struggled with will come back sooner.</div>');
+      '<div class="status" id="reviewDoneMsg">' + esc(T('reviewDone')) + '</div>');
     setTimeout(()=>{ const m=document.getElementById('reviewDoneMsg'); m && m.remove(); }, 6000);
   }
   review = null; currentPhrase = null; renderStats();
@@ -963,35 +1124,42 @@ function endReview(done){
 /* ================= WORDS ================= */
 function renderWords(){
   const list = document.getElementById('wordList');
-  if (!DB.deck.length){
-    list.innerHTML = '<div class="empty">No saved words yet. Do a lesson, practice a phrase, or tap ⭐ Save on anything Leya says in Chat.</div>';
+  if (!P().deck.length){
+    list.innerHTML = '<div class="empty">' + esc(T('emptyWords')) + '</div>';
     return;
   }
-  const sorted = [...DB.deck].sort((a,b)=>a.due-b.due);
+  const sorted = [...P().deck].sort((a,b)=>a.due-b.due);
   list.innerHTML = sorted.map(c=>`
     <div class="word-row">
       <span class="growth" title="box ${c.box}">${GROWTH[c.box]||'🌱'}</span>
       <div class="word-main">
         <div class="w-ua">${esc(c.ua)}</div>
-        <div class="w-en">${esc(c.en)}${c.last!=null ? ' · last score '+c.last : ''}${c.due<=Date.now() ? ' · <b>due</b>' : ''}</div>
+        <div class="w-en">${esc(c.en)}${c.last!=null ? ' · '+T('lastScore')+' '+c.last : ''}${c.due<=Date.now() ? ' · <b>'+T('dueWord')+'</b>' : ''}</div>
       </div>
       <button class="icon-btn" onclick="speakUa(${JSON.stringify(c.ua).replace(/"/g,'&quot;')},0.85)" aria-label="Listen">🔊</button>
       <button class="icon-btn" onclick="deleteCard('${c.id}')" aria-label="Remove">✕</button>
     </div>`).join('');
 }
 function deleteCard(id){
-  DB.deck = DB.deck.filter(c=>c.id!==id);
+  P().deck = P().deck.filter(c=>c.id!==id);
   saveDB(); renderWords(); renderStats();
 }
 
 /* ================= CHAT ================= */
-const CHAT_SYSTEM =
-  'You are Leya (Лея), a warm, patient Ukrainian tutor having a spoken conversation with a learner working toward basic conversational fluency. ' +
-  'Keep replies SHORT (1-2 simple Ukrainian sentences), slightly stretch the learner beyond their current level, and ask small follow-up questions to keep them producing language. ' +
-  'The learner\'s Ukrainian arrives via speech recognition, so odd words may be mispronunciations — infer the intent. ' +
-  'If they spoke English, answer briefly and give them a Ukrainian phrase to try saying. ' +
+function translitSpec(){
+  return DB.dir === 'en'
+    ? 'pronunciation respelling in Ukrainian Cyrillic letters with STRESSED syllables in CAPITALS (як вимовляється українськими літерами)'
+    : 'syllable-by-syllable Latin transliteration with STRESSED syllables in caps';
+}
+function chatSystem(){
+  const L = LC();
+  return `You are Leya (Лея), a warm, patient ${L.targetName} tutor having a spoken conversation with a native ${L.helperName} speaker at "${getLevel()}" level, working toward fluent ${L.targetName}. ` +
+  `Keep replies SHORT (1-2 ${L.targetName} sentences), slightly stretch the learner beyond their current level, and ask small follow-up questions to keep them producing language. ` +
+  `The learner's ${L.targetName} arrives via speech recognition, so odd words may be mispronunciations — infer the intent. ` +
+  `If they spoke ${L.helperName}, answer briefly and give them a ${L.targetName} phrase to try saying. ` +
   'Respond ONLY with minified JSON, no markdown: ' +
-  '{"ua":"your reply in Ukrainian","translit":"transliteration with STRESSED syllables in caps","en":"English translation","note":"gentle correction of the learner\'s last Ukrainian (grammar/word choice/likely pronunciation) in English, or null if it was fine or they spoke English"}';
+  `{"ua":"your reply in ${L.targetName}","translit":"${translitSpec()}","en":"${L.helperName} translation","note":"gentle correction of the learner's last ${L.targetName} (grammar/word choice/likely pronunciation), written in ${L.helperName}, or null if it was fine or they spoke ${L.helperName}"}`;
+}
 
 function addMsg(html, who){
   const d = document.createElement('div');
@@ -1004,11 +1172,11 @@ function addMsg(html, who){
 
 async function sendChat(text, spoken){
   addMsg(esc(text), 'user');
-  chatHistory.push({role:'user', content: (speakLang==='uk-UA' && spoken ? '[spoke Ukrainian] ' : '') + text});
+  chatHistory.push({role:'user', content: (speakLang===LC().target && spoken ? ('[spoke ' + LC().targetName + '] ') : '') + text});
   const typing = document.getElementById('typing');
   typing.classList.remove('hidden');
   try{
-    const r = await callClaude(CHAT_SYSTEM, chatHistory);
+    const r = await callClaude(chatSystem(), chatHistory);
     chatHistory.push({role:'assistant', content: JSON.stringify(r)});
     if (chatHistory.length > 24) chatHistory = chatHistory.slice(-24);
     const saveIdx = chatSaves.length;
@@ -1019,8 +1187,8 @@ async function sendChat(text, spoken){
       '<div class="m-en">' + esc(r.en) + '</div>';
     if (r.note) html += '<div class="m-note">' + esc(r.note) + '</div>';
     html += '<div class="msg-actions">' +
-      '<button class="btn ghost" onclick="speakUa(this.dataset.ua,0.85)" data-ua="' + esc(r.ua) + '">🔊 Replay</button>' +
-      '<button class="btn ghost" onclick="saveFromChat(' + saveIdx + ', this)">⭐ Save to my words</button>' +
+      '<button class="btn ghost" onclick="speakUa(this.dataset.ua,0.85)" data-ua="' + esc(r.ua) + '">' + esc(T('replay')) + '</button>' +
+      '<button class="btn ghost" onclick="saveFromChat(' + saveIdx + ', this)">' + esc(T('saveWord')) + '</button>' +
       '</div>';
     addMsg(html, 'tutor');
     speakUa(r.ua, 0.85);
@@ -1037,7 +1205,7 @@ function saveFromChat(idx, btn){
   if (!p) return;
   upsertCard(p, 'chat');
   saveDB(); renderWords(); renderStats();
-  btn.textContent = '✓ Saved'; btn.disabled = true;
+  btn.textContent = T('saved'); btn.disabled = true;
 }
 function sendTyped(){
   const inp = document.getElementById('textInput');
@@ -1054,17 +1222,17 @@ function setMode(m){
     document.getElementById('tab-'+x).setAttribute('aria-selected', x===m);
     document.getElementById(x+'Pane').classList.toggle('hidden', x!==m);
   });
-  setMicLabel(m==='chat' ? 'Tap to speak to Leya'
-    : m==='review' ? 'Tap to speak — recall the Ukrainian from memory'
-    : m==='alphabet' ? 'Tap a letter, then tap to say its word'
-    : 'Tap to speak');
+  setMicLabel(m==='chat' ? T('micChat')
+    : m==='review' ? T('micReview')
+    : m==='alphabet' ? T('micAlpha')
+    : T('tapToSpeak'));
   if (m==='review'){ renderStats(); }
   if (m==='words'){ renderWords(); }
 }
 function setSpeakLang(l){
   speakLang = l;
-  document.getElementById('pillUa').setAttribute('aria-pressed', l==='uk-UA');
-  document.getElementById('pillEn').setAttribute('aria-pressed', l==='en-US');
+  document.getElementById('pillUa').setAttribute('aria-pressed', l===LC().target);
+  document.getElementById('pillEn').setAttribute('aria-pressed', l===LC().helper);
 }
 
 /* ================= STREAK ================= */
@@ -1087,6 +1255,23 @@ function renderStreak(){
 }
 
 /* ================= ALPHABET ================= */
+const SOUNDS_EN = [
+ {L:'TH', n:'θ (глухий)', s:'язик між зубами, без голосу — не «с»', w:'think', wt:'θІНК (не «сінк»)', we:'думати'},
+ {L:'TH', n:'ð (дзвінкий)', s:'язик між зубами, з голосом — не «з»', w:'this', wt:'ðІС (не «зіс»)', we:'це'},
+ {L:'W', n:'w', s:'губи трубочкою, як коротке «у» — не «в»', w:'west', wt:'УЕст', we:'захід'},
+ {L:'V', n:'v', s:'верхні зуби торкаються нижньої губи', w:'very', wt:'ВЕрі', we:'дуже'},
+ {L:'I', n:'ɪ (коротке)', s:'коротке розслаблене «і», між «і» та «и»', w:'ship', wt:'шІп (не «шііп»)', we:'корабель'},
+ {L:'EE', n:'iː (довге)', s:'довге напружене «і»', w:'sheep', wt:'шІІп', we:'вівця'},
+ {L:'A', n:'æ', s:'широке «е» — рот відкритий ширше', w:'cat', wt:'кЕт (широке)', we:'кіт'},
+ {L:'NG', n:'ŋ', s:'носовий звук, БЕЗ «ґ» у кінці', w:'song', wt:'сОн(ґ) — «ґ» майже нема', we:'пісня'},
+ {L:'R', n:'r', s:'язик не вібрує — не розкочуй', w:'red', wt:'Ред (м\'яке r)', we:'червоний'},
+ {L:'H', n:'h', s:'легкий видих — не жорстке «х»', w:'happy', wt:'hЕпі (не «хепі»)', we:'щасливий'},
+ {L:'Ə', n:'ə (шва)', s:'нейтральний слабкий звук у ненаголошених складах', w:'about', wt:'еБАут', we:'про'},
+ {L:'OO', n:'ʊ', s:'коротке «у»', w:'book', wt:'бУк (коротке)', we:'книга'},
+ {L:'J', n:'dʒ', s:'«дж» як один злитий звук', w:'job', wt:'ДЖОб', we:'робота'},
+ {L:'D/G/Z', n:'дзвінкі в кінці', s:'НЕ оглушуй кінцеві: dog ≠ dock, bag ≠ back', w:'dog', wt:'дОҐ (дзвінке ґ!)', we:'пес', noQuiz:true}
+];
+function alphaData(){ return DB.dir === 'en' ? SOUNDS_EN : ALPHABET; }
 const ALPHABET = [
  {L:'А а', n:'а',  s:'"a" in father',      w:'автобус', wt:'av-TO-bus',   we:'bus'},
  {L:'Б б', n:'бе', s:'"b" in bat',          w:'банан',   wt:'ba-NAN',      we:'banana'},
@@ -1118,13 +1303,13 @@ const ALPHABET = [
  {L:'Ч ч', n:'че', s:'"ch" in chat',        w:'час',     wt:'chas',        we:'time'},
  {L:'Ш ш', n:'ша', s:'"sh" in shop',        w:'школа',   wt:'SHKO-la',     we:'school'},
  {L:'Щ щ', n:'ща', s:'"shch" — fresh cheese',w:'щастя',  wt:'SHCHAS-tya',  we:'happiness'},
- {L:'Ь ь', n:"м'який знак", s:'soft sign — softens the consonant before it', w:'день', wt:'den', we:'day'},
+ {L:'Ь ь', n:"м'який знак", s:'soft sign — softens the consonant before it', w:'день', wt:'den', we:'day', noQuiz:true},
  {L:'Ю ю', n:'ю',  s:'"yu" in youth',       w:'юрист',   wt:'yu-RYST',     we:'lawyer'},
  {L:'Я я', n:'я',  s:'"ya" in yard',        w:'яблуко',  wt:'YA-blu-ko',   we:'apple'}
 ];
 
 function renderAlphabet(){
-  document.getElementById('letterGrid').innerHTML = ALPHABET.map((a,i)=>`
+  document.getElementById('letterGrid').innerHTML = alphaData().map((a,i)=>`
     <button class="letter-tile" id="lt${i}" onclick="selectLetter(${i})">
       <div class="big">${a.L}</div>
       <div class="snd">${esc(a.s)}</div>
@@ -1132,20 +1317,20 @@ function renderAlphabet(){
 }
 
 function selectLetter(i){
-  const a = ALPHABET[i];
+  const a = alphaData()[i];
   document.getElementById('alphaQuiz').classList.add('hidden');
   document.querySelectorAll('.letter-tile').forEach(t=>t.classList.remove('active'));
   document.getElementById('lt'+i).classList.add('active');
   currentPhrase = { ua: a.w, translit: a.wt, en: a.we, hint: a.L.split(' ')[0] + ' sounds like ' + a.s + '.', theme: 'alphabet' };
   document.getElementById('alphaDetail').innerHTML = `
     <div class="card">
-      <div class="eyebrow">Letter ${i+1} of 33 — called “${esc(a.n)}”</div>
+      <div class="eyebrow">${i+1} / ${alphaData().length} — “${esc(a.n)}”</div>
       <div class="ua-big">${a.L} <span style="font-size:.55em;color:var(--ink-soft);font-family:'IBM Plex Sans';font-weight:400">= ${esc(a.s)}</span></div>
       <div class="translit">${esc(a.w)} · ${esc(a.wt)}</div>
-      <div class="en">${esc(a.we)} — now say “${esc(a.w)}” into the mic 👇</div>
+      <div class="en">${esc(a.we)} — ${T('nowSay')} “${esc(a.w)}” ${T('intoMic')}</div>
       <div class="row" style="margin-top:16px;margin-bottom:0">
-        <button class="btn" onclick="speakUa('${esc(a.n)}', 0.8)">🔊 Letter name</button>
-        <button class="btn" onclick="speakUa('${esc(a.w)}', 0.9)">🔊 Word</button>
+        <button class="btn" onclick="speakUa('${esc(DB.dir==='en' ? a.w : a.n)}', 0.8)">🔊 ${DB.dir==='en' ? T('soundBtn') : T('letterNameBtn')}</button>
+        <button class="btn" onclick="speakUa('${esc(a.w)}', 0.9)">${T('wordBtn')}</button>
         <button class="btn" onclick="speakUa('${esc(a.w)}', 0.6)">🐢 Slow</button>
       </div>
     </div>
@@ -1156,7 +1341,7 @@ function selectLetter(i){
       <div class="fb-text" id="alphaFbText"></div>
     </div>`;
   document.getElementById('alphaDetail').scrollIntoView({behavior:'smooth', block:'nearest'});
-  speakUa(a.n, 0.8);
+  speakUa(DB.dir==='en' ? a.w : a.n, 0.8);
 }
 
 /* alphabet sound quiz: hear a word, tap the letter it starts with */
@@ -1170,27 +1355,27 @@ function startAlphaQuiz(){
   nextQuizQ();
 }
 function nextQuizQ(){
-  let idx;
-  do { idx = Math.floor(Math.random()*ALPHABET.length); } while (idx === 30); // Ь never starts a word
-  const a = ALPHABET[idx];
+  const data = alphaData();
+  const pool = data.map((a,i)=>a.noQuiz ? -1 : i).filter(i=>i>=0);
+  const idx = pool[Math.floor(Math.random()*pool.length)];
+  const a = data[idx];
   const opts = new Set([idx]);
   while (opts.size < 4){
-    const j = Math.floor(Math.random()*ALPHABET.length);
-    if (j !== 30) opts.add(j);
+    opts.add(pool[Math.floor(Math.random()*pool.length)]);
   }
   const arr = [...opts].sort(()=>Math.random()-.5);
   quiz.answer = idx;
   document.getElementById('alphaQuiz').innerHTML = `
     <div class="card">
-      <div class="eyebrow">Sound quiz <span class="quiz-score" style="float:right">${quiz.right} / ${quiz.total}</span></div>
-      <div class="en" style="margin-bottom:4px">Listen — which letter does this word <b>start</b> with?</div>
+      <div class="eyebrow">${T('soundQuizTitle')} <span class="quiz-score" style="float:right">${quiz.right} / ${quiz.total}</span></div>
+      <div class="en" style="margin-bottom:4px">${T('quizQ')}</div>
       <div class="row" style="margin:12px 0 0">
-        <button class="btn" onclick="speakUa('${esc(a.w)}', 0.85)">🔊 Play again</button>
+        <button class="btn" onclick="speakUa('${esc(a.w)}', 0.85)">${T('playAgain')}</button>
         <button class="btn" onclick="speakUa('${esc(a.w)}', 0.6)">🐢 Slow</button>
-        <button class="btn ghost" onclick="endAlphaQuiz()">Done</button>
+        <button class="btn ghost" onclick="endAlphaQuiz()">${T('doneBtn')}</button>
       </div>
       <div class="quiz-opts">
-        ${arr.map(j=>`<button class="quiz-opt" id="qo${j}" onclick="answerQuiz(${j})">${ALPHABET[j].L.split(' ')[0]}</button>`).join('')}
+        ${arr.map(j=>`<button class="quiz-opt" id="qo${j}" onclick="answerQuiz(${j})">${alphaData()[j].L.split(' ')[0]}</button>`).join('')}
       </div>
     </div>`;
   speakUa(a.w, 0.85);
@@ -1203,13 +1388,13 @@ function answerQuiz(j){
   if (correct){ quiz.right++; bumpStreak(); saveDB(); }
   document.getElementById('qo'+quiz.answer).classList.add('right');
   if (!correct) document.getElementById('qo'+j).classList.add('wrong');
-  const a = ALPHABET[quiz.answer];
-  setMicLabel((correct ? '✓ ' : '✗ ') + a.w + ' (' + a.we + ') starts with ' + a.L.split(' ')[0]);
+  const a = alphaData()[quiz.answer];
+  setMicLabel((correct ? '✓ ' : '✗ ') + a.w + ' (' + a.we + ') ' + T('startsWith') + ' ' + a.L.split(' ')[0]);
   setTimeout(()=>{ quiz.answered = false; nextQuizQ(); }, 1400);
 }
 function endAlphaQuiz(){
   document.getElementById('alphaQuiz').classList.add('hidden');
-  setMicLabel(quiz && quiz.total ? `Quiz done: ${quiz.right} / ${quiz.total} correct` : 'Tap a letter, then tap to say its word');
+  setMicLabel(quiz && quiz.total ? `${T('quizDone')} ${quiz.right} / ${quiz.total} ${T('correct')}` : T('micAlpha'));
   quiz = null;
 }
 
@@ -1217,14 +1402,14 @@ function endAlphaQuiz(){
 function buildCSV(){
   const head = ['Ukrainian','Transliteration','English','Hint','Theme','Box (0-5)','Best score','Last score','Attempts','Next review','Added'];
   const q = v => '"' + String(v ?? '').replace(/"/g,'""') + '"';
-  const rows = [...DB.deck].sort((a,b)=>a.added-b.added).map(c=>[
+  const rows = [...P().deck].sort((a,b)=>a.added-b.added).map(c=>[
     c.ua, c.translit, c.en, c.hint, c.theme || '', c.box, c.best ?? '', c.last ?? '', c.attempts,
     new Date(c.due).toLocaleDateString(), new Date(c.added).toLocaleDateString()
   ].map(q).join(','));
   return head.map(q).join(',') + '\n' + rows.join('\n');
 }
 function exportCSV(){
-  if (!DB.deck.length){ setMicLabel('No words to export yet.'); return; }
+  if (!P().deck.length){ setMicLabel('No words to export yet.'); return; }
   try{
     const blob = new Blob(['\ufeff' + buildCSV()], {type:'text/csv;charset=utf-8'});
     const url = URL.createObjectURL(blob);
@@ -1235,7 +1420,7 @@ function exportCSV(){
   }catch(e){ setMicLabel('Download blocked here — use 📋 Copy CSV instead.'); }
 }
 async function copyCSV(){
-  if (!DB.deck.length){ setMicLabel('No words to copy yet.'); return; }
+  if (!P().deck.length){ setMicLabel('No words to copy yet.'); return; }
   const btn = document.getElementById('copyCsvBtn');
   try{
     await navigator.clipboard.writeText(buildCSV());
