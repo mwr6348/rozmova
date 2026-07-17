@@ -240,7 +240,7 @@
 <header>
   <div>
     <div class="brand">Розмова<span class="dot">.</span> <span>Rozmova</span></div>
-    <div class="tagline" id="tagline">Speak Ukrainian out loud. Get corrected. Improve. <span style="opacity:.55">· v6</span></div>
+    <div class="tagline" id="tagline">Speak Ukrainian out loud. Get corrected. Improve. <span style="opacity:.55">· v7</span></div>
   </div>
   <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
     <div class="streak" id="streakChip" title="Practice on consecutive days to grow your streak">🔥 0</div>
@@ -397,7 +397,7 @@ function migrateDB(){
     delete DB.deck; delete DB.usedPhrases; delete DB.lessons; delete DB.stats; delete DB.level;
   }
 }
-const APP_V = 'v6';
+const APP_V = 'v7';
 const STR = {
 en: {
   tagline:'Speak Ukrainian out loud. Get corrected. Improve.',
@@ -675,7 +675,10 @@ function saveApiKey(){
 }
 function removeApiKey(){ DB.apiKey = null; saveDB(); renderEnvStatus(); }
 function tutorErrorMsg(){
-  return (!inArtifact() && !DB.apiKey) ? T('errKey') : T('errNet');
+  if (!inArtifact() && !DB.apiKey) return T('errKey');
+  const code = lastApiError || '';
+  if (code.indexOf('401') >= 0 || code.indexOf('403') >= 0) return T('errKey');
+  return T('errNet') + (code ? ' (' + code + ')' : '');
 }
 
 /* Hold the mic stream open after the first grant so the browser stops
@@ -761,37 +764,42 @@ async function toggleMic(){
   recognition.interimResults = true;
   recognition.continuous = true;    // keep listening through natural pauses
   recognition.maxAlternatives = 1;
-  let finalText = '';
+  let finalText = '', finalsRaw = [], lastInterim = '';
   let idleTimer = null;
   const stopSoon = (ms)=>{ clearTimeout(idleTimer); idleTimer = setTimeout(()=>{ try{ recognition.stop(); }catch(e){} }, ms); };
-  recognition.onstart = ()=> stopSoon(6000);          // up to 6s to start talking
-  recognition.onresult = (e)=>{
-    // Android delivers finals as growing snapshots + repeats ("Доброго",
-    // "Доброго ранку", "Доброго ранку"). Collapse repeats/extensions of the
-    // previous final; keep genuinely new segments.
-    const finals = []; let interim = '';
-    for (let i = 0; i < e.results.length; i++){
-      if (e.results[i].isFinal) finals.push(e.results[i][0].transcript.trim());
-      else interim += e.results[i][0].transcript;
-    }
+  // Collapse Android's growing-snapshot/repeat finals; keep genuinely new segments.
+  const collapseSegs = (arr)=>{
     const lower = t => t.trim().toLowerCase();
     const out = [];
-    for (const f of finals){
+    for (const raw of arr){
+      const f = (raw || '').trim();
       if (!f) continue;
       const prev = out[out.length-1];
       if (prev !== undefined && (lower(f) === lower(prev) || lower(f).startsWith(lower(prev)))) out[out.length-1] = f;
       else if (prev !== undefined && lower(prev).startsWith(lower(f))) { /* shorter echo — drop */ }
       else out.push(f);
     }
-    finalText = out.join(' ');
+    return out;
+  };
+  recognition.onstart = ()=> stopSoon(8000);          // up to 8s to start talking
+  recognition.onresult = (e)=>{
+    finalsRaw = []; let interim = '';
+    for (let i = 0; i < e.results.length; i++){
+      if (e.results[i].isFinal) finalsRaw.push(e.results[i][0].transcript.trim());
+      else interim += e.results[i][0].transcript;
+    }
+    lastInterim = interim;
+    finalText = collapseSegs(finalsRaw).join(' ');
     setMicLabel('“' + ((finalText + ' ' + interim).trim()) + '”');
-    stopSoon(3000);                                    // finishes ~3s after you stop speaking
+    stopSoon(4000);                                    // finishes ~4s after you stop speaking
   };
   recognition.onend = ()=>{
     clearTimeout(idleTimer);
     listening = false;
     document.getElementById('micBtn').classList.remove('listening');
-    if (finalText.trim()){ setMicLabel(T('tapToSpeak')); handleSpeech(finalText.trim()); }
+    // Include any interim tail Android never finalized — this was silently dropped before.
+    const said = collapseSegs(finalsRaw.concat(lastInterim ? [lastInterim] : [])).join(' ').trim();
+    if (said){ setMicLabel(T('tapToSpeak')); handleSpeech(said); }
     else setMicLabel(T('noCatch'));
   };
   recognition.onerror = (e)=>{
@@ -820,6 +828,7 @@ function handleSpeech(text){
 
 /* ================= Claude API ================= */
 function inArtifact(){ return !!window.storage; }
+let lastApiError = null;
 async function callClaude(system, messages){
   const headers = {'Content-Type':'application/json'};
   if (DB.apiKey){
@@ -827,12 +836,31 @@ async function callClaude(system, messages){
     headers['anthropic-version'] = '2023-06-01';
     headers['anthropic-dangerous-direct-browser-access'] = 'true';
   }
+  let lastErr = null;
+  for (let attempt = 0; attempt < 3; attempt++){
+    try{
+      const out = await callClaudeOnce(headers, system, messages);
+      lastApiError = null;
+      return out;
+    }catch(e){
+      lastErr = e; lastApiError = e.message || 'network';
+      if (e.fatal) break;                          // bad key / bad request: retrying won't help
+      await new Promise(r=>setTimeout(r, 700 * (attempt + 1)));
+    }
+  }
+  throw lastErr;
+}
+async function callClaudeOnce(headers, system, messages){
   const res = await fetch('https://api.anthropic.com/v1/messages', {
     method:'POST',
     headers,
     body: JSON.stringify({ model:'claude-sonnet-4-6', max_tokens:1000, system, messages })
   });
-  if (!res.ok) throw new Error('API ' + res.status);
+  if (!res.ok){
+    const err = new Error('API ' + res.status);
+    if (res.status === 401 || res.status === 403 || res.status === 400) err.fatal = true;
+    throw err;
+  }
   const data = await res.json();
   const text = (data.content || []).filter(b=>b.type==='text').map(b=>b.text).join('\n');
   const clean = text.replace(/```json|```/g,'').trim();
