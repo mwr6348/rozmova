@@ -240,7 +240,7 @@
 <header>
   <div>
     <div class="brand">Розмова<span class="dot">.</span> <span>Rozmova</span></div>
-    <div class="tagline" id="tagline">Speak Ukrainian out loud. Get corrected. Improve. <span style="opacity:.55">· v7</span></div>
+    <div class="tagline" id="tagline">Speak Ukrainian out loud. Get corrected. Improve. <span style="opacity:.55">· v8</span></div>
   </div>
   <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
     <div class="streak" id="streakChip" title="Practice on consecutive days to grow your streak">🔥 0</div>
@@ -260,6 +260,7 @@
 <div class="tabs" role="tablist">
   <button class="tab" role="tab" id="tab-lessons" aria-selected="true" onclick="setMode('lessons')">📖 Lessons</button>
   <button class="tab" role="tab" id="tab-alphabet" aria-selected="false" onclick="setMode('alphabet')">🔤 Alphabet</button>
+  <button class="tab" role="tab" id="tab-culture" aria-selected="false" onclick="setMode('culture')">🌍 Culture</button>
   <button class="tab" role="tab" id="tab-practice" aria-selected="false" onclick="setMode('practice')">🎯 Practice</button>
   <button class="tab" role="tab" id="tab-chat" aria-selected="false" onclick="setMode('chat')">💬 Chat</button>
   <button class="tab" role="tab" id="tab-review" aria-selected="false" onclick="setMode('review')">🔁 Review<span class="badge zero" id="dueBadge">0</span></button>
@@ -302,6 +303,13 @@
     <div class="letter-grid" id="letterGrid"></div>
   </section>
 
+  <!-- ============ CULTURE ============ -->
+  <section id="culturePane" class="hidden">
+    <div class="row"><span class="small-label" id="cultureNote"></span></div>
+    <div class="lesson-grid" id="culturePicker"></div>
+    <div id="cultureCardWrap"></div>
+  </section>
+
   <!-- ============ PRACTICE ============ -->
   <section id="practicePane" class="hidden">
     <div class="row">
@@ -342,6 +350,10 @@
       <div class="stat"><div class="n" id="stMastered">0</div><div class="l" id="stMasteredL">mastered</div></div>
       <div class="stat"><div class="n" id="stDue">0</div><div class="l" id="stDueL">due now</div></div>
       <div class="stat"><div class="n" id="stAvg">–</div><div class="l" id="stAvgL">avg score</div></div>
+    </div>
+    <div class="card" id="chartCard" style="padding:14px 16px">
+      <div class="eyebrow" id="chartTitle"></div>
+      <div id="chartBars" style="display:flex;align-items:flex-end;gap:4px;height:60px"></div>
     </div>
     <div id="reviewIdle">
       <div class="card">
@@ -397,7 +409,7 @@ function migrateDB(){
     delete DB.deck; delete DB.usedPhrases; delete DB.lessons; delete DB.stats; delete DB.level;
   }
 }
-const APP_V = 'v7';
+const APP_V = 'v8';
 const STR = {
 en: {
   tagline:'Speak Ukrainian out loud. Get corrected. Improve.',
@@ -428,6 +440,10 @@ en: {
   nowSay:'now say', intoMic:'into the mic \ud83d\udc47', soundBtn:'Sound', letterNameBtn:'Letter name', wordBtn:'\ud83d\udd0a Word',
   errKey:'The AI tutor needs an Anthropic API key \u2014 tap \u201c\u2699 Setup & voice\u201d at the top to add it (one-time).',
   errNet:'Could not reach the tutor \u2014 check your connection and try again.',
+  tabCulture:'\ud83c\udf0d Culture', cultureNote:'Stories, etiquette, and traditions \u2014 every card ends with a real phrase to say out loud.',
+  newCard:'\u2728 New card', backTopics:'\u2190 Topics', keyPhrase:'Key phrase \u2014 say it!', funFact:'\ud83d\udca1 Fun fact:',
+  loadingCard:'Leya is writing your culture card\u2026', micCulture:'Open a card, then say its key phrase',
+  chartTitle:'Last 14 days', gtOpen:'Opened Google Translate \u2014 tap the \ud83d\udd0a speaker there.', noExport:'No saved words yet.',
   levels:['\ud83c\udf31 Absolute beginner','\ud83c\udf3f Beginner','\ud83c\udf3b Intermediate','\ud83c\udf3e Upper intermediate']
 },
 uk: {
@@ -459,6 +475,10 @@ uk: {
   nowSay:'\u0442\u0435\u043f\u0435\u0440 \u0441\u043a\u0430\u0436\u0438', intoMic:'\u0443 \u043c\u0456\u043a\u0440\u043e\u0444\u043e\u043d \ud83d\udc47', soundBtn:'\u0417\u0432\u0443\u043a', letterNameBtn:'\u041d\u0430\u0437\u0432\u0430 \u043b\u0456\u0442\u0435\u0440\u0438', wordBtn:'\ud83d\udd0a \u0421\u043b\u043e\u0432\u043e',
   errKey:'\u0414\u043b\u044f \u0428\u0406-\u0440\u0435\u043f\u0435\u0442\u0438\u0442\u043e\u0440\u0430 \u043f\u043e\u0442\u0440\u0456\u0431\u0435\u043d \u043a\u043b\u044e\u0447 Anthropic API \u2014 \u043d\u0430\u0442\u0438\u0441\u043d\u0438 \u00ab\u2699 Setup & voice\u00bb \u0432\u0433\u043e\u0440\u0456 (\u043e\u0434\u0438\u043d \u0440\u0430\u0437).',
   errNet:'\u041d\u0435 \u0432\u0434\u0430\u043b\u043e\u0441\u044f \u0437\u2019\u0454\u0434\u043d\u0430\u0442\u0438\u0441\u044f \u0437 \u0440\u0435\u043f\u0435\u0442\u0438\u0442\u043e\u0440\u043e\u043c \u2014 \u043f\u0435\u0440\u0435\u0432\u0456\u0440 \u0456\u043d\u0442\u0435\u0440\u043d\u0435\u0442 \u0456 \u0441\u043f\u0440\u043e\u0431\u0443\u0439 \u0449\u0435.',
+  tabCulture:'\ud83c\udf0d \u041a\u0443\u043b\u044c\u0442\u0443\u0440\u0430', cultureNote:'\u0406\u0441\u0442\u043e\u0440\u0456\u0457, \u0435\u0442\u0438\u043a\u0435\u0442 \u0456 \u0442\u0440\u0430\u0434\u0438\u0446\u0456\u0457 \u2014 \u043a\u043e\u0436\u043d\u0430 \u043a\u0430\u0440\u0442\u043a\u0430 \u0437\u0430\u0432\u0435\u0440\u0448\u0443\u0454\u0442\u044c\u0441\u044f \u0436\u0438\u0432\u043e\u044e \u0444\u0440\u0430\u0437\u043e\u044e.',
+  newCard:'\u2728 \u041d\u043e\u0432\u0430 \u043a\u0430\u0440\u0442\u043a\u0430', backTopics:'\u2190 \u0422\u0435\u043c\u0438', keyPhrase:'\u041a\u043b\u044e\u0447\u043e\u0432\u0430 \u0444\u0440\u0430\u0437\u0430 \u2014 \u0441\u043a\u0430\u0436\u0438 \u0457\u0457!', funFact:'\ud83d\udca1 \u0426\u0456\u043a\u0430\u0432\u0438\u0439 \u0444\u0430\u043a\u0442:',
+  loadingCard:'\u041b\u0435\u044f \u043f\u0438\u0448\u0435 \u0442\u0432\u043e\u044e \u043a\u0443\u043b\u044c\u0442\u0443\u0440\u043d\u0443 \u043a\u0430\u0440\u0442\u043a\u0443\u2026', micCulture:'\u0412\u0456\u0434\u043a\u0440\u0438\u0439 \u043a\u0430\u0440\u0442\u043a\u0443 \u0456 \u0441\u043a\u0430\u0436\u0438 \u043a\u043b\u044e\u0447\u043e\u0432\u0443 \u0444\u0440\u0430\u0437\u0443',
+  chartTitle:'\u041e\u0441\u0442\u0430\u043d\u043d\u0456 14 \u0434\u043d\u0456\u0432', gtOpen:'\u0412\u0456\u0434\u043a\u0440\u0438\u0442\u043e Google Translate \u2014 \u043d\u0430\u0442\u0438\u0441\u043d\u0438 \ud83d\udd0a \u0442\u0430\u043c.', noExport:'\u041f\u043e\u043a\u0438 \u043d\u0435\u043c\u0430\u0454 \u0441\u043b\u0456\u0432.',
   levels:['\ud83c\udf31 \u041f\u043e\u0447\u0430\u0442\u043a\u043e\u0432\u0438\u0439','\ud83c\udf3f \u0411\u0430\u0437\u043e\u0432\u0438\u0439','\ud83c\udf3b \u0421\u0435\u0440\u0435\u0434\u043d\u0456\u0439','\ud83c\udf3e \u0412\u0438\u0449\u0435 \u0441\u0435\u0440\u0435\u0434\u043d\u044c\u043e\u0433\u043e']
 }
 };
@@ -471,6 +491,8 @@ function applyLang(){
   document.getElementById('tab-chat').textContent = T('tabChat');
   document.getElementById('tab-review').innerHTML = esc(T('tabReview')) + '<span class="badge zero" id="dueBadge">0</span>';
   document.getElementById('tab-words').textContent = T('tabWords');
+  document.getElementById('tab-culture').textContent = T('tabCulture');
+  document.getElementById('cultureNote').textContent = T('cultureNote');
   const lv = document.getElementById('level');
   T('levels').forEach((label,i)=>{ if (lv.options[i]) lv.options[i].textContent = label; });
   document.getElementById('practiceNote').textContent = T('practiceNote');
@@ -516,7 +538,7 @@ function setDir(d){
   document.getElementById('reviewIdle').classList.remove('hidden');
   document.getElementById('alphaQuiz').classList.add('hidden');
   document.getElementById('alphaDetail').innerHTML = '';
-  renderLessonGrid(); renderAlphabet(); renderStats(); renderWords(); pickVoice(); renderEnvStatus();
+  renderLessonGrid(); renderAlphabet(); renderCultureGrid(); renderStats(); renderWords(); pickVoice(); renderEnvStatus();
   setMode('lessons');
 }
 let mode = 'lessons';
@@ -548,7 +570,7 @@ async function loadDB(){
   if (!DB.streak) DB.streak = {count:0, last:null};
   speakLang = LC().target;
   applyLang();
-  renderLessonGrid(); renderStats(); renderWords(); renderStreak(); renderAlphabet(); pickVoice(); renderEnvStatus();
+  renderLessonGrid(); renderStats(); renderWords(); renderStreak(); renderAlphabet(); renderCultureGrid(); pickVoice(); renderEnvStatus();
   if (!inArtifact() && !DB.apiKey && !DB.setupSeen) document.getElementById('setupPanel').classList.remove('hidden');
 }
 let saveTimer = null;
@@ -746,7 +768,7 @@ function openGT(text){
   if (Date.now() - lastGesture < 2500){
     // Named window: reuses ONE Google Translate window instead of endless new tabs.
     window.open('https://translate.google.com/?sl=' + LC().t2 + '&tl=' + LC().h2 + '&text=' + encodeURIComponent(text) + '&op=translate', 'rozmova_audio');
-    setMicLabel('Updated the Google Translate window — tap 🔊 there. Tip: snap it beside the app.');
+    setMicLabel(T('gtOpen'));
   }
 }
 let lastGesture = 0;
@@ -822,7 +844,7 @@ function setMicLabel(t){ document.getElementById('micLabel').textContent = t; }
 function handleSpeech(text){
   if (mode === 'chat') sendChat(text, true);
   else if (mode === 'review' && review) gradeCurrent(text, 'reviewFb');
-  else if (currentPhrase) gradeCurrent(text, mode === 'lessons' ? 'lessonFb' : mode === 'alphabet' ? 'alphaFb' : 'practiceFb');
+  else if (currentPhrase) gradeCurrent(text, mode === 'lessons' ? 'lessonFb' : mode === 'alphabet' ? 'alphaFb' : mode === 'culture' ? 'cultureFb' : 'practiceFb');
   else setMicLabel(mode === 'alphabet' ? 'Tap a letter first, then say its example word.' : 'Pick a phrase first, then tap to speak.');
 }
 
@@ -890,11 +912,31 @@ function applyScore(card, score){
   else if (score < 55) card.box = Math.max(0, (card.box || 0) - 1);
   card.due = Date.now() + INTERVALS[card.box] * DAY;
   P().stats.attempts++; P().stats.sumScore += score;
-  bumpStreak();
+  bumpStreak(); logActivity();
   saveDB(); renderStats();
 }
 function dueCards(){ const now = Date.now(); return P().deck.filter(c => c.due <= now); }
+function logActivity(){
+  const k = dayStr(0);
+  P().log = P().log || {};
+  P().log[k] = (P().log[k] || 0) + 1;
+}
+function renderChart(){
+  const bars = document.getElementById('chartBars');
+  document.getElementById('chartTitle').textContent = T('chartTitle');
+  const log = P().log || {};
+  const days = [];
+  for (let i = 13; i >= 0; i--) days.push(dayStr(-i));
+  const max = Math.max(1, ...days.map(d=>log[d]||0));
+  bars.innerHTML = days.map(d=>{
+    const n = log[d] || 0;
+    const h = n ? Math.max(6, Math.round(n / max * 56)) : 2;
+    const today = d === dayStr(0);
+    return `<div title="${d}: ${n}" style="flex:1;height:${h}px;border-radius:3px;background:${n ? (today ? 'var(--sun-deep)' : 'var(--sun)') : 'var(--line)'}"></div>`;
+  }).join('');
+}
 function renderStats(){
+  renderChart();
   const due = dueCards().length;
   const badge = document.getElementById('dueBadge');
   badge.textContent = due;
@@ -966,7 +1008,7 @@ async function gradeCurrent(heard, fbId){
         `Return JSON exactly: {"score": <0-100 integer>, "feedback":"2-3 sentences written in ${LC().helperName}: what matched, what to fix, referencing specific ${LC().targetName} sounds","tip":"one concrete drill or mouth-position tip written in ${LC().helperName}"}`
       }]
     );
-    scoreEl.textContent = r.score;
+    scoreEl.textContent = r.score + (r.score >= 85 ? ' 🎉' : '');
     scoreEl.className = 'score-num ' + (r.score>=80?'good':r.score>=55?'mid':'low');
     document.getElementById(fbId+'Text').innerHTML =
       esc(r.feedback) + '<span class="tip">💡 ' + esc(r.tip) + '</span>';
@@ -982,6 +1024,105 @@ async function gradeCurrent(heard, fbId){
     scoreEl.textContent = '–';
     document.getElementById(fbId+'Text').textContent = tutorErrorMsg();
   }
+}
+
+/* ================= CULTURE ================= */
+const CULTURE_UK = [
+  {id:'food',      emo:'🥟', name:'Food & table culture'},
+  {id:'holidays',  emo:'🎄', name:'Holidays & traditions'},
+  {id:'etiquette', emo:'🤝', name:'Etiquette & superstitions'},
+  {id:'music',     emo:'🎶', name:'Music & folk art'},
+  {id:'history',   emo:'🏛️', name:'History & identity'},
+  {id:'daily_c',   emo:'🏙️', name:'Everyday life'}
+];
+const CULTURE_EN = [
+  {id:'smalltalk_c', emo:'🗣️', name:'Смолток і ввічливість', promptName:'small talk and politeness norms'},
+  {id:'food_c',      emo:'🍔', name:'Їжа та чайові', promptName:'food culture and tipping'},
+  {id:'holidays_c',  emo:'🎆', name:'Свята і традиції', promptName:'holidays and traditions'},
+  {id:'work_c',      emo:'💼', name:'Робоча культура', promptName:'workplace culture'},
+  {id:'idioms_c',    emo:'💬', name:'Звідки ідіоми', promptName:'origins of common idioms'},
+  {id:'daily_c2',    emo:'🏙️', name:'Побут і звички', promptName:'everyday life and habits'}
+];
+function cultureTopics(){ return DB.dir === 'en' ? CULTURE_EN : CULTURE_UK; }
+function cultureCache(){ P().culture = P().culture || {}; return P().culture; }
+function renderCultureGrid(){
+  const g = document.getElementById('culturePicker');
+  g.classList.remove('hidden');
+  document.getElementById('cultureCardWrap').innerHTML = '';
+  g.innerHTML = cultureTopics().map(t=>{
+    const n = (cultureCache()[t.id] || []).length;
+    return `<button class="lesson-tile" onclick="openCultureTopic('${t.id}')">
+      <div class="emo">${t.emo}</div>
+      <div class="t">${esc(t.name)}</div>
+      <div class="p">${n ? n + ' ×' : ''}</div>
+    </button>`;
+  }).join('');
+}
+function openCultureTopic(id){
+  const cards = cultureCache()[id] || [];
+  if (cards.length) showCultureCard(id, cards[cards.length - 1]);
+  else newCultureCard(id);
+}
+async function newCultureCard(id){
+  const topic = cultureTopics().find(t=>t.id===id);
+  document.getElementById('culturePicker').classList.add('hidden');
+  document.getElementById('cultureCardWrap').innerHTML = '<div class="empty">' + esc(T('loadingCard')) + '</div>';
+  currentPhrase = null;
+  const seen = (cultureCache()[id] || []).map(c=>c.title).slice(-12);
+  const cultureName = DB.dir === 'en' ? 'American and British everyday culture' : 'Ukrainian culture';
+  try{
+    const card = await callClaude(
+      `You are a vivid, warm cultural guide to ${cultureName} for language learners. Respond ONLY with minified JSON, no markdown.`,
+      [{role:'user', content:
+        `Create ONE engaging culture card about "${topic.promptName || topic.name}" for a ${LC().helperName}-speaking learner of ${LC().targetName}. ` +
+        `Avoid these already-seen titles: ${JSON.stringify(seen)}. ` +
+        `Return JSON exactly: {"title":"short catchy title in ${LC().helperName}","body":"two short vivid, specific, practical paragraphs in ${LC().helperName}, separated by \\n\\n, no markdown","phrase":{"ua":"one authentic ${LC().targetName} phrase connected to this topic","translit":"${translitSpec()}","en":"${LC().helperName} meaning"},"fact":"one surprising fun fact in ${LC().helperName}"}`
+      }]
+    );
+    const cache = cultureCache();
+    cache[id] = cache[id] || [];
+    cache[id].push(card);
+    if (cache[id].length > 20) cache[id] = cache[id].slice(-20);
+    saveDB();
+    showCultureCard(id, card);
+  }catch(e){
+    document.getElementById('cultureCardWrap').innerHTML = '<div class="empty">' + esc(tutorErrorMsg()) + '</div>' +
+      '<div class="row" style="justify-content:center"><button class="btn" onclick="renderCultureGrid()">' + esc(T('backTopics')) + '</button></div>';
+  }
+}
+function showCultureCard(id, card){
+  const topic = cultureTopics().find(t=>t.id===id);
+  document.getElementById('culturePicker').classList.add('hidden');
+  currentPhrase = Object.assign({theme:'culture', hint:null}, card.phrase);
+  const paras = String(card.body || '').split(/\n\n+/).map(b=>'<p style="margin-bottom:10px">' + esc(b) + '</p>').join('');
+  document.getElementById('cultureCardWrap').innerHTML = `
+    <div class="row">
+      <button class="btn" onclick="renderCultureGrid()">${T('backTopics')}</button>
+      <button class="btn primary" onclick="newCultureCard('${id}')">${T('newCard')}</button>
+    </div>
+    <div class="card">
+      <div class="eyebrow">${topic.emo} ${esc(topic.name)}</div>
+      <div class="ua-big" style="font-size:1.2rem;margin-bottom:12px">${esc(card.title)}</div>
+      <div class="fb-text">${paras}</div>
+    </div>
+    <div class="card" style="border-left:5px solid var(--sun)">
+      <div class="eyebrow">${T('keyPhrase')}</div>
+      <div class="ua-big" style="font-size:1.25rem">${esc(card.phrase.ua)}</div>
+      <div class="translit">${esc(card.phrase.translit)}</div>
+      <div class="en">${esc(card.phrase.en)}</div>
+      <div class="row" style="margin-top:14px;margin-bottom:0">
+        <button class="btn" onclick="speakUa(currentPhrase.ua, 0.9)">${T('listen')}</button>
+        <button class="btn" onclick="speakUa(currentPhrase.ua, 0.6)">${T('slow')}</button>
+      </div>
+    </div>
+    <div class="card feedback hidden" id="cultureFb">
+      <div class="eyebrow">${T('attempt')}</div>
+      <div class="score-line"><div class="score-num" id="cultureFbScore">–</div><div class="small-label">${T('outOf')}</div></div>
+      <div class="heard">${T('heard')} <b id="cultureFbHeard"></b></div>
+      <div class="fb-text" id="cultureFbText"></div>
+    </div>
+    <div class="status" style="background:var(--wheat)"><b>${T('funFact')}</b> ${esc(card.fact)}</div>`;
+  speakUa(card.phrase.ua, 0.9);
 }
 
 /* ================= LESSONS ================= */
@@ -1220,7 +1361,7 @@ async function sendChat(text, spoken){
       '</div>';
     addMsg(html, 'tutor');
     speakUa(r.ua, 0.85);
-    bumpStreak(); saveDB();
+    bumpStreak(); logActivity(); saveDB();
   }catch(e){
     addMsg('<div class="m-en">' + esc(tutorErrorMsg()) + '</div>', 'tutor');
     chatHistory.pop();
@@ -1246,13 +1387,14 @@ function sendTyped(){
 /* ================= mode / toggles ================= */
 function setMode(m){
   mode = m;
-  ['lessons','alphabet','practice','chat','review','words'].forEach(x=>{
+  ['lessons','alphabet','culture','practice','chat','review','words'].forEach(x=>{
     document.getElementById('tab-'+x).setAttribute('aria-selected', x===m);
     document.getElementById(x+'Pane').classList.toggle('hidden', x!==m);
   });
   setMicLabel(m==='chat' ? T('micChat')
     : m==='review' ? T('micReview')
     : m==='alphabet' ? T('micAlpha')
+    : m==='culture' ? T('micCulture')
     : T('tapToSpeak'));
   if (m==='review'){ renderStats(); }
   if (m==='words'){ renderWords(); }
@@ -1349,7 +1491,7 @@ function selectLetter(i){
   document.getElementById('alphaQuiz').classList.add('hidden');
   document.querySelectorAll('.letter-tile').forEach(t=>t.classList.remove('active'));
   document.getElementById('lt'+i).classList.add('active');
-  currentPhrase = { ua: a.w, translit: a.wt, en: a.we, hint: a.L.split(' ')[0] + ' sounds like ' + a.s + '.', theme: 'alphabet' };
+  currentPhrase = { ua: a.w, translit: a.wt, en: a.we, hint: a.L.split(' ')[0] + ' — ' + a.s, theme: 'alphabet' };
   document.getElementById('alphaDetail').innerHTML = `
     <div class="card">
       <div class="eyebrow">${i+1} / ${alphaData().length} — “${esc(a.n)}”</div>
@@ -1403,7 +1545,7 @@ function nextQuizQ(){
         <button class="btn ghost" onclick="endAlphaQuiz()">${T('doneBtn')}</button>
       </div>
       <div class="quiz-opts">
-        ${arr.map(j=>`<button class="quiz-opt" id="qo${j}" onclick="answerQuiz(${j})">${alphaData()[j].L.split(' ')[0]}</button>`).join('')}
+        ${arr.map(j=>`<button class="quiz-opt" id="qo${j}" onclick="answerQuiz(${j})" style="font-size:${DB.dir==='en'?'1rem':'1.3rem'}">${DB.dir==='en' ? esc(alphaData()[j].n.split(' ')[0]) : alphaData()[j].L.split(' ')[0]}</button>`).join('')}
       </div>
     </div>`;
   speakUa(a.w, 0.85);
@@ -1417,7 +1559,7 @@ function answerQuiz(j){
   document.getElementById('qo'+quiz.answer).classList.add('right');
   if (!correct) document.getElementById('qo'+j).classList.add('wrong');
   const a = alphaData()[quiz.answer];
-  setMicLabel((correct ? '✓ ' : '✗ ') + a.w + ' (' + a.we + ') ' + T('startsWith') + ' ' + a.L.split(' ')[0]);
+  setMicLabel((correct ? '✓ ' : '✗ ') + a.w + ' (' + a.we + ') ' + T('startsWith') + ' ' + (DB.dir==='en' ? a.n.split(' ')[0] : a.L.split(' ')[0]));
   setTimeout(()=>{ quiz.answered = false; nextQuizQ(); }, 1400);
 }
 function endAlphaQuiz(){
@@ -1437,7 +1579,7 @@ function buildCSV(){
   return head.map(q).join(',') + '\n' + rows.join('\n');
 }
 function exportCSV(){
-  if (!P().deck.length){ setMicLabel('No words to export yet.'); return; }
+  if (!P().deck.length){ setMicLabel(T('noExport')); return; }
   try{
     const blob = new Blob(['\ufeff' + buildCSV()], {type:'text/csv;charset=utf-8'});
     const url = URL.createObjectURL(blob);
@@ -1448,7 +1590,7 @@ function exportCSV(){
   }catch(e){ setMicLabel('Download blocked here — use 📋 Copy CSV instead.'); }
 }
 async function copyCSV(){
-  if (!P().deck.length){ setMicLabel('No words to copy yet.'); return; }
+  if (!P().deck.length){ setMicLabel(T('noExport')); return; }
   const btn = document.getElementById('copyCsvBtn');
   try{
     await navigator.clipboard.writeText(buildCSV());
