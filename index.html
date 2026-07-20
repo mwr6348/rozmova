@@ -34,15 +34,20 @@
   }
   header{
     position:relative;
-    padding:18px 20px 20px;
-    display:flex; align-items:baseline; justify-content:space-between; flex-wrap:wrap; gap:8px;
+    padding:16px 20px 40px;
+    display:flex; flex-direction:column; gap:12px;
     background:linear-gradient(180deg,#e9eff7 0%,var(--paper) 92%);
   }
   header::after{
-    content:""; position:absolute; left:0; right:0; bottom:0; height:13px;
+    content:""; position:absolute; left:20px; right:20px; bottom:14px; height:13px;
     background-image:var(--stitch); background-size:auto 13px; background-repeat:repeat-x;
-    background-position:center; opacity:.92;
+    background-position:center; opacity:.9; pointer-events:none;
   }
+  .hdr-top{display:flex; justify-content:space-between; align-items:flex-start; gap:10px; flex-wrap:wrap}
+  .brandrow{display:flex; align-items:center; gap:10px}
+  .logo{flex-shrink:0; filter:drop-shadow(0 2px 5px rgba(12,37,81,.28))}
+  .hdr-selects{display:flex; flex-direction:column; align-items:center; gap:8px}
+  .hdr-selects select{width:min(340px,100%); text-align:center; text-align-last:center}
   .brand{font-family:'Unbounded',sans-serif;font-weight:800;font-size:1.3rem;letter-spacing:-.02em}
   .brand span{color:var(--sky-deep)} .brand .dot{color:var(--sun-deep)}
   .tagline{font-size:.82rem;color:var(--ink-soft)}
@@ -203,7 +208,8 @@
 
   /* mobile layout */
   @media (max-width:520px){
-    header{padding:12px 14px 8px}
+    header{padding:12px 14px 38px}
+    .logo{width:32px;height:32px}
     .brand{font-size:1.05rem}
     .tagline{font-size:.72rem}
     main{padding:12px 12px 118px}
@@ -280,12 +286,17 @@
 <body>
 
 <header>
-  <div>
-    <div class="brand">Розмова<span class="dot">.</span> <span>Rozmova</span></div>
-    <div class="tagline" id="tagline">Speak Ukrainian out loud. Get corrected. Improve. <span style="opacity:.55">· v12</span></div>
-  </div>
-  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+  <div class="hdr-top">
+    <div class="brandrow">
+      <svg class="logo" viewBox="0 0 512 512" width="36" height="36" aria-hidden="true"><rect width="512" height="512" rx="120" fill="#0c4ea8"/><path d="M148 96L140 130L140 300L168 312Q168 380 226 414L256 436L286 414Q344 380 344 312L372 300L372 130L364 96Q332 106 328 152L328 296L278 296L278 150L298 140L256 82L214 140L234 150L234 296L184 296L184 152Q180 106 148 96ZM206 322Q196 356 224 382Q234 352 224 322ZM306 322Q316 356 288 382Q278 352 288 322ZM249 308L263 308L263 398Q256 405 249 398Z" fill="#f4b31f" stroke="#d99400" stroke-width="6" stroke-linejoin="round"/></svg>
+      <div>
+        <div class="brand">Розмова<span class="dot">.</span> <span>Rozmova</span></div>
+        <div class="tagline" id="tagline">Speak Ukrainian out loud. Get corrected. Improve. <span style="opacity:.55">· v13</span></div>
+      </div>
+    </div>
     <div class="streak" id="streakChip" title="Practice on consecutive days to grow your streak">🔥 0</div>
+  </div>
+  <div class="hdr-selects">
     <select id="dirSel" aria-label="Language direction" onchange="setDir(this.value)">
       <option value="uk">EN → 🇺🇦  Learning Ukrainian</option>
       <option value="en">🇺🇦 → EN  Вивчаю англійську</option>
@@ -505,7 +516,7 @@ function migrateDB(){
     delete DB.deck; delete DB.usedPhrases; delete DB.lessons; delete DB.stats; delete DB.level;
   }
 }
-const APP_V = 'v12';
+const APP_V = 'v13';
 const STR = {
 en: {
   tagline:'Speak Ukrainian out loud. Get corrected. Improve.',
