@@ -12,13 +12,17 @@
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <style>
   :root{
-    --ink:#1c2742; --ink-soft:#4b5878;
-    --paper:#f7f9fc; --card:#ffffff;
-    --sky:#3d7de0; --sky-deep:#1d4fa8;
-    --sun:#f2b705; --sun-deep:#d99e00;
-    --wheat:#fff6dc;
-    --good:#2e8b57; --warn:#c4452f;
-    --line:#dfe6f2; --radius:18px;
+    --ink:#16233d; --ink-soft:#5a6a86;
+    --paper:#f4f1ea; --card:#ffffff;
+    --sky:#1668cf; --sky-deep:#0c4ea8;
+    --sun:#f4b31f; --sun-deep:#d99400;
+    --wheat:#fdf0d0;
+    --good:#1f8a54; --warn:#c1362f;
+    --line:#e5dfd2; --radius:20px;
+    --azure-ink:#0c2551; --berry:#c1362f; --linen-well:#ece5d6; --gold-soft:#fdf0d0;
+    --shadow-sm:0 2px 6px rgba(22,40,75,.06);
+    --shadow:0 6px 20px rgba(22,40,75,.09), 0 1px 3px rgba(22,40,75,.05);
+    --stitch:url("data:image/svg+xml,<svg%20xmlns='http://www.w3.org/2000/svg'%20width='44'%20height='22'><path%20d='M0%2011L22%200L44%2011L22%2022Z'%20fill='none'%20stroke='%230c4ea8'%20stroke-width='2.2'/><path%20d='M22%204L35%2011L22%2018L9%2011Z'%20fill='%23f4b31f'/><path%20d='M22%208L26%2011L22%2014L18%2011Z'%20fill='%23c1362f'/></svg>");
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{height:100%}
@@ -29,12 +33,17 @@
     -webkit-font-smoothing:antialiased;
   }
   header{
-    padding:18px 20px 10px;
+    position:relative;
+    padding:18px 20px 20px;
     display:flex; align-items:baseline; justify-content:space-between; flex-wrap:wrap; gap:8px;
-    border-bottom:3px solid var(--sun);
-    background:linear-gradient(180deg,#eaf1fc 0%,var(--paper) 100%);
+    background:linear-gradient(180deg,#e9eff7 0%,var(--paper) 92%);
   }
-  .brand{font-family:'Unbounded',sans-serif;font-weight:800;font-size:1.3rem}
+  header::after{
+    content:""; position:absolute; left:0; right:0; bottom:0; height:13px;
+    background-image:var(--stitch); background-size:auto 13px; background-repeat:repeat-x;
+    background-position:center; opacity:.92;
+  }
+  .brand{font-family:'Unbounded',sans-serif;font-weight:800;font-size:1.3rem;letter-spacing:-.02em}
   .brand span{color:var(--sky-deep)} .brand .dot{color:var(--sun-deep)}
   .tagline{font-size:.82rem;color:var(--ink-soft)}
   .tabs{display:flex;gap:8px;padding:12px 20px 0;overflow-x:auto;scrollbar-width:none}
@@ -44,7 +53,7 @@
     padding:9px 14px;border-radius:999px;border:1.5px solid var(--line);
     background:var(--card);color:var(--ink-soft);cursor:pointer;transition:all .15s;position:relative;
   }
-  .tab[aria-selected="true"]{background:var(--sky-deep);border-color:var(--sky-deep);color:#fff}
+  .tab[aria-selected="true"]{background:linear-gradient(180deg,#1a72d6,var(--sky-deep));border-color:var(--sky-deep);color:#fff;box-shadow:0 4px 12px rgba(12,78,168,.32);transform:translateY(-1px)}
   .tab:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
   .badge{
     display:inline-block;min-width:18px;padding:1px 5px;margin-left:5px;border-radius:999px;
@@ -61,11 +70,11 @@
   .status.bad{background:#fdeeea;border-color:#eec4ba;color:var(--warn)}
 
   .card{
-    background:var(--card);border:1.5px solid var(--line);border-radius:var(--radius);
-    padding:20px;margin-bottom:14px;box-shadow:0 2px 8px rgba(28,39,66,.05);
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:20px;margin-bottom:14px;box-shadow:var(--shadow);
   }
   .eyebrow{font-size:.7rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--sky-deep);margin-bottom:10px}
-  .ua-big{font-family:'Unbounded',sans-serif;font-weight:600;font-size:clamp(1.35rem,4.5vw,2.1rem);line-height:1.3;margin-bottom:10px}
+  .ua-big{font-family:'Unbounded',sans-serif;font-weight:600;font-size:clamp(1.35rem,4.5vw,2.1rem);line-height:1.3;margin-bottom:10px;color:var(--azure-ink);letter-spacing:-.01em}
   .translit{font-style:italic;color:var(--sky-deep);font-size:1.02rem;margin-bottom:4px}
   .en{color:var(--ink-soft);font-size:.98rem}
   .hint{margin-top:12px;padding-top:12px;border-top:1px dashed var(--line);font-size:.88rem;color:var(--ink-soft)}
@@ -74,15 +83,17 @@
   .row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
   .btn{
     font-family:'IBM Plex Sans',sans-serif;font-weight:600;font-size:.9rem;
-    padding:10px 15px;border-radius:12px;border:1.5px solid var(--line);
-    background:var(--card);color:var(--ink);cursor:pointer;transition:transform .08s, background .15s;
+    padding:10px 15px;border-radius:13px;border:1px solid var(--line);
+    background:var(--card);color:var(--ink);cursor:pointer;box-shadow:var(--shadow-sm);
+    transition:transform .1s ease, box-shadow .15s, background .15s;
   }
-  .btn:hover{background:#eef3fb}
-  .btn:active{transform:scale(.97)}
+  .btn:hover{background:#f1ece0;transform:translateY(-1px);box-shadow:var(--shadow)}
+  .btn:active{transform:translateY(0) scale(.98)}
   .btn:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
-  .btn.primary{background:var(--sky-deep);border-color:var(--sky-deep);color:#fff}
-  .btn.primary:hover{background:var(--sky)}
-  .btn.ghost{border:none;background:none;color:var(--sky-deep);padding:6px 4px;font-size:.82rem}
+  .btn.primary{background:linear-gradient(180deg,#1a72d6,var(--sky-deep));border-color:var(--sky-deep);color:#fff;box-shadow:0 4px 14px rgba(12,78,168,.32)}
+  .btn.primary:hover{background:linear-gradient(180deg,#2a7fe0,#0f57b6);box-shadow:0 6px 18px rgba(12,78,168,.4)}
+  .btn.ghost{border:none;background:none;color:var(--sky-deep);padding:6px 4px;font-size:.82rem;box-shadow:none}
+  .btn.ghost:hover{background:none;transform:none;box-shadow:none;text-decoration:underline}
   .btn:disabled{opacity:.45;cursor:not-allowed}
   select{
     font-family:inherit;font-size:.9rem;padding:9px 12px;border-radius:12px;
@@ -93,7 +104,7 @@
   .mic-dock{
     position:fixed;left:0;right:0;bottom:0;display:flex;flex-direction:column;align-items:center;
     padding:10px 0 16px;pointer-events:none;
-    background:linear-gradient(180deg,rgba(247,249,252,0) 0%,var(--paper) 45%);
+    background:linear-gradient(180deg,rgba(244,241,234,0) 0%,var(--paper) 45%);
   }
   .mic-label{font-size:.78rem;color:var(--ink-soft);margin-top:6px;min-height:1.1em;max-width:90%;text-align:center}
   .mic{
@@ -137,13 +148,13 @@
   .lesson-tile .t{font-weight:600;font-size:.9rem;margin:6px 0 4px}
   .lesson-tile .p{font-size:.75rem;color:var(--ink-soft)}
   .prog-bar{height:6px;border-radius:99px;background:var(--line);margin-top:8px;overflow:hidden}
-  .prog-bar i{display:block;height:100%;background:var(--sun);border-radius:99px}
+  .prog-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--sun),var(--sun-deep));border-radius:99px}
   .lesson-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
   .lesson-count{font-family:'Unbounded',sans-serif;font-weight:600;font-size:.85rem;color:var(--sky-deep)}
 
   /* review */
   .stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
-  .stat{background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:10px;text-align:center}
+  .stat{background:linear-gradient(180deg,#fff,#fbf8f2);border:1px solid var(--line);border-radius:14px;padding:10px;text-align:center;box-shadow:var(--shadow-sm)}
   .stat .n{font-family:'Unbounded',sans-serif;font-weight:800;font-size:1.25rem;color:var(--sky-deep)}
   .stat .l{font-size:.68rem;color:var(--ink-soft);margin-top:2px}
   .ua-blur{filter:blur(9px);cursor:pointer;user-select:none;transition:filter .2s}
@@ -152,7 +163,7 @@
   /* words */
   .word-row{
     display:flex;align-items:center;gap:10px;background:var(--card);
-    border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:8px;
+    border:1px solid var(--line);border-radius:13px;padding:10px 12px;margin-bottom:8px;box-shadow:var(--shadow-sm);
   }
   .word-main{flex:1;min-width:0}
   .word-main .w-ua{font-weight:600;font-size:.98rem}
@@ -165,7 +176,7 @@
   /* streak */
   .streak{
     font-family:'Unbounded',sans-serif;font-weight:600;font-size:.85rem;
-    background:var(--wheat);border:1.5px solid #efdfae;border-radius:999px;padding:8px 13px;
+    background:linear-gradient(180deg,#fdf3d7,#f9e7b4);border:1.5px solid #eccf88;border-radius:999px;padding:8px 13px;box-shadow:var(--shadow-sm);
   }
 
   /* alphabet */
@@ -233,6 +244,37 @@
     border:1.5px solid var(--line);background:var(--card);cursor:pointer;color:var(--ink-soft);
   }
   .pill[aria-pressed="true"]{background:var(--sun);border-color:var(--sun-deep);color:var(--ink)}
+
+  /* ---------- motion & final polish (v11) ---------- */
+  @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  @keyframes pop{0%{transform:scale(.4);opacity:0}60%{transform:scale(1.14)}100%{transform:scale(1);opacity:1}}
+  @keyframes micAura{
+    0%,100%{box-shadow:0 6px 18px rgba(217,148,0,.42), 0 0 0 0 rgba(244,179,31,0), inset 0 0 0 6px rgba(255,255,255,.35)}
+    50%{box-shadow:0 9px 24px rgba(217,148,0,.52), 0 0 0 12px rgba(244,179,31,.10), inset 0 0 0 6px rgba(255,255,255,.42)}
+  }
+  /* dynamically (re)inserted nodes animate in on render + tab/direction switch */
+  .card,.lesson-tile,.letter-tile,.word-row,.msg{animation:rise .34s cubic-bezier(.2,.7,.3,1) both}
+  /* score classes are added by JS when a grade arrives → pop fires exactly then */
+  .score-num.good,.score-num.mid,.score-num.low{animation:pop .42s cubic-bezier(.2,.8,.3,1.25) both}
+  /* signature interactive element: gentle idle glow, silenced while listening */
+  .mic{animation:micAura 3s ease-in-out infinite}
+  .mic.listening{animation:none}
+  .mic svg{transition:transform .1s}
+  .lesson-tile:hover,.letter-tile:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+  .lesson-tile,.letter-tile,.stat{transition:transform .12s ease, box-shadow .15s, border-color .15s, background .15s}
+  .tab{transition:transform .15s ease, box-shadow .15s, background .15s, color .15s, border-color .15s}
+  .translit{letter-spacing:.005em}
+  .eyebrow{color:var(--sky)}
+  @media (prefers-reduced-motion:reduce){
+    .card,.lesson-tile,.letter-tile,.word-row,.msg,
+    .score-num.good,.score-num.mid,.score-num.low,.mic{animation:none}
+    .lesson-tile:hover,.letter-tile:hover,.btn:hover,.tab[aria-selected="true"]{transform:none}
+  }
+  /* navigation styles (v12) */
+  .tabs.nav-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:6px;overflow:visible}
+  .tabs.nav-grid .tab{text-align:center;padding:9px 5px;font-size:.66rem;line-height:1.15}
+  .navsel{margin:12px 20px 0;display:block;width:calc(100% - 40px);font-family:'Unbounded',sans-serif;font-weight:600;font-size:.9rem;padding:12px 14px;border-radius:13px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);box-shadow:var(--shadow-sm)}
+  @media (max-width:520px){ .tabs.nav-grid{grid-template-columns:repeat(auto-fill,minmax(74px,1fr))} .tabs.nav-grid .tab{font-size:.6rem;padding:8px 3px} }
 </style>
 </head>
 <body>
@@ -240,13 +282,13 @@
 <header>
   <div>
     <div class="brand">Розмова<span class="dot">.</span> <span>Rozmova</span></div>
-    <div class="tagline" id="tagline">Speak Ukrainian out loud. Get corrected. Improve. <span style="opacity:.55">· v9</span></div>
+    <div class="tagline" id="tagline">Speak Ukrainian out loud. Get corrected. Improve. <span style="opacity:.55">· v12</span></div>
   </div>
   <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
     <div class="streak" id="streakChip" title="Practice on consecutive days to grow your streak">🔥 0</div>
     <select id="dirSel" aria-label="Language direction" onchange="setDir(this.value)">
-      <option value="uk">🇬🇧→🇺🇦 Learning Ukrainian</option>
-      <option value="en">🇺🇦→🇬🇧 Вивчаю англійську</option>
+      <option value="uk">EN → 🇺🇦  Learning Ukrainian</option>
+      <option value="en">🇺🇦 → EN  Вивчаю англійську</option>
     </select>
     <select id="level" aria-label="Difficulty level" onchange="saveDB()">
       <option value="absolute beginner">🌱 Absolute beginner</option>
@@ -257,10 +299,12 @@
   </div>
 </header>
 
-<div class="tabs" role="tablist">
+<div class="tabs" id="tabStrip" role="tablist">
   <button class="tab" role="tab" id="tab-lessons" aria-selected="true" onclick="setMode('lessons')">📖 Lessons</button>
   <button class="tab" role="tab" id="tab-alphabet" aria-selected="false" onclick="setMode('alphabet')">🔤 Alphabet</button>
   <button class="tab" role="tab" id="tab-culture" aria-selected="false" onclick="setMode('culture')">🌍 Culture</button>
+  <button class="tab" role="tab" id="tab-numbers" aria-selected="false" onclick="setMode('numbers')">🔢 Numbers</button>
+  <button class="tab" role="tab" id="tab-twisters" aria-selected="false" onclick="setMode('twisters')">🐾 Twisters</button>
   <button class="tab" role="tab" id="tab-practice" aria-selected="false" onclick="setMode('practice')">🎯 Practice</button>
   <button class="tab" role="tab" id="tab-chat" aria-selected="false" onclick="setMode('chat')">💬 Chat</button>
   <button class="tab" role="tab" id="tab-review" aria-selected="false" onclick="setMode('review')">🔁 Review<span class="badge zero" id="dueBadge">0</span></button>
@@ -268,10 +312,23 @@
 </div>
 
 <main>
+  <select id="navMenu" class="navsel hidden" aria-label="Go to section" onchange="setMode(this.value)"></select>
+
   <div class="row" style="margin-bottom:10px">
     <button class="btn" style="font-size:.8rem;padding:7px 12px" onclick="toggleSetup()">⚙ Setup &amp; voice <span id="setupHint" style="color:var(--warn)"></span></button>
   </div>
   <div id="setupPanel" class="hidden">
+    <div class="status" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+      <span id="navLabel">Menu style</span>
+      <button class="btn" id="navBtnTiles" onclick="setNav('grid')">▦ Tiles</button>
+      <button class="btn" id="navBtnMenu" onclick="setNav('menu')">▾ Menu</button>
+      <button class="btn" id="navBtnTabs" onclick="setNav('tabs')">— Tabs</button>
+    </div>
+    <div class="status" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <span id="speedLabel">Voice speed</span>
+      <input type="range" id="speedSlider" min="60" max="120" step="5" style="flex:1;min-width:120px" oninput="setVoiceSpeed(this.value)">
+      <b id="speedVal" style="min-width:42px;text-align:right">1.0×</b>
+    </div>
     <div id="voiceStatus" class="status"></div>
     <div id="envStatus" class="status hidden"></div>
     <div id="voiceDebug" class="status hidden" style="max-height:240px;overflow-y:auto"></div>
@@ -310,6 +367,33 @@
     <div id="cultureCardWrap"></div>
   </section>
 
+  <!-- ============ NUMBERS ============ -->
+  <section id="numbersPane" class="hidden">
+    <div class="row"><span class="small-label" id="numbersNote"></span></div>
+    <div class="card" style="text-align:center">
+      <div class="eyebrow" id="numbersEyebrow"></div>
+      <div class="ua-big" id="numberBig" style="font-size:3rem">–</div>
+      <div class="row" style="justify-content:center;margin:10px 0 0">
+        <button class="btn" id="numPlayBtn" onclick="playNumber()">🔊</button>
+        <button class="btn" id="numNewBtn" onclick="newNumber()">↻</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="text-row">
+        <input id="numInput" inputmode="numeric" placeholder="123" style="text-align:center;font-size:1.3rem" onkeydown="if(event.key==='Enter')checkNumber()">
+        <button class="btn primary" id="numCheckBtn" onclick="checkNumber()">✓</button>
+      </div>
+      <div id="numResult" class="fb-text" style="margin-top:10px;text-align:center"></div>
+    </div>
+  </section>
+
+  <!-- ============ TONGUE TWISTERS ============ -->
+  <section id="twistersPane" class="hidden">
+    <div class="row"><span class="small-label" id="twistersNote"></span></div>
+    <div class="row"><button class="btn primary" id="twisterNewBtn" onclick="newTwister()">🎲</button></div>
+    <div id="twisterWrap"></div>
+  </section>
+
   <!-- ============ PRACTICE ============ -->
   <section id="practicePane" class="hidden">
     <div class="row">
@@ -324,7 +408,7 @@
     <div class="lang-toggle">
       <span class="small-label" id="speakInLabel">I'll speak in:</span>
       <button class="pill" id="pillUa" aria-pressed="true" onclick="setSpeakLang(LC().target)">🇺🇦 Ukrainian</button>
-      <button class="pill" id="pillEn" aria-pressed="false" onclick="setSpeakLang(LC().helper)">🇺🇸 English (ask questions)</button>
+      <button class="pill" id="pillEn" aria-pressed="false" onclick="setSpeakLang(LC().helper)">EN · English (ask questions)</button>
     </div>
     <div class="chat-log" id="chatLog">
       <div class="msg tutor">
@@ -376,7 +460,19 @@
     <div class="row">
       <button class="btn" onclick="exportCSV()">⬇ Export CSV</button>
       <button class="btn" id="copyCsvBtn" onclick="copyCSV()">📋 Copy CSV</button>
+      <button class="btn" id="importBtn" onclick="toggleImport()">⬆ Import</button>
       <span class="small-label" id="wordsNote"></span>
+    </div>
+    <div id="importBox" class="hidden">
+      <div class="card">
+        <div class="eyebrow" id="importEyebrow"></div>
+        <div class="small-label" id="importHelp" style="margin-bottom:8px"></div>
+        <textarea id="importText" rows="5" style="width:100%;border:1.5px solid var(--line);border-radius:12px;padding:10px;font-family:inherit;font-size:.9rem" placeholder="дякую | thank you&#10;будь ласка | please"></textarea>
+        <div class="row" style="margin-top:10px;margin-bottom:0">
+          <button class="btn primary" id="importGoBtn" onclick="doImport()">⬆ Import</button>
+          <span class="small-label" id="importResult"></span>
+        </div>
+      </div>
     </div>
     <div id="wordList"></div>
   </section>
@@ -409,7 +505,7 @@ function migrateDB(){
     delete DB.deck; delete DB.usedPhrases; delete DB.lessons; delete DB.stats; delete DB.level;
   }
 }
-const APP_V = 'v9';
+const APP_V = 'v12';
 const STR = {
 en: {
   tagline:'Speak Ukrainian out loud. Get corrected. Improve.',
@@ -430,7 +526,7 @@ en: {
   wordsNote:'\ud83c\udf31 new \u2192 \ud83c\udf3f learning \u2192 \ud83c\udf3b growing \u2192 \ud83c\udf3e mastered. Tap \ud83d\udd0a to hear, \u2715 to remove.',
   emptyWords:'No saved words yet. Do a lesson, practice a phrase, or tap \u2b50 Save on anything Leya says in Chat.',
   lastScore:'last score', dueWord:'due',
-  speakIn:"I'll speak in:", pillTarget:'\ud83c\uddfa\ud83c\udde6 Ukrainian', pillHelper:'\ud83c\uddfa\ud83c\uddf8 English (ask questions)',
+  speakIn:"I'll speak in:", pillTarget:'\ud83c\uddfa\ud83c\udde6 Ukrainian', pillHelper:'EN \u00b7 English (ask questions)',
   typedPh:'Or type here (Ukrainian or English)\u2026', send:'Send', replay:'\ud83d\udd0a Replay', saveWord:'\u2b50 Save to my words', saved:'\u2713 Saved', thinking:'Leya is thinking\u2026',
   introUa:'\u041f\u0440\u0438\u0432\u0456\u0442! \u042f \u041b\u0435\u044f, \u0442\u0432\u043e\u044f \u0432\u0447\u0438\u0442\u0435\u043b\u044c\u043a\u0430. \u042f\u043a \u0441\u043f\u0440\u0430\u0432\u0438?', introTr:'pry-VIT! ya LE-ya, tvo-YA vchy-TEL-ka. yak SPRA-vy?', introEn:"Hi! I'm Leya, your teacher. How are you?",
   alphaNote:'All 33 letters. Tap one to hear it and practice a word that uses it.', soundQuiz:'\ud83c\udfa7 Sound quiz', soundQuizTitle:'Sound quiz',
@@ -444,6 +540,11 @@ en: {
   newCard:'\u2728 New card', backTopics:'\u2190 Topics', keyPhrase:'Key phrase \u2014 say it!', funFact:'\ud83d\udca1 Fun fact:',
   loadingCard:'Leya is writing your culture card\u2026', micCulture:'Open a card, then say its key phrase',
   chartTitle:'Last 14 days', gtOpen:'Opened Google Translate \u2014 tap the \ud83d\udd0a speaker there.', noExport:'No saved words yet.',
+  voiceSpeed:'Voice speed', navStyle:'Menu style', navTiles:'▦ Tiles', navMenu2:'▾ Menu', navTabs:'— Tabs', streakStart:'Practice today to start a streak', streakToday:'-day streak \u2014 today is done!', streakKeep:'-day streak \u2014 practice today to keep it alive', freezeBanked:'freeze banked',
+  tabNumbers:'\ud83d\udd22 Numbers', tabTwisters:'\ud83d\udc3e Twisters',
+  numbersNote:'Hear a number, type the digits. Range grows with your level.', numbersEyebrow:'What number is this?', micNumber:'Type the number you hear',
+  twistersNote:'\u0421\u043a\u043e\u0440\u043e\u043c\u043e\u0432\u043a\u0438 \u2014 tricky twisters to sharpen tough sounds. Tap the mic and try!', twisterEyebrow:'Tongue-twister \u2014 say it!', loadingTwister:'Finding a twister\u2026', micTwister:'Tap and say the tongue-twister',
+  importTitle:'Import your own words', importHelp:'One per line: Ukrainian | English (also accepts tab, comma, or semicolon).', importBtn:'\u2b06 Import', imported:'Added %n new words.',
   levels:['\ud83c\udf31 Absolute beginner','\ud83c\udf3f Beginner','\ud83c\udf3b Intermediate','\ud83c\udf3e Upper intermediate']
 },
 uk: {
@@ -465,7 +566,7 @@ uk: {
   wordsNote:'\ud83c\udf31 \u043d\u043e\u0432\u0435 \u2192 \ud83c\udf3f \u0432\u0438\u0432\u0447\u0430\u044e \u2192 \ud83c\udf3b \u0440\u043e\u0441\u0442\u0435 \u2192 \ud83c\udf3e \u0437\u0430\u0441\u0432\u043e\u0454\u043d\u043e. \ud83d\udd0a \u2014 \u043f\u0440\u043e\u0441\u043b\u0443\u0445\u0430\u0442\u0438, \u2715 \u2014 \u0432\u0438\u0434\u0430\u043b\u0438\u0442\u0438.',
   emptyWords:'\u041f\u043e\u043a\u0438 \u043d\u0435\u043c\u0430\u0454 \u0437\u0431\u0435\u0440\u0435\u0436\u0435\u043d\u0438\u0445 \u0441\u043b\u0456\u0432. \u041f\u0440\u043e\u0439\u0434\u0438 \u0443\u0440\u043e\u043a, \u043f\u043e\u0442\u0440\u0435\u043d\u0443\u0439 \u0444\u0440\u0430\u0437\u0443 \u0430\u0431\u043e \u043d\u0430\u0442\u0438\u0441\u043d\u0438 \u2b50 \u0443 \u0447\u0430\u0442\u0456 \u0437 \u041b\u0435\u0454\u044e.',
   lastScore:'\u043e\u0441\u0442\u0430\u043d\u043d\u0456\u0439 \u0431\u0430\u043b', dueWord:'\u043f\u043e\u0432\u0442\u043e\u0440\u0438\u0442\u0438',
-  speakIn:'\u042f \u0433\u043e\u0432\u043e\u0440\u0438\u0442\u0438\u043c\u0443:', pillTarget:'\ud83c\uddec\ud83c\udde7 English', pillHelper:'\ud83c\uddfa\ud83c\udde6 \u0423\u043a\u0440\u0430\u0457\u043d\u0441\u044c\u043a\u043e\u044e (\u0437\u0430\u043f\u0438\u0442\u0430\u0442\u0438)',
+  speakIn:'\u042f \u0433\u043e\u0432\u043e\u0440\u0438\u0442\u0438\u043c\u0443:', pillTarget:'EN \u00b7 English', pillHelper:'\ud83c\uddfa\ud83c\udde6 \u0423\u043a\u0440\u0430\u0457\u043d\u0441\u044c\u043a\u043e\u044e (\u0437\u0430\u043f\u0438\u0442\u0430\u0442\u0438)',
   typedPh:'\u0410\u0431\u043e \u043d\u0430\u043f\u0438\u0448\u0438 \u0442\u0443\u0442 (\u0430\u043d\u0433\u043b\u0456\u0439\u0441\u044c\u043a\u043e\u044e \u0447\u0438 \u0443\u043a\u0440\u0430\u0457\u043d\u0441\u044c\u043a\u043e\u044e)\u2026', send:'\u041d\u0430\u0434\u0456\u0441\u043b\u0430\u0442\u0438', replay:'\ud83d\udd0a \u0429\u0435 \u0440\u0430\u0437', saveWord:'\u2b50 \u0417\u0431\u0435\u0440\u0435\u0433\u0442\u0438', saved:'\u2713 \u0417\u0431\u0435\u0440\u0435\u0436\u0435\u043d\u043e', thinking:'\u041b\u0435\u044f \u0434\u0443\u043c\u0430\u0454\u2026',
   introUa:"Hi! I'm Leya, your English teacher. How's your day going?", introTr:'\u0445\u0430\u0439! \u0430\u0439\u043c \u041b\u0415\u044f, \u0439\u043e\u0440 \u0406\u043d\u0433\u043b\u0456\u0448 \u0422\u0406\u0447\u0435\u0440. \u0445\u0430\u0443\u0437 \u0439\u043e\u0440 \u0434\u0435\u0439 \u0413\u041e\u0443\u0456\u043d\u0433?', introEn:'\u041f\u0440\u0438\u0432\u0456\u0442! \u042f \u041b\u0435\u044f, \u0442\u0432\u043e\u044f \u0432\u0447\u0438\u0442\u0435\u043b\u044c\u043a\u0430 \u0430\u043d\u0433\u043b\u0456\u0439\u0441\u044c\u043a\u043e\u0457. \u042f\u043a \u043c\u0438\u043d\u0430\u0454 \u0434\u0435\u043d\u044c?',
   alphaNote:'\u0417\u0432\u0443\u043a\u0438, \u044f\u043a\u0456 \u0432\u0438\u0434\u0430\u044e\u0442\u044c \u0443\u043a\u0440\u0430\u0457\u043d\u0446\u0456\u0432 \u0432 \u0430\u043d\u0433\u043b\u0456\u0439\u0441\u044c\u043a\u0456\u0439. \u041e\u0431\u0435\u0440\u0438 \u0437\u0432\u0443\u043a \u0456 \u043f\u043e\u0442\u0440\u0435\u043d\u0443\u0439 \u0441\u043b\u043e\u0432\u043e.', soundQuiz:'\ud83c\udfa7 \u0417\u0432\u0443\u043a\u043e\u0432\u0438\u0439 \u0442\u0435\u0441\u0442', soundQuizTitle:'\u0417\u0432\u0443\u043a\u043e\u0432\u0438\u0439 \u0442\u0435\u0441\u0442',
@@ -479,6 +580,11 @@ uk: {
   newCard:'\u2728 \u041d\u043e\u0432\u0430 \u043a\u0430\u0440\u0442\u043a\u0430', backTopics:'\u2190 \u0422\u0435\u043c\u0438', keyPhrase:'\u041a\u043b\u044e\u0447\u043e\u0432\u0430 \u0444\u0440\u0430\u0437\u0430 \u2014 \u0441\u043a\u0430\u0436\u0438 \u0457\u0457!', funFact:'\ud83d\udca1 \u0426\u0456\u043a\u0430\u0432\u0438\u0439 \u0444\u0430\u043a\u0442:',
   loadingCard:'\u041b\u0435\u044f \u043f\u0438\u0448\u0435 \u0442\u0432\u043e\u044e \u043a\u0443\u043b\u044c\u0442\u0443\u0440\u043d\u0443 \u043a\u0430\u0440\u0442\u043a\u0443\u2026', micCulture:'\u0412\u0456\u0434\u043a\u0440\u0438\u0439 \u043a\u0430\u0440\u0442\u043a\u0443 \u0456 \u0441\u043a\u0430\u0436\u0438 \u043a\u043b\u044e\u0447\u043e\u0432\u0443 \u0444\u0440\u0430\u0437\u0443',
   chartTitle:'\u041e\u0441\u0442\u0430\u043d\u043d\u0456 14 \u0434\u043d\u0456\u0432', gtOpen:'\u0412\u0456\u0434\u043a\u0440\u0438\u0442\u043e Google Translate \u2014 \u043d\u0430\u0442\u0438\u0441\u043d\u0438 \ud83d\udd0a \u0442\u0430\u043c.', noExport:'\u041f\u043e\u043a\u0438 \u043d\u0435\u043c\u0430\u0454 \u0441\u043b\u0456\u0432.',
+  voiceSpeed:'\u0428\u0432\u0438\u0434\u043a\u0456\u0441\u0442\u044c \u0433\u043e\u043b\u043e\u0441\u0443', navStyle:'\u0421\u0442\u0438\u043b\u044c \u043c\u0435\u043d\u044e', navTiles:'▦ \u041f\u043b\u0438\u0442\u043a\u0438', navMenu2:'▾ \u041c\u0435\u043d\u044e', navTabs:'— \u0412\u043a\u043b\u0430\u0434\u043a\u0438', streakStart:'\u041f\u043e\u0442\u0440\u0435\u043d\u0443\u0439\u0441\u044f \u0441\u044c\u043e\u0433\u043e\u0434\u043d\u0456, \u0449\u043e\u0431 \u043f\u043e\u0447\u0430\u0442\u0438 \u0441\u0435\u0440\u0456\u044e', streakToday:'-\u0434\u0435\u043d\u043d\u0430 \u0441\u0435\u0440\u0456\u044f \u2014 \u043d\u0430 \u0441\u044c\u043e\u0433\u043e\u0434\u043d\u0456 \u0433\u043e\u0442\u043e\u0432\u043e!', streakKeep:'-\u0434\u0435\u043d\u043d\u0430 \u0441\u0435\u0440\u0456\u044f \u2014 \u043f\u043e\u0442\u0440\u0435\u043d\u0443\u0439\u0441\u044f \u0441\u044c\u043e\u0433\u043e\u0434\u043d\u0456', freezeBanked:'\u0437\u0430\u043c\u043e\u0440\u043e\u0437\u043a\u0430',
+  tabNumbers:'\ud83d\udd22 \u0427\u0438\u0441\u043b\u0430', tabTwisters:'\ud83d\udc3e \u0421\u043a\u043e\u0440\u043e\u043c\u043e\u0432\u043a\u0438',
+  numbersNote:'\u041f\u043e\u0447\u0443\u0439 \u0447\u0438\u0441\u043b\u043e \u0442\u0430 \u0432\u0432\u0435\u0434\u0438 \u0446\u0438\u0444\u0440\u0438. \u0414\u0456\u0430\u043f\u0430\u0437\u043e\u043d \u0440\u043e\u0441\u0442\u0435 \u0437 \u0440\u0456\u0432\u043d\u0435\u043c.', numbersEyebrow:'\u042f\u043a\u0435 \u0446\u0435 \u0447\u0438\u0441\u043b\u043e?', micNumber:'\u0412\u0432\u0435\u0434\u0438 \u043f\u043e\u0447\u0443\u0442\u0435 \u0447\u0438\u0441\u043b\u043e',
+  twistersNote:'\u0421\u043a\u043e\u0440\u043e\u043c\u043e\u0432\u043a\u0438 \u2014 \u0449\u043e\u0431 \u0432\u0456\u0434\u0442\u043e\u0447\u0438\u0442\u0438 \u0441\u043a\u043b\u0430\u0434\u043d\u0456 \u0437\u0432\u0443\u043a\u0438. \u041d\u0430\u0442\u0438\u0441\u043d\u0438 \u043c\u0456\u043a\u0440\u043e\u0444\u043e\u043d!', twisterEyebrow:'\u0421\u043a\u043e\u0440\u043e\u043c\u043e\u0432\u043a\u0430 \u2014 \u0441\u043a\u0430\u0436\u0438 \u0457\u0457!', loadingTwister:'\u0428\u0443\u043a\u0430\u044e \u0441\u043a\u043e\u0440\u043e\u043c\u043e\u0432\u043a\u0443\u2026', micTwister:'\u041d\u0430\u0442\u0438\u0441\u043d\u0438 \u0442\u0430 \u0441\u043a\u0430\u0436\u0438 \u0441\u043a\u043e\u0440\u043e\u043c\u043e\u0432\u043a\u0443',
+  importTitle:'\u0406\u043c\u043f\u043e\u0440\u0442 \u0432\u043b\u0430\u0441\u043d\u0438\u0445 \u0441\u043b\u0456\u0432', importHelp:'\u041f\u043e \u043e\u0434\u043d\u043e\u043c\u0443 \u043d\u0430 \u0440\u044f\u0434\u043e\u043a: \u0430\u043d\u0433\u043b\u0456\u0439\u0441\u044c\u043a\u0430 | \u0443\u043a\u0440\u0430\u0457\u043d\u0441\u044c\u043a\u0430 (\u0430\u0431\u043e \u0442\u0430\u0431/\u043a\u043e\u043c\u0430/\u043a\u0440\u0430\u043f\u043a\u0430 \u0437 \u043a\u043e\u043c\u043e\u044e).', importBtn:'\u2b06 \u0406\u043c\u043f\u043e\u0440\u0442', imported:'\u0414\u043e\u0434\u0430\u043d\u043e %n \u043d\u043e\u0432\u0438\u0445 \u0441\u043b\u0456\u0432.',
   levels:['\ud83c\udf31 \u041f\u043e\u0447\u0430\u0442\u043a\u043e\u0432\u0438\u0439','\ud83c\udf3f \u0411\u0430\u0437\u043e\u0432\u0438\u0439','\ud83c\udf3b \u0421\u0435\u0440\u0435\u0434\u043d\u0456\u0439','\ud83c\udf3e \u0412\u0438\u0449\u0435 \u0441\u0435\u0440\u0435\u0434\u043d\u044c\u043e\u0433\u043e']
 }
 };
@@ -493,6 +599,21 @@ function applyLang(){
   document.getElementById('tab-words').textContent = T('tabWords');
   document.getElementById('tab-culture').textContent = T('tabCulture');
   document.getElementById('cultureNote').textContent = T('cultureNote');
+  document.getElementById('tab-numbers').textContent = T('tabNumbers');
+  document.getElementById('tab-twisters').textContent = T('tabTwisters');
+  document.getElementById('numbersNote').textContent = T('numbersNote');
+  document.getElementById('numbersEyebrow').textContent = T('numbersEyebrow');
+  document.getElementById('twistersNote').textContent = T('twistersNote');
+  document.getElementById('importEyebrow').textContent = T('importTitle');
+  document.getElementById('importHelp').textContent = T('importHelp');
+  document.getElementById('importBtn').textContent = T('importBtn');
+  document.getElementById('importGoBtn').textContent = T('importBtn');
+  document.getElementById('navLabel').textContent = T('navStyle');
+  document.getElementById('navBtnTiles').textContent = T('navTiles');
+  document.getElementById('navBtnMenu').textContent = T('navMenu2');
+  document.getElementById('navBtnTabs').textContent = T('navTabs');
+  applyNav();
+  syncSpeedUI();
   const lv = document.getElementById('level');
   T('levels').forEach((label,i)=>{ if (lv.options[i]) lv.options[i].textContent = label; });
   document.getElementById('practiceNote').textContent = T('practiceNote');
@@ -740,6 +861,17 @@ function rescanVoices(){
   setMicLabel('Re-scanning voices…');
   setTimeout(()=>{ setMicLabel('Tap to speak'); }, 2600);
 }
+function speedMult(){ return (DB.voiceSpeed || 100) / 100; }
+function setVoiceSpeed(v){
+  DB.voiceSpeed = parseInt(v, 10);
+  document.getElementById('speedVal').textContent = (DB.voiceSpeed/100).toFixed(2).replace(/0$/,'') + '\u00d7';
+  saveDB();
+}
+function syncSpeedUI(){
+  const sl = document.getElementById('speedSlider');
+  if (sl){ sl.value = DB.voiceSpeed || 100; document.getElementById('speedVal').textContent = ((DB.voiceSpeed||100)/100).toFixed(2).replace(/0$/,'') + '\u00d7'; }
+  const lab = document.getElementById('speedLabel'); if (lab) lab.textContent = T('voiceSpeed');
+}
 function speakUa(text, rate){
   if (!uaVoice){ playRemote(text, rate); return; }
   try{
@@ -747,7 +879,7 @@ function speakUa(text, rate){
     const u = new SpeechSynthesisUtterance(text);
     u.lang = LC().target;
     if (uaVoice) u.voice = uaVoice;
-    u.rate = rate || 0.9;
+    u.rate = (rate || 0.9) * speedMult();
     speechSynthesis.speak(u);
   }catch(e){ console.error(e); }
 }
@@ -759,7 +891,7 @@ function playRemote(text, rate){
     if (remoteAudio){ remoteAudio.pause(); remoteAudio = null; }
     const url = 'https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=' + LC().t2 + '&q=' + encodeURIComponent(text);
     remoteAudio = new Audio(url);
-    remoteAudio.playbackRate = (rate && rate < 0.8) ? 0.65 : 1;   // 🐢 Slow support
+    remoteAudio.playbackRate = Math.max(0.5, Math.min(1, (rate && rate < 0.8 ? 0.65 : 1) * speedMult()));   // 🐢 Slow + speed slider
     remoteAudio.onerror = ()=>{ remoteBlocked = true; pickVoice(); openGT(text); };
     remoteAudio.play().catch(()=>{ remoteBlocked = true; pickVoice(); openGT(text); });
   }catch(e){ remoteBlocked = true; openGT(text); }
@@ -844,7 +976,7 @@ function setMicLabel(t){ document.getElementById('micLabel').textContent = t; }
 function handleSpeech(text){
   if (mode === 'chat') sendChat(text, true);
   else if (mode === 'review' && review) gradeCurrent(text, 'reviewFb');
-  else if (currentPhrase) gradeCurrent(text, mode === 'lessons' ? 'lessonFb' : mode === 'alphabet' ? 'alphaFb' : mode === 'culture' ? 'cultureFb' : 'practiceFb');
+  else if (currentPhrase) gradeCurrent(text, mode === 'lessons' ? 'lessonFb' : mode === 'alphabet' ? 'alphaFb' : mode === 'culture' ? 'cultureFb' : mode === 'twisters' ? 'twisterFb' : 'practiceFb');
   else setMicLabel(mode === 'alphabet' ? 'Tap a letter first, then say its example word.' : 'Pick a phrase first, then tap to speak.');
 }
 
@@ -949,6 +1081,7 @@ function renderStats(){
   document.getElementById('stMasteredL').textContent = T('stMastered');
   document.getElementById('stDueL').textContent = T('stDue');
   document.getElementById('stAvgL').textContent = T('stAvg');
+  if ((DB.nav||'grid')==='menu') applyNav();
   document.getElementById('startReviewBtn').disabled = due === 0;
   document.getElementById('startReviewBtn').textContent = due ? `${T('startReview')} (${due})` : T('nothingDue');
 }
@@ -1024,6 +1157,80 @@ async function gradeCurrent(heard, fbId){
     scoreEl.textContent = '–';
     document.getElementById(fbId+'Text').textContent = tutorErrorMsg();
   }
+}
+
+/* ================= NUMBERS ================= */
+let numTarget = null;
+function numberRange(){
+  const lv = getLevel();
+  if (lv.indexOf('intermediate') >= 0 || lv.indexOf('\u0421\u0435\u0440\u0435\u0434') >= 0) return 1000;
+  if (lv.indexOf('beginner') >= 0 || lv.indexOf('\u041f\u043e\u0447\u0430\u0442') >= 0 || lv.indexOf('\u0411\u0430\u0437\u043e\u0432') >= 0) return 100;
+  return 100000;
+}
+function newNumber(){
+  numTarget = Math.floor(Math.random() * numberRange()) + 1;
+  document.getElementById('numberBig').textContent = '?';
+  document.getElementById('numInput').value = '';
+  document.getElementById('numResult').textContent = '';
+  var el = document.getElementById('numInput'); if (el) el.focus();
+  playNumber();
+}
+function playNumber(){ if (numTarget != null) speakUa(String(numTarget), 0.9); }
+function checkNumber(){
+  if (numTarget == null){ newNumber(); return; }
+  const guess = parseInt((document.getElementById('numInput').value || '').replace(/\D/g,''), 10);
+  const res = document.getElementById('numResult');
+  document.getElementById('numberBig').textContent = numTarget;
+  if (guess === numTarget){
+    res.innerHTML = '<span style="color:var(--good)">\u2713 ' + T('correct') + '! ' + numTarget + '</span>';
+    bumpStreak(); logActivity(); saveDB();
+    setTimeout(newNumber, 1100);
+  } else {
+    res.innerHTML = '<span style="color:var(--warn)">\u2717 ' + (isNaN(guess)?'\u2014':guess) + ' \u2192 ' + numTarget + '</span>';
+  }
+}
+
+/* ================= TONGUE TWISTERS ================= */
+async function newTwister(){
+  document.getElementById('twisterWrap').innerHTML = '<div class="empty">' + esc(T('loadingTwister')) + '</div>';
+  currentPhrase = null;
+  const seen = ((P().twisters)||[]).slice(-10);
+  try{
+    const t = await callClaude(
+      `You are a fun ${LC().targetName} coach. Respond ONLY with minified JSON, no markdown.`,
+      [{role:'user', content:
+        `Give ONE short ${LC().targetName} tongue-twister suitable for a ${getLevel()} learner \u2014 tricky but sayable. ` +
+        `Avoid: ${JSON.stringify(seen)}. ` +
+        `Return JSON: {"ua":"the tongue-twister in ${LC().targetName}","translit":"${translitSpec()}","en":"${LC().helperName} meaning","hint":"which sound it drills, in ${LC().helperName}"}`
+      }]
+    );
+    P().twisters = (P().twisters||[]).concat([t.ua]).slice(-30);
+    saveDB();
+    currentPhrase = Object.assign({theme:'twister'}, t);
+    document.getElementById('twisterWrap').innerHTML = phraseCardHtml(t, 'twisterFb', { eyebrow: T('twisterEyebrow') });
+    speakUa(t.ua, 0.7);
+  }catch(e){
+    document.getElementById('twisterWrap').innerHTML = '<div class="empty">' + esc(tutorErrorMsg()) + '</div>';
+  }
+}
+
+/* ================= CUSTOM IMPORT ================= */
+function toggleImport(){ document.getElementById('importBox').classList.toggle('hidden'); }
+function doImport(){
+  const raw = document.getElementById('importText').value || '';
+  const lines = raw.split(/\n+/).map(l=>l.trim()).filter(Boolean);
+  let added = 0;
+  for (const line of lines){
+    const parts = line.split(/\s*[|\t;]\s*|\s{2,}/).filter(Boolean);
+    if (parts.length < 2) continue;
+    const ua = parts[0].trim(), en = parts.slice(1).join(' ').trim();
+    if (!ua || !en || findCard(ua)) continue;
+    upsertCard({ ua, translit:'', en, hint:null }, 'import');
+    added++;
+  }
+  saveDB(); renderWords(); renderStats();
+  document.getElementById('importResult').textContent = T('imported').replace('%n', added);
+  if (added) document.getElementById('importText').value = '';
 }
 
 /* ================= CULTURE ================= */
@@ -1385,16 +1592,41 @@ function sendTyped(){
 }
 
 /* ================= mode / toggles ================= */
+const MODES=[['lessons','tabLessons'],['alphabet','tabAlpha'],['culture','tabCulture'],['numbers','tabNumbers'],['twisters','tabTwisters'],['practice','tabPractice'],['chat','tabChat'],['review','tabReview'],['words','tabWords']];
+function applyNav(){
+  const style = DB.nav || 'grid';
+  const strip = document.getElementById('tabStrip');
+  const menu = document.getElementById('navMenu');
+  strip.classList.toggle('hidden', style==='menu');
+  strip.classList.toggle('nav-grid', style==='grid');
+  menu.classList.toggle('hidden', style!=='menu');
+  if (style==='menu'){
+    const due = dueCards().length;
+    menu.innerHTML = MODES.map(([m,key])=>{
+      let label = T(key); if (m==='review' && due) label += ' ('+due+')';
+      return '<option value="'+m+'"'+(m===mode?' selected':'')+'>'+label+'</option>';
+    }).join('');
+  }
+  // reflect current nav choice on the setup buttons
+  ['grid','menu','tabs'].forEach(v=>{
+    const b = document.getElementById(v==='grid'?'navBtnTiles':v==='menu'?'navBtnMenu':'navBtnTabs');
+    if (b) b.style.outline = (style===v) ? '2.5px solid var(--sky)' : '';
+  });
+}
+function setNav(v){ DB.nav = v; saveDB(); applyNav(); }
 function setMode(m){
   mode = m;
-  ['lessons','alphabet','culture','practice','chat','review','words'].forEach(x=>{
+  ['lessons','alphabet','culture','numbers','twisters','practice','chat','review','words'].forEach(x=>{
     document.getElementById('tab-'+x).setAttribute('aria-selected', x===m);
     document.getElementById(x+'Pane').classList.toggle('hidden', x!==m);
   });
+  const nm = document.getElementById('navMenu'); if (nm && nm.value !== m) nm.value = m;
   setMicLabel(m==='chat' ? T('micChat')
     : m==='review' ? T('micReview')
     : m==='alphabet' ? T('micAlpha')
     : m==='culture' ? T('micCulture')
+    : m==='twisters' ? T('micTwister')
+    : m==='numbers' ? T('micNumber')
     : T('tapToSpeak'));
   if (m==='review'){ renderStats(); }
   if (m==='words'){ renderWords(); }
@@ -1410,18 +1642,37 @@ function dayStr(offset){ return new Date(Date.now() + (offset||0)*DAY).toLocaleD
 function bumpStreak(){
   const today = dayStr(0), yesterday = dayStr(-1);
   if (DB.streak.last === today) return;
-  DB.streak.count = (DB.streak.last === yesterday) ? (DB.streak.count + 1) : 1;
+  if (DB.streak.freezes === undefined) DB.streak.freezes = 0;
+  const prevCount = DB.streak.count;
+  if (DB.streak.last === yesterday){
+    DB.streak.count = DB.streak.count + 1;
+  } else if (DB.streak.last === dayStr(-2) && DB.streak.freezes > 0){
+    // exactly one full day missed, and we have a token: spend it to bridge the gap
+    DB.streak.freezes -= 1;
+    DB.streak.count = DB.streak.count + 1;
+    DB.streak.usedFreeze = today;
+  } else {
+    DB.streak.count = 1;
+  }
   DB.streak.last = today;
+  // earn a freeze token on every 7th day (max 2 banked)
+  if (DB.streak.count > prevCount && DB.streak.count % 7 === 0 && DB.streak.freezes < 2){
+    DB.streak.freezes += 1;
+    DB.streak.earnedFreeze = today;
+  }
   renderStreak();
 }
 function renderStreak(){
-  const alive = DB.streak.last === dayStr(0) || DB.streak.last === dayStr(-1);
+  // streak stays alive with a banked freeze even after a 1-day gap
+  const f = DB.streak.freezes || 0;
+  const alive = DB.streak.last === dayStr(0) || DB.streak.last === dayStr(-1)
+    || (DB.streak.last === dayStr(-2) && f > 0);
   const n = alive ? DB.streak.count : 0;
   const chip = document.getElementById('streakChip');
-  chip.textContent = '🔥 ' + n;
-  chip.title = n === 0 ? 'Practice today to start a streak'
-    : DB.streak.last === dayStr(0) ? n + '-day streak — today is done!'
-    : n + '-day streak — practice today to keep it alive';
+  chip.textContent = '🔥 ' + n + (f > 0 ? ' ❄️' + f : '');
+  chip.title = n === 0 ? T('streakStart')
+    : DB.streak.last === dayStr(0) ? (n + T('streakToday') + (f?(' · ❄️'+f+' '+T('freezeBanked')):''))
+    : (n + T('streakKeep') + (f?(' · ❄️'+f+' '+T('freezeBanked')):''));
 }
 
 /* ================= ALPHABET ================= */
