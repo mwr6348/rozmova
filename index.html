@@ -35,7 +35,7 @@
   header{
     position:relative;
     padding:16px 20px 40px;
-    display:flex; flex-direction:column; gap:12px;
+    display:flex; flex-direction:column; align-items:center; text-align:center; gap:10px;
     background:linear-gradient(180deg,#e9eff7 0%,var(--paper) 92%);
   }
   header::after{
@@ -44,13 +44,15 @@
     background-position:center; opacity:.9; pointer-events:none;
   }
   .hdr-top{display:flex; justify-content:space-between; align-items:flex-start; gap:10px; flex-wrap:wrap}
-  .brandrow{display:flex; align-items:center; gap:10px}
+  .brandrow{display:flex; align-items:center; justify-content:center; gap:14px; flex-wrap:nowrap}
+  .brand-uk{color:var(--ink)} .brand-en{color:var(--sky-deep)}
+  .ver{font-size:.62rem;color:var(--ink-soft);opacity:.55;margin-top:-4px;letter-spacing:.05em}
   .logo{flex-shrink:0; filter:drop-shadow(0 2px 5px rgba(12,37,81,.28))}
   .hdr-selects{display:flex; flex-direction:column; align-items:center; gap:8px}
   .hdr-selects select{width:min(340px,100%); text-align:center; text-align-last:center}
   .brand{font-family:'Unbounded',sans-serif;font-weight:800;font-size:1.3rem;letter-spacing:-.02em}
   .brand span{color:var(--sky-deep)} .brand .dot{color:var(--sun-deep)}
-  .tagline{font-size:.82rem;color:var(--ink-soft)}
+  /* tagline removed */
   .tabs{display:flex;gap:8px;padding:12px 20px 0;overflow-x:auto;scrollbar-width:none}
   .tabs::-webkit-scrollbar{display:none}
   .tab{
@@ -65,7 +67,9 @@
     background:var(--warn);color:#fff;font-size:.65rem;font-family:'IBM Plex Sans';font-weight:600;
   }
   .badge.zero{background:var(--good)}
-  main{flex:1;overflow-y:auto;padding:16px 20px 130px;max-width:760px;width:100%;margin:0 auto}
+  main{flex:1;overflow-y:auto;padding:16px 20px 130px;max-width:760px;width:100%;margin:0 auto;text-align:center}
+  .row{justify-content:center}
+  .msg,.chat-log,.word-row,.word-main{text-align:left}
   .hidden{display:none !important}
 
   .status{
@@ -141,10 +145,11 @@
   .small-label{font-size:.78rem;color:var(--ink-soft)}
 
   /* lessons */
-  .lesson-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+  .lesson-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
   .lesson-tile{
     background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:14px;
-    cursor:pointer;text-align:left;font-family:inherit;transition:border-color .15s, transform .08s;
+    cursor:pointer;text-align:center;font-family:inherit;transition:border-color .15s, transform .08s;
+    flex:0 1 160px;
   }
   .lesson-tile:hover{border-color:var(--sky)}
   .lesson-tile:active{transform:scale(.98)}
@@ -209,9 +214,9 @@
   /* mobile layout */
   @media (max-width:520px){
     header{padding:12px 14px 38px}
-    .logo{width:32px;height:32px}
+    .logo{width:34px;height:34px}
     .brand{font-size:1.05rem}
-    .tagline{font-size:.72rem}
+    .ver{font-size:.58rem}
     main{padding:12px 12px 118px}
     .card{padding:15px}
     .ua-big{font-size:1.35rem}
@@ -219,7 +224,7 @@
     .letter-tile{padding:9px 2px;border-radius:10px}
     .letter-tile .big{font-size:.95rem}
     .letter-tile .snd{display:none}
-    .lesson-grid{grid-template-columns:repeat(2,1fr)}
+    .lesson-tile{flex:1 1 44%;max-width:47%}
     .stat .n{font-size:1.05rem}
     .mic{width:70px;height:70px}
     .mic svg{width:28px;height:28px}
@@ -277,25 +282,22 @@
     .lesson-tile:hover,.letter-tile:hover,.btn:hover,.tab[aria-selected="true"]{transform:none}
   }
   /* navigation styles (v12) */
-  .tabs.nav-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:6px;overflow:visible}
-  .tabs.nav-grid .tab{text-align:center;padding:9px 5px;font-size:.66rem;line-height:1.15}
+  .tabs.nav-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;overflow:visible}
+  .tabs.nav-grid .tab{text-align:center;padding:9px 11px;font-size:.66rem;line-height:1.15;flex:0 0 auto}
   .navsel{margin:12px 20px 0;display:block;width:calc(100% - 40px);font-family:'Unbounded',sans-serif;font-weight:600;font-size:.9rem;padding:12px 14px;border-radius:13px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);box-shadow:var(--shadow-sm)}
-  @media (max-width:520px){ .tabs.nav-grid{grid-template-columns:repeat(auto-fill,minmax(74px,1fr))} .tabs.nav-grid .tab{font-size:.6rem;padding:8px 3px} }
+  @media (max-width:520px){ .tabs.nav-grid .tab{font-size:.6rem;padding:8px 7px} }
 </style>
 </head>
 <body>
 
 <header>
-  <div class="hdr-top">
-    <div class="brandrow">
-      <svg class="logo" viewBox="0 0 512 512" width="36" height="36" aria-hidden="true"><rect width="512" height="512" rx="120" fill="#0c4ea8"/><path d="M148 96L140 130L140 300L168 312Q168 380 226 414L256 436L286 414Q344 380 344 312L372 300L372 130L364 96Q332 106 328 152L328 296L278 296L278 150L298 140L256 82L214 140L234 150L234 296L184 296L184 152Q180 106 148 96ZM206 322Q196 356 224 382Q234 352 224 322ZM306 322Q316 356 288 382Q278 352 288 322ZM249 308L263 308L263 398Q256 405 249 398Z" fill="#f4b31f" stroke="#d99400" stroke-width="6" stroke-linejoin="round"/></svg>
-      <div>
-        <div class="brand">Розмова<span class="dot">.</span> <span>Rozmova</span></div>
-        <div class="tagline" id="tagline">Speak Ukrainian out loud. Get corrected. Improve. <span style="opacity:.55">· v16</span></div>
-      </div>
-    </div>
-    <div class="streak" id="streakChip" title="Practice on consecutive days to grow your streak">🔥 0</div>
+  <div class="brandrow">
+    <span class="brand brand-uk">Розмова</span>
+    <svg class="logo" viewBox="0 0 512 512" width="40" height="40" aria-hidden="true"><rect width="512" height="512" rx="120" fill="#0c4ea8"/><path d="M148 96L140 130L140 300L168 312Q168 380 226 414L256 436L286 414Q344 380 344 312L372 300L372 130L364 96Q332 106 328 152L328 296L278 296L278 150L298 140L256 82L214 140L234 150L234 296L184 296L184 152Q180 106 148 96ZM206 322Q196 356 224 382Q234 352 224 322ZM306 322Q316 356 288 382Q278 352 288 322ZM249 308L263 308L263 398Q256 405 249 398Z" fill="#f4b31f" stroke="#d99400" stroke-width="6" stroke-linejoin="round"/></svg>
+    <span class="brand brand-en">Rozmova</span>
   </div>
+  <div class="ver" id="ver">v17</div>
+  <div class="streak" id="streakChip" title="Practice on consecutive days to grow your streak">🔥 0</div>
   <div class="hdr-selects">
     <select id="dirSel" aria-label="Language direction" onchange="setDir(this.value)">
       <option value="uk">EN → 🇺🇦  Learning Ukrainian</option>
@@ -319,6 +321,8 @@
   <button class="tab" role="tab" id="tab-grammar" aria-selected="false" onclick="setMode('grammar')">📐 Grammar</button>
   <button class="tab" role="tab" id="tab-practice" aria-selected="false" onclick="setMode('practice')">🎯 Practice</button>
   <button class="tab" role="tab" id="tab-listen" aria-selected="false" onclick="setMode('listen')">🎧 Listen</button>
+  <button class="tab" role="tab" id="tab-photo" aria-selected="false" onclick="setMode('photo')">📸 Photo</button>
+  <button class="tab" role="tab" id="tab-music" aria-selected="false" onclick="setMode('music')">🎵 Music</button>
   <button class="tab" role="tab" id="tab-chat" aria-selected="false" onclick="setMode('chat')">💬 Chat</button>
   <button class="tab" role="tab" id="tab-review" aria-selected="false" onclick="setMode('review')">🔁 Review<span class="badge zero" id="dueBadge">0</span></button>
   <button class="tab" role="tab" id="tab-words" aria-selected="false" onclick="setMode('words')">⭐ My words</button>
@@ -426,6 +430,27 @@
     <div id="grammarWrap"></div>
   </section>
 
+  <!-- ============ PHOTO VOCABULARY ============ -->
+  <section id="photoPane" class="hidden">
+    <div class="row"><span class="small-label" id="photoNote"></span></div>
+    <input type="file" accept="image/*" capture="environment" id="photoInput" onchange="onPhoto(event)" style="display:none">
+    <div class="row"><button class="btn primary" id="photoBtn" onclick="openCamera()">📸 <span id="photoBtnText">Take a photo</span></button></div>
+    <div id="photoWrap"></div>
+  </section>
+
+  <!-- ============ MUSIC & MEDIA DISCOVERY ============ -->
+  <section id="musicPane" class="hidden">
+    <div class="row"><span class="small-label" id="musicNote"></span></div>
+    <div class="lang-toggle">
+      <span class="small-label" id="musicKindLabel">Find:</span>
+      <button class="pill" id="musicKindMusic" aria-pressed="true" onclick="setMusicKind('music')">🎵 Music</button>
+      <button class="pill" id="musicKindPod" aria-pressed="false" onclick="setMusicKind('podcasts')">🎙 Podcasts</button>
+      <button class="pill" id="musicKindShow" aria-pressed="false" onclick="setMusicKind('shows')">📺 Shows</button>
+    </div>
+    <div class="row"><button class="btn primary" id="musicGetBtn" onclick="getMusic()">✨ Recommend</button></div>
+    <div id="musicWrap"></div>
+  </section>
+
   <!-- ============ PRACTICE ============ -->
   <section id="practicePane" class="hidden">
     <div class="row">
@@ -475,6 +500,21 @@
     <div class="card" id="badgesCard" style="padding:14px 16px">
       <div class="eyebrow" id="badgesTitle"></div>
       <div id="badgesGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:8px;margin-top:4px"></div>
+    </div>
+    <div class="card" id="compareCard" style="padding:14px 16px">
+      <div class="eyebrow" id="compareTitle"></div>
+      <div class="small-label" id="compareNote" style="margin:4px 0 8px"></div>
+      <div class="text-row" style="margin-bottom:8px"><input id="nickInput" placeholder="Your name" oninput="setNick(this.value)" style="text-align:center"></div>
+      <div class="row" style="justify-content:center;margin-bottom:8px">
+        <button class="btn" id="compareShareBtn" onclick="shareProgress()">📤 Share</button>
+        <button class="btn" id="compareAddBtn" onclick="toggleFriendAdd()">📥 Add code</button>
+      </div>
+      <div id="compareShareBox" class="hidden"></div>
+      <div id="compareAddBox" class="hidden">
+        <div class="text-row"><input id="friendCodeInput" placeholder="paste code…"><button class="btn primary" onclick="addFriend()">✓</button></div>
+        <div id="compareAddResult" class="small-label" style="margin-top:6px"></div>
+      </div>
+      <div id="compareBoard" style="margin-top:10px"></div>
     </div>
     <div id="reviewIdle">
       <div class="card">
@@ -542,7 +582,7 @@ function migrateDB(){
     delete DB.deck; delete DB.usedPhrases; delete DB.lessons; delete DB.stats; delete DB.level;
   }
 }
-const APP_V = 'v16';
+const APP_V = 'v19';
 const STR = {
 en: {
   tagline:'Speak Ukrainian out loud. Get corrected. Improve.',
@@ -578,7 +618,7 @@ en: {
   loadingCard:'Leya is writing your culture card\u2026', micCulture:'Open a card, then say its key phrase',
   chartTitle:'Last 14 days', gtOpen:'Opened Google Translate \u2014 tap the \ud83d\udd0a speaker there.', noExport:'No saved words yet.',
   voiceSpeed:'Voice speed', navStyle:'Menu style', navTiles:'▦ Tiles', navMenu2:'▾ Menu', navTabs:'— Tabs', streakStart:'Practice today to start a streak', streakToday:'-day streak \u2014 today is done!', streakKeep:'-day streak \u2014 practice today to keep it alive', freezeBanked:'freeze banked',
-  tabGrammar:'📐 Grammar', tabListen:'🎧 Listen', listenNote:'Hear a sentence, then say what it means or type it out — trains your ear for real speech.', listenModeLabel:'Mode:', listenComp:'Comprehension', listenDict:'Dictation', loadingClip:'Preparing a clip…', listenAskMeaning:'What does it mean? (type in English)', listenAskType:'Type exactly what you heard (in Ukrainian)', phMeaning:'meaning in English…', phType:'type in Ukrainian…', replayWord:'Replay', slowWord:'Slow', matchLabel:'match', micListen:'Tap New clip to hear a sentence', grammarNote:'Bite-size grammar lessons with instant practice drills.', loadingGrammar:'Writing your lesson…', examples:'Examples', practice:'Practice', grammarDone:'Drills complete!', micGrammar:'Grammar drills use typing', freeChat:'Free chat', badgesTitle:'Badges', badgeEarned:'Earned:', bW10:'10 words', bW50:'50 words', bW100:'100 words', bS7:'7-day streak', bS30:'30-day streak', bM10:'10 mastered', bA50:'50 tries', bA200:'200 tries', bP90:'90+ average',
+  tabGrammar:'📐 Grammar', tabListen:'🎧 Listen', listenNote:'Hear a sentence, then say what it means or type it out — trains your ear for real speech.', listenModeLabel:'Mode:', listenComp:'Comprehension', listenDict:'Dictation', loadingClip:'Preparing a clip…', listenAskMeaning:'What does it mean? (type in English)', listenAskType:'Type exactly what you heard (in Ukrainian)', phMeaning:'meaning in English…', phType:'type in Ukrainian…', replayWord:'Replay', slowWord:'Slow', matchLabel:'match', micListen:'Tap New clip to hear a sentence', grammarNote:'Bite-size grammar lessons with instant practice drills.', loadingGrammar:'Writing your lesson…', examples:'Examples', practice:'Practice', grammarDone:'Drills complete!', micGrammar:'Grammar drills use typing', freeChat:'Free chat', tabPhoto:'📸 Photo', photoNote:'Snap a photo and learn the Ukrainian words for what you see.', photoBtnText:'Take a photo', photoAnalyzing:'Looking at your photo…', photoNone:'No clear objects found — try another photo.', photoSaveAll:'Save all to my words', photoAnother:'Another photo', photoSaved:'Saved to your words.', micPhoto:'Take a photo to learn words', tabMusic:'🎵 Music', musicNote:'Discover Ukrainian music, podcasts, and shows picked for your level.', musicKindLabel:'Find:', musicKindMusic:'🎵 Music', musicKindPod:'🎙 Podcasts', musicKindShow:'📺 Shows', musicLoading:'Finding recommendations…', musicFind:'Find it', musicNone:'No picks right now — try again.', recommend:'Recommend', micMusic:'Discover music, podcasts & shows', compareTitle:'Compare with a friend', compareNote:'Share your code or paste a friend\'s to compare progress — no account needed.', compareShare:'📤 Share', compareAdd:'📥 Add code', compareYourCode:'Copy this and send it to your friend:', copy:'Copy', copied:'Copied!', friendAdded:'Added %n.', friendBad:'That code didn\'t work — check you copied all of it.', name:'Name', yourName:'Your name', badgesTitle:'Badges', badgeEarned:'Earned:', bW10:'10 words', bW50:'50 words', bW100:'100 words', bS7:'7-day streak', bS30:'30-day streak', bM10:'10 mastered', bA50:'50 tries', bA200:'200 tries', bP90:'90+ average',
   tabNumbers:'\ud83d\udd22 Numbers', tabTwisters:'\ud83d\udc3e Twisters',
   numbersNote:'Hear a number, type the digits. Range grows with your level.', numbersEyebrow:'What number is this?', micNumber:'Type the number you hear',
   twistersNote:'\u0421\u043a\u043e\u0440\u043e\u043c\u043e\u0432\u043a\u0438 \u2014 tricky twisters to sharpen tough sounds. Tap the mic and try!', twisterEyebrow:'Tongue-twister \u2014 say it!', loadingTwister:'Finding a twister\u2026', micTwister:'Tap and say the tongue-twister',
@@ -619,7 +659,7 @@ uk: {
   loadingCard:'\u041b\u0435\u044f \u043f\u0438\u0448\u0435 \u0442\u0432\u043e\u044e \u043a\u0443\u043b\u044c\u0442\u0443\u0440\u043d\u0443 \u043a\u0430\u0440\u0442\u043a\u0443\u2026', micCulture:'\u0412\u0456\u0434\u043a\u0440\u0438\u0439 \u043a\u0430\u0440\u0442\u043a\u0443 \u0456 \u0441\u043a\u0430\u0436\u0438 \u043a\u043b\u044e\u0447\u043e\u0432\u0443 \u0444\u0440\u0430\u0437\u0443',
   chartTitle:'\u041e\u0441\u0442\u0430\u043d\u043d\u0456 14 \u0434\u043d\u0456\u0432', gtOpen:'\u0412\u0456\u0434\u043a\u0440\u0438\u0442\u043e Google Translate \u2014 \u043d\u0430\u0442\u0438\u0441\u043d\u0438 \ud83d\udd0a \u0442\u0430\u043c.', noExport:'\u041f\u043e\u043a\u0438 \u043d\u0435\u043c\u0430\u0454 \u0441\u043b\u0456\u0432.',
   voiceSpeed:'\u0428\u0432\u0438\u0434\u043a\u0456\u0441\u0442\u044c \u0433\u043e\u043b\u043e\u0441\u0443', navStyle:'\u0421\u0442\u0438\u043b\u044c \u043c\u0435\u043d\u044e', navTiles:'▦ \u041f\u043b\u0438\u0442\u043a\u0438', navMenu2:'▾ \u041c\u0435\u043d\u044e', navTabs:'— \u0412\u043a\u043b\u0430\u0434\u043a\u0438', streakStart:'\u041f\u043e\u0442\u0440\u0435\u043d\u0443\u0439\u0441\u044f \u0441\u044c\u043e\u0433\u043e\u0434\u043d\u0456, \u0449\u043e\u0431 \u043f\u043e\u0447\u0430\u0442\u0438 \u0441\u0435\u0440\u0456\u044e', streakToday:'-\u0434\u0435\u043d\u043d\u0430 \u0441\u0435\u0440\u0456\u044f \u2014 \u043d\u0430 \u0441\u044c\u043e\u0433\u043e\u0434\u043d\u0456 \u0433\u043e\u0442\u043e\u0432\u043e!', streakKeep:'-\u0434\u0435\u043d\u043d\u0430 \u0441\u0435\u0440\u0456\u044f \u2014 \u043f\u043e\u0442\u0440\u0435\u043d\u0443\u0439\u0441\u044f \u0441\u044c\u043e\u0433\u043e\u0434\u043d\u0456', freezeBanked:'\u0437\u0430\u043c\u043e\u0440\u043e\u0437\u043a\u0430',
-  tabGrammar:'📐 Граматика', tabListen:'🎧 Слухання', listenNote:'Послухай речення і скажи, що воно означає, або надрукуй його — тренує слух.', listenModeLabel:'Режим:', listenComp:'Розуміння', listenDict:'Диктант', loadingClip:'Готую запис…', listenAskMeaning:'Що це означає? (українською)', listenAskType:'Надрукуй, що почув (англійською)', phMeaning:'значення українською…', phType:'друкуй англійською…', replayWord:'Ще раз', slowWord:'Повільно', matchLabel:'збіг', micListen:'Натисни «Новий запис»', grammarNote:'Короткі уроки граматики з миттєвою практикою.', loadingGrammar:'Пишу урок…', examples:'Приклади', practice:'Практика', grammarDone:'Вправи завершено!', micGrammar:'Вправи — друкуванням', freeChat:'Вільний чат', badgesTitle:'Значки', badgeEarned:'Отримано:', bW10:'10 слів', bW50:'50 слів', bW100:'100 слів', bS7:'7 днів поспіль', bS30:'30 днів поспіль', bM10:'10 засвоєно', bA50:'50 спроб', bA200:'200 спроб', bP90:'90+ середній',
+  tabGrammar:'📐 Граматика', tabListen:'🎧 Слухання', listenNote:'Послухай речення і скажи, що воно означає, або надрукуй його — тренує слух.', listenModeLabel:'Режим:', listenComp:'Розуміння', listenDict:'Диктант', loadingClip:'Готую запис…', listenAskMeaning:'Що це означає? (українською)', listenAskType:'Надрукуй, що почув (англійською)', phMeaning:'значення українською…', phType:'друкуй англійською…', replayWord:'Ще раз', slowWord:'Повільно', matchLabel:'збіг', micListen:'Натисни «Новий запис»', grammarNote:'Короткі уроки граматики з миттєвою практикою.', loadingGrammar:'Пишу урок…', examples:'Приклади', practice:'Практика', grammarDone:'Вправи завершено!', micGrammar:'Вправи — друкуванням', freeChat:'Вільний чат', tabPhoto:'📸 Фото', photoNote:'Сфотографуй щось і вивчи англійські слова для того, що бачиш.', photoBtnText:'Зробити фото', photoAnalyzing:'Дивлюся на фото…', photoNone:'Чітких обʼєктів не знайдено — спробуй інше фото.', photoSaveAll:'Зберегти всі', photoAnother:'Інше фото', photoSaved:'Збережено.', micPhoto:'Зроби фото, щоб вивчати слова', tabMusic:'🎵 Музика', musicNote:'Відкривай англійську музику, подкасти та шоу для свого рівня.', musicKindLabel:'Знайти:', musicKindMusic:'🎵 Музика', musicKindPod:'🎙 Подкасти', musicKindShow:'📺 Шоу', musicLoading:'Шукаю рекомендації…', musicFind:'Знайти', musicNone:'Поки немає — спробуй ще.', recommend:'Порадити', micMusic:'Музика, подкасти та шоу', compareTitle:'Порівняння з другом', compareNote:'Поділись кодом або встав код друга, щоб порівняти прогрес — без акаунтів.', compareShare:'📤 Поділитися', compareAdd:'📥 Додати код', compareYourCode:'Скопіюй і надішли другові:', copy:'Копіювати', copied:'Скопійовано!', friendAdded:'Додано %n.', friendBad:'Код не спрацював — перевір, чи скопійовано повністю.', name:'Імʼя', yourName:'Твоє імʼя', badgesTitle:'Значки', badgeEarned:'Отримано:', bW10:'10 слів', bW50:'50 слів', bW100:'100 слів', bS7:'7 днів поспіль', bS30:'30 днів поспіль', bM10:'10 засвоєно', bA50:'50 спроб', bA200:'200 спроб', bP90:'90+ середній',
   tabNumbers:'\ud83d\udd22 \u0427\u0438\u0441\u043b\u0430', tabTwisters:'\ud83d\udc3e \u0421\u043a\u043e\u0440\u043e\u043c\u043e\u0432\u043a\u0438',
   numbersNote:'\u041f\u043e\u0447\u0443\u0439 \u0447\u0438\u0441\u043b\u043e \u0442\u0430 \u0432\u0432\u0435\u0434\u0438 \u0446\u0438\u0444\u0440\u0438. \u0414\u0456\u0430\u043f\u0430\u0437\u043e\u043d \u0440\u043e\u0441\u0442\u0435 \u0437 \u0440\u0456\u0432\u043d\u0435\u043c.', numbersEyebrow:'\u042f\u043a\u0435 \u0446\u0435 \u0447\u0438\u0441\u043b\u043e?', micNumber:'\u0412\u0432\u0435\u0434\u0438 \u043f\u043e\u0447\u0443\u0442\u0435 \u0447\u0438\u0441\u043b\u043e',
   twistersNote:'\u0421\u043a\u043e\u0440\u043e\u043c\u043e\u0432\u043a\u0438 \u2014 \u0449\u043e\u0431 \u0432\u0456\u0434\u0442\u043e\u0447\u0438\u0442\u0438 \u0441\u043a\u043b\u0430\u0434\u043d\u0456 \u0437\u0432\u0443\u043a\u0438. \u041d\u0430\u0442\u0438\u0441\u043d\u0438 \u043c\u0456\u043a\u0440\u043e\u0444\u043e\u043d!', twisterEyebrow:'\u0421\u043a\u043e\u0440\u043e\u043c\u043e\u0432\u043a\u0430 \u2014 \u0441\u043a\u0430\u0436\u0438 \u0457\u0457!', loadingTwister:'\u0428\u0443\u043a\u0430\u044e \u0441\u043a\u043e\u0440\u043e\u043c\u043e\u0432\u043a\u0443\u2026', micTwister:'\u041d\u0430\u0442\u0438\u0441\u043d\u0438 \u0442\u0430 \u0441\u043a\u0430\u0436\u0438 \u0441\u043a\u043e\u0440\u043e\u043c\u043e\u0432\u043a\u0443',
@@ -629,7 +669,7 @@ uk: {
 };
 function T(k){ const u = STR[uiLang()]; return (u && u[k] !== undefined) ? u[k] : STR.en[k]; }
 function applyLang(){
-  document.getElementById('tagline').innerHTML = esc(T('tagline')) + ' <span style="opacity:.55">\u00b7 ' + APP_V + '</span>';
+  { const v=document.getElementById('ver'); if(v) v.textContent = APP_V; }
   document.getElementById('tab-lessons').textContent = T('tabLessons');
   document.getElementById('tab-alphabet').textContent = T('tabAlpha');
   document.getElementById('tab-practice').textContent = T('tabPractice');
@@ -642,6 +682,22 @@ function applyLang(){
   document.getElementById('tab-twisters').textContent = T('tabTwisters');
   document.getElementById('tab-grammar').textContent = T('tabGrammar');
   document.getElementById('tab-listen').textContent = T('tabListen');
+  document.getElementById('tab-photo').textContent = T('tabPhoto');
+  document.getElementById('photoNote').textContent = T('photoNote');
+  document.getElementById('photoBtnText').textContent = T('photoBtnText');
+  document.getElementById('tab-music').textContent = T('tabMusic');
+  document.getElementById('musicNote').textContent = T('musicNote');
+  document.getElementById('musicKindLabel').textContent = T('musicKindLabel');
+  document.getElementById('musicKindMusic').textContent = T('musicKindMusic');
+  document.getElementById('musicKindPod').textContent = T('musicKindPod');
+  document.getElementById('musicKindShow').textContent = T('musicKindShow');
+  document.getElementById('musicGetBtn').textContent = '✨ ' + T('recommend');
+  document.getElementById('compareTitle').textContent = T('compareTitle');
+  document.getElementById('compareNote').textContent = T('compareNote');
+  document.getElementById('compareShareBtn').textContent = T('compareShare');
+  document.getElementById('compareAddBtn').textContent = T('compareAdd');
+  { const ni=document.getElementById('nickInput'); if(ni){ ni.value = DB.nick||''; ni.placeholder = T('yourName'); } }
+  renderCompare();
   document.getElementById('listenNote').textContent = T('listenNote');
   document.getElementById('listenModeLabel').textContent = T('listenModeLabel');
   document.getElementById('listenModeComp').textContent = T('listenComp');
@@ -1132,7 +1188,7 @@ function renderStats(){
   if ((DB.nav||'grid')==='menu') applyNav();
   document.getElementById('startReviewBtn').disabled = due === 0;
   document.getElementById('startReviewBtn').textContent = due ? `${T('startReview')} (${due})` : T('nothingDue');
-  checkBadges(); renderBadges();
+  checkBadges(); renderBadges(); renderCompare();
 }
 
 /* ================= phrase card rendering ================= */
@@ -1471,6 +1527,152 @@ function checkDrill(){
 }
 function nextDrill(){ grammarLesson.idx++; showDrill(); }
 
+/* ================= PHOTO VOCABULARY (camera + vision) ================= */
+let photoItems=[], lastPhoto=null;
+function openCamera(){ const el=document.getElementById('photoInput'); if(el) el.click(); }
+function onPhoto(ev){
+  const file=ev.target.files&&ev.target.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=()=>{
+    const img=new Image();
+    img.onload=()=>{
+      const max=768, sc=Math.min(1,max/Math.max(img.width,img.height));
+      const cv=document.createElement('canvas');
+      cv.width=Math.round(img.width*sc); cv.height=Math.round(img.height*sc);
+      cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height);
+      identifyImage(cv.toDataURL('image/jpeg',0.8));
+    };
+    img.onerror=()=>{ document.getElementById('photoWrap').innerHTML='<div class="empty">'+esc(T('photoNone'))+'</div>'; };
+    img.src=reader.result;
+  };
+  reader.readAsDataURL(file); ev.target.value='';
+}
+async function identifyImage(dataUrl){
+  lastPhoto=dataUrl; currentPhrase=null;
+  const base64=(dataUrl.split(',')[1])||'';
+  document.getElementById('photoWrap').innerHTML='<div class="empty">'+esc(T('photoAnalyzing'))+'</div>';
+  try{
+    const r=await callClaude(
+      'You are a visual vocabulary tutor for language learners. Respond ONLY with minified JSON, no markdown.',
+      [{role:'user', content:[
+        {type:'image', source:{type:'base64', media_type:'image/jpeg', data:base64}},
+        {type:'text', text:'Identify up to 8 real, clearly-visible objects in this photo. For each, give the '+LC().targetName+' word, a '+translitSpec()+', and the '+LC().helperName+' meaning. Also a short '+LC().helperName+' caption of the scene. Return JSON: {"caption":"...","items":[{"ua":"'+LC().targetName+' word","translit":"pronunciation","en":"'+LC().helperName+' meaning"}]}'}
+      ]}]);
+    photoItems=r.items||[];
+    renderPhotoResult(r.caption||'', photoItems, dataUrl);
+  }catch(e){ document.getElementById('photoWrap').innerHTML='<div class="empty">'+esc(tutorErrorMsg())+'</div>'; }
+}
+function renderPhotoResult(caption, items, dataUrl){
+  const rows=items.map((it,i)=>'<div class="word-row"><div class="word-main"><div class="w-ua">'+esc(it.ua)+'</div><div class="w-en">'+esc(it.translit)+' \u00b7 '+esc(it.en)+'</div></div>'+
+    '<button class="icon-btn" onclick="speakUa('+JSON.stringify(it.ua).replace(/"/g,'&quot;')+',0.9)">\ud83d\udd0a</button>'+
+    '<button class="icon-btn" onclick="savePhotoItem('+i+', this)">\u2b50</button></div>').join('');
+  document.getElementById('photoWrap').innerHTML=
+    '<div class="card">'+(dataUrl?'<img src="'+dataUrl+'" alt="" style="width:100%;max-height:280px;object-fit:cover;border-radius:12px;margin-bottom:10px">':'')+
+    '<div class="en" style="margin-bottom:8px">'+esc(caption)+'</div>'+
+    (rows||('<div class="small-label">'+esc(T('photoNone'))+'</div>'))+
+    (items.length?'<button class="btn primary" style="margin-top:10px" onclick="savePhotoAll()">\u2b50 '+T('photoSaveAll')+'</button>':'')+'</div>'+
+    '<div class="row"><button class="btn" onclick="openCamera()">\ud83d\udcf8 '+T('photoAnother')+'</button></div>';
+}
+function savePhotoItem(i,btn){ const it=photoItems[i]; if(!it) return; upsertCard({ua:it.ua,translit:it.translit,en:it.en,hint:null},'photo'); saveDB(); renderWords(); renderStats(); if(btn){btn.textContent='\u2713'; btn.disabled=true;} }
+function savePhotoAll(){ photoItems.forEach(it=>{ if(!findCard(it.ua)) upsertCard({ua:it.ua,translit:it.translit,en:it.en,hint:null},'photo'); }); saveDB(); renderWords(); renderStats(); setMicLabel(T('photoSaved')); }
+
+/* ================= culture fact sensitivity net ================= */
+function factIsSerious(card){
+  if(card && card.factTone==='serious') return true;
+  const t=((card&&card.fact)||'').toLowerCase();
+  const kw=['execut','killed','murder',' died','death','famine','holodomor','genocide','massacre','arrest','purg','deport','persecut','torture','invasion','occupat','atrocit','tragedy','tragic','victim','gulag','stalin','starv','slaughter','ethnic cleans','martyr','repress','crackdown','forcibly','wartime',
+    '\u0440\u043e\u0437\u0441\u0442\u0440\u0456','\u0432\u0431\u0438\u0432','\u0441\u043c\u0435\u0440\u0442','\u043f\u043e\u043c\u0435\u0440','\u0433\u043e\u043b\u043e\u0434\u043e\u043c\u043e\u0440','\u0433\u0435\u043d\u043e\u0446\u0438\u0434','\u0440\u0456\u0437\u0430\u043d','\u0430\u0440\u0435\u0448\u0442','\u0440\u0435\u043f\u0440\u0435\u0441','\u0434\u0435\u043f\u043e\u0440\u0442','\u043f\u0435\u0440\u0435\u0441\u043b\u0456\u0434','\u043a\u0430\u0442\u0443\u0432','\u0432\u0456\u0439\u043d','\u043e\u043a\u0443\u043f\u0430\u0446','\u0441\u0442\u0440\u0430\u0436\u0434\u0430\u043d','\u0442\u0440\u0430\u0433\u0435\u0434','\u0436\u0435\u0440\u0442\u0432','\u0433\u0443\u043b\u0430\u0433','\u0441\u0442\u0430\u043b\u0456\u043d','\u0433\u043e\u043b\u043e\u0434','\u0437\u043d\u0438\u0449','\u0440\u043e\u0437\u043f\u0440\u0430\u0432'];
+  return kw.some(w=>t.indexOf(w)>=0);
+}
+
+/* ================= MUSIC & MEDIA DISCOVERY ================= */
+let musicKind='music';
+function setMusicKind(k){
+  musicKind=k;
+  const map={music:'musicKindMusic',podcasts:'musicKindPod',shows:'musicKindShow'};
+  Object.keys(map).forEach(x=>{ const b=document.getElementById(map[x]); if(b) b.setAttribute('aria-pressed', x===k); });
+  document.getElementById('musicWrap').innerHTML='';
+}
+function musicCache(){ P().music=P().music||{}; return P().music; }
+async function getMusic(){
+  const key=musicKind+'_'+getLevel();
+  document.getElementById('musicWrap').innerHTML='<div class="empty">'+esc(T('musicLoading'))+'</div>';
+  currentPhrase=null;
+  const kindWord = musicKind==='music'?'music artists or songs':musicKind==='podcasts'?'podcasts':'YouTube channels or TV shows';
+  try{
+    const r=await callClaude(
+      'You recommend '+LC().targetName+'-language '+kindWord+' for language learners. Respond ONLY with minified JSON, no markdown.',
+      [{role:'user',content:
+        'Recommend 5 real, well-known '+LC().targetName+' '+kindWord+' that are genuinely good for a '+getLevel()+' learner (accessible, clear, engaging). '+
+        'Return a JSON array of exactly 5: [{"name":"the name","type":"artist/song/podcast/channel/show","why":"one short reason in '+LC().helperName+' why it helps a learner","q":"a YouTube search query to find it"}]'
+      }]);
+    musicCache()[key]=r; saveDB();
+    renderMusic(r);
+  }catch(e){ document.getElementById('musicWrap').innerHTML='<div class="empty">'+esc(tutorErrorMsg())+'</div>'; }
+}
+function renderMusic(list){
+  const w=document.getElementById('musicWrap'); if(!w) return;
+  w.innerHTML=(list||[]).map(it=>
+    '<div class="card" style="text-align:left">'+
+      '<div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">'+
+        '<div class="ua-big" style="font-size:1.05rem;text-align:left;margin:0">'+esc(it.name)+'</div>'+
+        '<span class="small-label" style="white-space:nowrap">'+esc(it.type||'')+'</span></div>'+
+      '<div class="en" style="margin:6px 0 10px">'+esc(it.why||'')+'</div>'+
+      '<button class="btn" onclick="findMusic('+JSON.stringify(it.q||it.name).replace(/"/g,'&quot;')+')">\u25b6 '+T('musicFind')+'</button>'+
+    '</div>').join('') || ('<div class="empty">'+esc(T('musicNone'))+'</div>');
+}
+function findMusic(q){ try{ window.open('https://www.youtube.com/results?search_query='+encodeURIComponent(q),'_blank'); }catch(e){} }
+
+/* ================= COMPARE WITH A FRIEND (no backend) ================= */
+function setNick(v){ DB.nick=(v||'').slice(0,20); saveDB(); renderCompare(); }
+function myStats(){
+  const p=P(); const avg=p.stats.attempts?Math.round(p.stats.sumScore/p.stats.attempts):0;
+  return { nick:(DB.nick||'You'), dir:DB.dir, streak:(streakAlive()?DB.streak.count:0), words:p.deck.length, mastered:p.deck.filter(c=>c.box>=4).length, avg:avg, badges:(p.badges||[]).length, me:true };
+}
+function shareProgress(){
+  const box=document.getElementById('compareShareBox'); box.classList.remove('hidden');
+  document.getElementById('compareAddBox').classList.add('hidden');
+  const snap=myStats(); delete snap.me;
+  const code='RZM1.'+btoa(unescape(encodeURIComponent(JSON.stringify(snap))));
+  box.innerHTML='<div class="small-label" style="margin:6px 0">'+esc(T('compareYourCode'))+'</div>'+
+    '<textarea id="myShareCode" readonly rows="3" style="width:100%;border:1.5px solid var(--line);border-radius:10px;padding:8px;font-size:.66rem" onclick="this.select()">'+esc(code)+'</textarea>'+
+    '<button class="btn" style="margin-top:6px" onclick="copyShareCode()">\ud83d\udccb '+esc(T('copy'))+'</button>';
+}
+function copyShareCode(){ const t=document.getElementById('myShareCode'); if(!t) return; t.select(); try{ navigator.clipboard.writeText(t.value); }catch(e){} setMicLabel(T('copied')); }
+function toggleFriendAdd(){ document.getElementById('compareAddBox').classList.toggle('hidden'); document.getElementById('compareShareBox').classList.add('hidden'); }
+function addFriend(){
+  const raw=(document.getElementById('friendCodeInput').value||'').trim();
+  const res=document.getElementById('compareAddResult');
+  try{
+    if(raw.indexOf('RZM1.')!==0) throw new Error('bad');
+    const data=JSON.parse(decodeURIComponent(escape(atob(raw.slice(5)))));
+    if(typeof data.words!=='number' || typeof data.streak!=='number') throw new Error('bad');
+    data.me=false;
+    P().friends=(P().friends||[]).filter(f=>f.nick!==data.nick);
+    P().friends.push(data);
+    saveDB(); renderCompare();
+    res.style.color=''; res.textContent=T('friendAdded').replace('%n', data.nick||'friend');
+    document.getElementById('friendCodeInput').value='';
+  }catch(e){ res.style.color='var(--warn)'; res.textContent=T('friendBad'); }
+}
+function removeFriend(nick){ P().friends=(P().friends||[]).filter(f=>f.nick!==nick); saveDB(); renderCompare(); }
+function renderCompare(){
+  const board=document.getElementById('compareBoard'); if(!board) return;
+  const me=myStats();
+  const friends=(P().friends||[]).filter(f=>f.dir===DB.dir);
+  const all=[me].concat(friends).sort((a,b)=> (b.words-a.words) || (b.streak-a.streak) || (b.mastered-a.mastered));
+  board.innerHTML='<table style="width:100%;border-collapse:collapse;font-size:.82rem">'+
+    '<tr style="color:var(--ink-soft)"><th style="padding:4px 3px">#</th><th style="text-align:left;padding:4px 3px">'+esc(T('name'))+'</th><th style="padding:4px 3px">\ud83d\udd25</th><th style="padding:4px 3px">\u2b50</th><th style="padding:4px 3px">\ud83c\udf3e</th><th style="padding:4px 3px">\ud83c\udfc5</th></tr>'+
+    all.map((f,i)=>'<tr style="'+(f.me?'font-weight:700;background:var(--wheat)':'')+'">'+
+      '<td style="text-align:center;padding:4px 3px">'+(i+1)+'</td>'+
+      '<td style="text-align:left;padding:4px 3px">'+esc(f.nick||'?')+(!f.me?' <span onclick="removeFriend('+JSON.stringify(f.nick||'').replace(/"/g,'&quot;')+')" style="cursor:pointer;color:var(--warn)">\u2715</span>':'')+'</td>'+
+      '<td style="text-align:center;padding:4px 3px">'+(f.streak||0)+'</td>'+
+      '<td style="text-align:center;padding:4px 3px">'+(f.words||0)+'</td>'+
+      '<td style="text-align:center;padding:4px 3px">'+(f.mastered||0)+'</td>'+
+      '<td style="text-align:center;padding:4px 3px">'+(f.badges||0)+'</td></tr>').join('')+
+    '</table>';
+}
+
 /* ================= CULTURE ================= */
 const CULTURE_UK = [
   {id:'food',      emo:'🥟', name:'Food & table culture'},
@@ -1566,7 +1768,7 @@ function showCultureCard(id, card){
       <div class="heard">${T('heard')} <b id="cultureFbHeard"></b></div>
       <div class="fb-text" id="cultureFbText"></div>
     </div>
-    <div class="status" style="${card.factTone==='serious'?'background:#eef1f6;border-left:4px solid var(--sky-deep)':'background:var(--wheat)'}"><b>${card.factTone==='serious'?T('factSerious'):T('funFact')}</b> ${esc(card.fact)}</div>`;
+    <div class="status" style="${factIsSerious(card)?'background:#eef1f6;border-left:4px solid var(--sky-deep)':'background:var(--wheat)'}"><b>${factIsSerious(card)?T('factSerious'):T('funFact')}</b> ${esc(card.fact)}</div>`;
   speakUa(card.phrase.ua, 0.9);
 }
 
@@ -1907,7 +2109,7 @@ function sendTyped(){
 }
 
 /* ================= mode / toggles ================= */
-const MODES=[['lessons','tabLessons'],['alphabet','tabAlpha'],['culture','tabCulture'],['numbers','tabNumbers'],['twisters','tabTwisters'],['grammar','tabGrammar'],['practice','tabPractice'],['listen','tabListen'],['chat','tabChat'],['review','tabReview'],['words','tabWords']];
+const MODES=[['lessons','tabLessons'],['alphabet','tabAlpha'],['culture','tabCulture'],['numbers','tabNumbers'],['twisters','tabTwisters'],['grammar','tabGrammar'],['practice','tabPractice'],['listen','tabListen'],['photo','tabPhoto'],['music','tabMusic'],['chat','tabChat'],['review','tabReview'],['words','tabWords']];
 function applyNav(){
   const style = DB.nav || 'grid';
   const strip = document.getElementById('tabStrip');
@@ -1931,7 +2133,7 @@ function applyNav(){
 function setNav(v){ DB.nav = v; saveDB(); applyNav(); }
 function setMode(m){
   mode = m;
-  ['lessons','alphabet','culture','numbers','twisters','grammar','practice','listen','chat','review','words'].forEach(x=>{
+  ['lessons','alphabet','culture','numbers','twisters','grammar','practice','listen','photo','music','chat','review','words'].forEach(x=>{
     document.getElementById('tab-'+x).setAttribute('aria-selected', x===m);
     document.getElementById(x+'Pane').classList.toggle('hidden', x!==m);
   });
@@ -1944,6 +2146,8 @@ function setMode(m){
     : m==='numbers' ? T('micNumber')
     : m==='listen' ? T('micListen')
     : m==='grammar' ? T('micGrammar')
+    : m==='photo' ? T('micPhoto')
+    : m==='music' ? T('micMusic')
     : T('tapToSpeak'));
   if (m==='review'){ renderStats(); }
   if (m==='words'){ renderWords(); }
