@@ -291,7 +291,7 @@
       <svg class="logo" viewBox="0 0 512 512" width="36" height="36" aria-hidden="true"><rect width="512" height="512" rx="120" fill="#0c4ea8"/><path d="M148 96L140 130L140 300L168 312Q168 380 226 414L256 436L286 414Q344 380 344 312L372 300L372 130L364 96Q332 106 328 152L328 296L278 296L278 150L298 140L256 82L214 140L234 150L234 296L184 296L184 152Q180 106 148 96ZM206 322Q196 356 224 382Q234 352 224 322ZM306 322Q316 356 288 382Q278 352 288 322ZM249 308L263 308L263 398Q256 405 249 398Z" fill="#f4b31f" stroke="#d99400" stroke-width="6" stroke-linejoin="round"/></svg>
       <div>
         <div class="brand">Розмова<span class="dot">.</span> <span>Rozmova</span></div>
-        <div class="tagline" id="tagline">Speak Ukrainian out loud. Get corrected. Improve. <span style="opacity:.55">· v15</span></div>
+        <div class="tagline" id="tagline">Speak Ukrainian out loud. Get corrected. Improve. <span style="opacity:.55">· v16</span></div>
       </div>
     </div>
     <div class="streak" id="streakChip" title="Practice on consecutive days to grow your streak">🔥 0</div>
@@ -542,7 +542,7 @@ function migrateDB(){
     delete DB.deck; delete DB.usedPhrases; delete DB.lessons; delete DB.stats; delete DB.level;
   }
 }
-const APP_V = 'v15';
+const APP_V = 'v16';
 const STR = {
 en: {
   tagline:'Speak Ukrainian out loud. Get corrected. Improve.',
@@ -574,7 +574,7 @@ en: {
   errKey:'The AI tutor needs an Anthropic API key \u2014 tap \u201c\u2699 Setup & voice\u201d at the top to add it (one-time).',
   errNet:'Could not reach the tutor \u2014 check your connection and try again.',
   tabCulture:'\ud83c\udf0d Culture', cultureNote:'Stories, etiquette, and traditions \u2014 every card ends with a real phrase to say out loud.',
-  newCard:'\u2728 New card', backTopics:'\u2190 Topics', keyPhrase:'Key phrase \u2014 say it!', funFact:'\ud83d\udca1 Fun fact:',
+  newCard:'\u2728 New card', backTopics:'\u2190 Topics', keyPhrase:'Key phrase \u2014 say it!', funFact:'\ud83d\udca1 Fun fact:', factSerious:'\ud83d\udd6f\ufe0f Worth knowing:', focusWordLabel:'Word to practice:', hearIt:'Hear it', tryAgainWord:'Tap the mic to try the whole phrase again.',
   loadingCard:'Leya is writing your culture card\u2026', micCulture:'Open a card, then say its key phrase',
   chartTitle:'Last 14 days', gtOpen:'Opened Google Translate \u2014 tap the \ud83d\udd0a speaker there.', noExport:'No saved words yet.',
   voiceSpeed:'Voice speed', navStyle:'Menu style', navTiles:'▦ Tiles', navMenu2:'▾ Menu', navTabs:'— Tabs', streakStart:'Practice today to start a streak', streakToday:'-day streak \u2014 today is done!', streakKeep:'-day streak \u2014 practice today to keep it alive', freezeBanked:'freeze banked',
@@ -615,7 +615,7 @@ uk: {
   errKey:'\u0414\u043b\u044f \u0428\u0406-\u0440\u0435\u043f\u0435\u0442\u0438\u0442\u043e\u0440\u0430 \u043f\u043e\u0442\u0440\u0456\u0431\u0435\u043d \u043a\u043b\u044e\u0447 Anthropic API \u2014 \u043d\u0430\u0442\u0438\u0441\u043d\u0438 \u00ab\u2699 Setup & voice\u00bb \u0432\u0433\u043e\u0440\u0456 (\u043e\u0434\u0438\u043d \u0440\u0430\u0437).',
   errNet:'\u041d\u0435 \u0432\u0434\u0430\u043b\u043e\u0441\u044f \u0437\u2019\u0454\u0434\u043d\u0430\u0442\u0438\u0441\u044f \u0437 \u0440\u0435\u043f\u0435\u0442\u0438\u0442\u043e\u0440\u043e\u043c \u2014 \u043f\u0435\u0440\u0435\u0432\u0456\u0440 \u0456\u043d\u0442\u0435\u0440\u043d\u0435\u0442 \u0456 \u0441\u043f\u0440\u043e\u0431\u0443\u0439 \u0449\u0435.',
   tabCulture:'\ud83c\udf0d \u041a\u0443\u043b\u044c\u0442\u0443\u0440\u0430', cultureNote:'\u0406\u0441\u0442\u043e\u0440\u0456\u0457, \u0435\u0442\u0438\u043a\u0435\u0442 \u0456 \u0442\u0440\u0430\u0434\u0438\u0446\u0456\u0457 \u2014 \u043a\u043e\u0436\u043d\u0430 \u043a\u0430\u0440\u0442\u043a\u0430 \u0437\u0430\u0432\u0435\u0440\u0448\u0443\u0454\u0442\u044c\u0441\u044f \u0436\u0438\u0432\u043e\u044e \u0444\u0440\u0430\u0437\u043e\u044e.',
-  newCard:'\u2728 \u041d\u043e\u0432\u0430 \u043a\u0430\u0440\u0442\u043a\u0430', backTopics:'\u2190 \u0422\u0435\u043c\u0438', keyPhrase:'\u041a\u043b\u044e\u0447\u043e\u0432\u0430 \u0444\u0440\u0430\u0437\u0430 \u2014 \u0441\u043a\u0430\u0436\u0438 \u0457\u0457!', funFact:'\ud83d\udca1 \u0426\u0456\u043a\u0430\u0432\u0438\u0439 \u0444\u0430\u043a\u0442:',
+  newCard:'\u2728 \u041d\u043e\u0432\u0430 \u043a\u0430\u0440\u0442\u043a\u0430', backTopics:'\u2190 \u0422\u0435\u043c\u0438', keyPhrase:'\u041a\u043b\u044e\u0447\u043e\u0432\u0430 \u0444\u0440\u0430\u0437\u0430 \u2014 \u0441\u043a\u0430\u0436\u0438 \u0457\u0457!', funFact:'\ud83d\udca1 \u0426\u0456\u043a\u0430\u0432\u0438\u0439 \u0444\u0430\u043a\u0442:', factSerious:'\ud83d\udd6f\ufe0f \u0412\u0430\u0440\u0442\u043e \u0437\u043d\u0430\u0442\u0438:', focusWordLabel:'\u0421\u043b\u043e\u0432\u043e \u0434\u043b\u044f \u043f\u0440\u0430\u043a\u0442\u0438\u043a\u0438:', hearIt:'\u041f\u0440\u043e\u0441\u043b\u0443\u0445\u0430\u0442\u0438', tryAgainWord:'\u041d\u0430\u0442\u0438\u0441\u043d\u0438 \u043c\u0456\u043a\u0440\u043e\u0444\u043e\u043d, \u0449\u043e\u0431 \u0441\u043f\u0440\u043e\u0431\u0443\u0432\u0430\u0442\u0438 \u0444\u0440\u0430\u0437\u0443 \u0449\u0435 \u0440\u0430\u0437.',
   loadingCard:'\u041b\u0435\u044f \u043f\u0438\u0448\u0435 \u0442\u0432\u043e\u044e \u043a\u0443\u043b\u044c\u0442\u0443\u0440\u043d\u0443 \u043a\u0430\u0440\u0442\u043a\u0443\u2026', micCulture:'\u0412\u0456\u0434\u043a\u0440\u0438\u0439 \u043a\u0430\u0440\u0442\u043a\u0443 \u0456 \u0441\u043a\u0430\u0436\u0438 \u043a\u043b\u044e\u0447\u043e\u0432\u0443 \u0444\u0440\u0430\u0437\u0443',
   chartTitle:'\u041e\u0441\u0442\u0430\u043d\u043d\u0456 14 \u0434\u043d\u0456\u0432', gtOpen:'\u0412\u0456\u0434\u043a\u0440\u0438\u0442\u043e Google Translate \u2014 \u043d\u0430\u0442\u0438\u0441\u043d\u0438 \ud83d\udd0a \u0442\u0430\u043c.', noExport:'\u041f\u043e\u043a\u0438 \u043d\u0435\u043c\u0430\u0454 \u0441\u043b\u0456\u0432.',
   voiceSpeed:'\u0428\u0432\u0438\u0434\u043a\u0456\u0441\u0442\u044c \u0433\u043e\u043b\u043e\u0441\u0443', navStyle:'\u0421\u0442\u0438\u043b\u044c \u043c\u0435\u043d\u044e', navTiles:'▦ \u041f\u043b\u0438\u0442\u043a\u0438', navMenu2:'▾ \u041c\u0435\u043d\u044e', navTabs:'— \u0412\u043a\u043b\u0430\u0434\u043a\u0438', streakStart:'\u041f\u043e\u0442\u0440\u0435\u043d\u0443\u0439\u0441\u044f \u0441\u044c\u043e\u0433\u043e\u0434\u043d\u0456, \u0449\u043e\u0431 \u043f\u043e\u0447\u0430\u0442\u0438 \u0441\u0435\u0440\u0456\u044e', streakToday:'-\u0434\u0435\u043d\u043d\u0430 \u0441\u0435\u0440\u0456\u044f \u2014 \u043d\u0430 \u0441\u044c\u043e\u0433\u043e\u0434\u043d\u0456 \u0433\u043e\u0442\u043e\u0432\u043e!', streakKeep:'-\u0434\u0435\u043d\u043d\u0430 \u0441\u0435\u0440\u0456\u044f \u2014 \u043f\u043e\u0442\u0440\u0435\u043d\u0443\u0439\u0441\u044f \u0441\u044c\u043e\u0433\u043e\u0434\u043d\u0456', freezeBanked:'\u0437\u0430\u043c\u043e\u0440\u043e\u0437\u043a\u0430',
@@ -965,7 +965,7 @@ async function toggleMic(){
   recognition.lang = lang;
   recognition.interimResults = true;
   recognition.continuous = true;    // keep listening through natural pauses
-  recognition.maxAlternatives = 1;
+  recognition.maxAlternatives = 3;
   let finalText = '', finalsRaw = [], lastInterim = '';
   let idleTimer = null;
   const stopSoon = (ms)=>{ clearTimeout(idleTimer); idleTimer = setTimeout(()=>{ try{ recognition.stop(); }catch(e){} }, ms); };
@@ -1183,17 +1183,26 @@ async function gradeCurrent(heard, fbId){
   revealAnswer();
   try{
     const r = await callClaude(
-      `You are an expert, encouraging ${LC().targetName} pronunciation coach for a native ${LC().helperName} speaker. Speech-recognition transcripts of the learner are your only signal: transcript differences from the target suggest mispronunciation; a match suggests good pronunciation. Respond ONLY with minified JSON, no markdown.`,
+      `You are a warm, encouraging ${LC().targetName} pronunciation coach for a native ${LC().helperName} speaker. The learner practices by speaking, and a speech-recognition transcript is your only signal — but it is imperfect and FREQUENTLY DROPS OR GARBLES a learner's first attempt at an unfamiliar word. So a target word missing from the transcript usually means the learner TRIED it and the recognizer could not parse it, NOT that they skipped it. Grade generously and pedagogically, rewarding effort. Respond ONLY with minified JSON, no markdown.`,
       [{role:'user', content:
         `Target ${LC().targetName} phrase: "${currentPhrase.ua}" (meaning: "${currentPhrase.en}"). ` +
-        `${LC().targetName} speech recognition heard the learner say: "${heard}". ` +
-        `Return JSON exactly: {"score": <0-100 integer>, "feedback":"2-3 sentences written in ${LC().helperName}: what matched, what to fix, referencing specific ${LC().targetName} sounds","tip":"one concrete drill or mouth-position tip written in ${LC().helperName}"}`
+        `The recognizer heard: "${heard}". ` +
+        `SCORING RUBRIC: give partial credit per correct word. If the learner got most of the phrase and only ONE short or unfamiliar word is off or missing, score 70-88 and coach just that word. Only score below 40 if MOST of the phrase is wrong or unintelligible. Never crater the score for a single tricky word. ` +
+        `Identify the single ${LC().targetName} word most worth practicing next (the one that differs from, or is missing in, the transcript). ` +
+        `Return JSON exactly: {"score": <0-100 integer>, "feedback":"2-3 warm sentences in ${LC().helperName}: FIRST what they got right, THEN the one specific word/sound to work on (and reassure them if the recognizer likely dropped their attempt)","tip":"one concrete pronunciation tip for that word in ${LC().helperName} — syllable breakdown or mouth position","focusWord":"the single ${LC().targetName} word to practice, or empty string if the whole phrase was already correct"}`
       }]
     );
     scoreEl.textContent = r.score + (r.score >= 85 ? ' 🎉' : '');
     scoreEl.className = 'score-num ' + (r.score>=80?'good':r.score>=55?'mid':'low');
+    let extra = '';
+    if (r.focusWord && String(r.focusWord).trim()){
+      const fw = String(r.focusWord).trim();
+      extra = '<div class="hint" style="margin-top:10px"><b>'+T('focusWordLabel')+'</b> <span class="translit" style="font-style:normal">'+esc(fw)+'</span> '+
+        '<button class="btn ghost" onclick="speakUa(this.dataset.w,0.55)" data-w="'+esc(fw)+'">🔊 '+T('hearIt')+'</button>'+
+        '<div class="small-label" style="margin-top:4px">'+T('tryAgainWord')+'</div></div>';
+    }
     document.getElementById(fbId+'Text').innerHTML =
-      esc(r.feedback) + '<span class="tip">💡 ' + esc(r.tip) + '</span>';
+      esc(r.feedback) + '<span class="tip">💡 ' + esc(r.tip) + '</span>' + extra;
     const card = upsertCard(currentPhrase, currentPhrase.theme);
     applyScore(card, r.score);
     if (mode === 'lessons' && lesson) lesson.scores[lesson.idx] = r.score;
@@ -1512,7 +1521,7 @@ async function newCultureCard(id){
       [{role:'user', content:
         `Create ONE engaging culture card about "${topic.promptName || topic.name}" for a ${LC().helperName}-speaking learner of ${LC().targetName}. ` +
         `Avoid these already-seen titles: ${JSON.stringify(seen)}. ` +
-        `Return JSON exactly: {"title":"short catchy title in ${LC().helperName}","body":"two short vivid, specific, practical paragraphs in ${LC().helperName}, separated by \\n\\n, no markdown","phrase":{"ua":"one authentic ${LC().targetName} phrase connected to this topic","translit":"${translitSpec()}","en":"${LC().helperName} meaning"},"fact":"one surprising fun fact in ${LC().helperName}"}`
+        `Return JSON exactly: {"title":"short catchy title in ${LC().helperName}","body":"two short vivid, specific, practical paragraphs in ${LC().helperName}, separated by \\n\\n, no markdown","phrase":{"ua":"one authentic ${LC().targetName} phrase connected to this topic","translit":"${translitSpec()}","en":"${LC().helperName} meaning"},"fact":"one memorable fact in ${LC().helperName}","factTone":"'light' for a playful/quirky fact, or 'serious' for anything about tragedy, war, oppression, death, or historical trauma — and when serious, write the fact respectfully and soberly, never flippantly"}`
       }]
     );
     const cache = cultureCache();
@@ -1557,7 +1566,7 @@ function showCultureCard(id, card){
       <div class="heard">${T('heard')} <b id="cultureFbHeard"></b></div>
       <div class="fb-text" id="cultureFbText"></div>
     </div>
-    <div class="status" style="background:var(--wheat)"><b>${T('funFact')}</b> ${esc(card.fact)}</div>`;
+    <div class="status" style="${card.factTone==='serious'?'background:#eef1f6;border-left:4px solid var(--sky-deep)':'background:var(--wheat)'}"><b>${card.factTone==='serious'?T('factSerious'):T('funFact')}</b> ${esc(card.fact)}</div>`;
   speakUa(card.phrase.ua, 0.9);
 }
 
