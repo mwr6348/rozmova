@@ -291,7 +291,7 @@
       <svg class="logo" viewBox="0 0 512 512" width="36" height="36" aria-hidden="true"><rect width="512" height="512" rx="120" fill="#0c4ea8"/><path d="M148 96L140 130L140 300L168 312Q168 380 226 414L256 436L286 414Q344 380 344 312L372 300L372 130L364 96Q332 106 328 152L328 296L278 296L278 150L298 140L256 82L214 140L234 150L234 296L184 296L184 152Q180 106 148 96ZM206 322Q196 356 224 382Q234 352 224 322ZM306 322Q316 356 288 382Q278 352 288 322ZM249 308L263 308L263 398Q256 405 249 398Z" fill="#f4b31f" stroke="#d99400" stroke-width="6" stroke-linejoin="round"/></svg>
       <div>
         <div class="brand">Розмова<span class="dot">.</span> <span>Rozmova</span></div>
-        <div class="tagline" id="tagline">Speak Ukrainian out loud. Get corrected. Improve. <span style="opacity:.55">· v14</span></div>
+        <div class="tagline" id="tagline">Speak Ukrainian out loud. Get corrected. Improve. <span style="opacity:.55">· v15</span></div>
       </div>
     </div>
     <div class="streak" id="streakChip" title="Practice on consecutive days to grow your streak">🔥 0</div>
@@ -316,7 +316,9 @@
   <button class="tab" role="tab" id="tab-culture" aria-selected="false" onclick="setMode('culture')">🌍 Culture</button>
   <button class="tab" role="tab" id="tab-numbers" aria-selected="false" onclick="setMode('numbers')">🔢 Numbers</button>
   <button class="tab" role="tab" id="tab-twisters" aria-selected="false" onclick="setMode('twisters')">🐾 Twisters</button>
+  <button class="tab" role="tab" id="tab-grammar" aria-selected="false" onclick="setMode('grammar')">📐 Grammar</button>
   <button class="tab" role="tab" id="tab-practice" aria-selected="false" onclick="setMode('practice')">🎯 Practice</button>
+  <button class="tab" role="tab" id="tab-listen" aria-selected="false" onclick="setMode('listen')">🎧 Listen</button>
   <button class="tab" role="tab" id="tab-chat" aria-selected="false" onclick="setMode('chat')">💬 Chat</button>
   <button class="tab" role="tab" id="tab-review" aria-selected="false" onclick="setMode('review')">🔁 Review<span class="badge zero" id="dueBadge">0</span></button>
   <button class="tab" role="tab" id="tab-words" aria-selected="false" onclick="setMode('words')">⭐ My words</button>
@@ -405,6 +407,25 @@
     <div id="twisterWrap"></div>
   </section>
 
+  <!-- ============ LISTEN (comprehension + dictation) ============ -->
+  <section id="listenPane" class="hidden">
+    <div class="row"><span class="small-label" id="listenNote"></span></div>
+    <div class="lang-toggle">
+      <span class="small-label" id="listenModeLabel">Mode:</span>
+      <button class="pill" id="listenModeComp" aria-pressed="true" onclick="setListenMode('comp')">Comprehension</button>
+      <button class="pill" id="listenModeDict" aria-pressed="false" onclick="setListenMode('dict')">Dictation</button>
+    </div>
+    <div class="row"><button class="btn primary" id="listenNewBtn" onclick="newListen()">▶ New clip</button></div>
+    <div id="listenWrap"></div>
+  </section>
+
+  <!-- ============ GRAMMAR ============ -->
+  <section id="grammarPane" class="hidden">
+    <div class="row"><span class="small-label" id="grammarNote"></span></div>
+    <div class="lesson-grid" id="grammarPicker"></div>
+    <div id="grammarWrap"></div>
+  </section>
+
   <!-- ============ PRACTICE ============ -->
   <section id="practicePane" class="hidden">
     <div class="row">
@@ -416,6 +437,7 @@
 
   <!-- ============ CHAT ============ -->
   <section id="chatPane" class="hidden">
+    <div class="row" style="margin-bottom:10px;gap:6px" id="scenarioRow"></div>
     <div class="lang-toggle">
       <span class="small-label" id="speakInLabel">I'll speak in:</span>
       <button class="pill" id="pillUa" aria-pressed="true" onclick="setSpeakLang(LC().target)">🇺🇦 Ukrainian</button>
@@ -449,6 +471,10 @@
     <div class="card" id="chartCard" style="padding:14px 16px">
       <div class="eyebrow" id="chartTitle"></div>
       <div id="chartBars" style="display:flex;align-items:flex-end;gap:4px;height:60px"></div>
+    </div>
+    <div class="card" id="badgesCard" style="padding:14px 16px">
+      <div class="eyebrow" id="badgesTitle"></div>
+      <div id="badgesGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:8px;margin-top:4px"></div>
     </div>
     <div id="reviewIdle">
       <div class="card">
@@ -516,7 +542,7 @@ function migrateDB(){
     delete DB.deck; delete DB.usedPhrases; delete DB.lessons; delete DB.stats; delete DB.level;
   }
 }
-const APP_V = 'v14';
+const APP_V = 'v15';
 const STR = {
 en: {
   tagline:'Speak Ukrainian out loud. Get corrected. Improve.',
@@ -552,6 +578,7 @@ en: {
   loadingCard:'Leya is writing your culture card\u2026', micCulture:'Open a card, then say its key phrase',
   chartTitle:'Last 14 days', gtOpen:'Opened Google Translate \u2014 tap the \ud83d\udd0a speaker there.', noExport:'No saved words yet.',
   voiceSpeed:'Voice speed', navStyle:'Menu style', navTiles:'▦ Tiles', navMenu2:'▾ Menu', navTabs:'— Tabs', streakStart:'Practice today to start a streak', streakToday:'-day streak \u2014 today is done!', streakKeep:'-day streak \u2014 practice today to keep it alive', freezeBanked:'freeze banked',
+  tabGrammar:'📐 Grammar', tabListen:'🎧 Listen', listenNote:'Hear a sentence, then say what it means or type it out — trains your ear for real speech.', listenModeLabel:'Mode:', listenComp:'Comprehension', listenDict:'Dictation', loadingClip:'Preparing a clip…', listenAskMeaning:'What does it mean? (type in English)', listenAskType:'Type exactly what you heard (in Ukrainian)', phMeaning:'meaning in English…', phType:'type in Ukrainian…', replayWord:'Replay', slowWord:'Slow', matchLabel:'match', micListen:'Tap New clip to hear a sentence', grammarNote:'Bite-size grammar lessons with instant practice drills.', loadingGrammar:'Writing your lesson…', examples:'Examples', practice:'Practice', grammarDone:'Drills complete!', micGrammar:'Grammar drills use typing', freeChat:'Free chat', badgesTitle:'Badges', badgeEarned:'Earned:', bW10:'10 words', bW50:'50 words', bW100:'100 words', bS7:'7-day streak', bS30:'30-day streak', bM10:'10 mastered', bA50:'50 tries', bA200:'200 tries', bP90:'90+ average',
   tabNumbers:'\ud83d\udd22 Numbers', tabTwisters:'\ud83d\udc3e Twisters',
   numbersNote:'Hear a number, type the digits. Range grows with your level.', numbersEyebrow:'What number is this?', micNumber:'Type the number you hear',
   twistersNote:'\u0421\u043a\u043e\u0440\u043e\u043c\u043e\u0432\u043a\u0438 \u2014 tricky twisters to sharpen tough sounds. Tap the mic and try!', twisterEyebrow:'Tongue-twister \u2014 say it!', loadingTwister:'Finding a twister\u2026', micTwister:'Tap and say the tongue-twister',
@@ -592,6 +619,7 @@ uk: {
   loadingCard:'\u041b\u0435\u044f \u043f\u0438\u0448\u0435 \u0442\u0432\u043e\u044e \u043a\u0443\u043b\u044c\u0442\u0443\u0440\u043d\u0443 \u043a\u0430\u0440\u0442\u043a\u0443\u2026', micCulture:'\u0412\u0456\u0434\u043a\u0440\u0438\u0439 \u043a\u0430\u0440\u0442\u043a\u0443 \u0456 \u0441\u043a\u0430\u0436\u0438 \u043a\u043b\u044e\u0447\u043e\u0432\u0443 \u0444\u0440\u0430\u0437\u0443',
   chartTitle:'\u041e\u0441\u0442\u0430\u043d\u043d\u0456 14 \u0434\u043d\u0456\u0432', gtOpen:'\u0412\u0456\u0434\u043a\u0440\u0438\u0442\u043e Google Translate \u2014 \u043d\u0430\u0442\u0438\u0441\u043d\u0438 \ud83d\udd0a \u0442\u0430\u043c.', noExport:'\u041f\u043e\u043a\u0438 \u043d\u0435\u043c\u0430\u0454 \u0441\u043b\u0456\u0432.',
   voiceSpeed:'\u0428\u0432\u0438\u0434\u043a\u0456\u0441\u0442\u044c \u0433\u043e\u043b\u043e\u0441\u0443', navStyle:'\u0421\u0442\u0438\u043b\u044c \u043c\u0435\u043d\u044e', navTiles:'▦ \u041f\u043b\u0438\u0442\u043a\u0438', navMenu2:'▾ \u041c\u0435\u043d\u044e', navTabs:'— \u0412\u043a\u043b\u0430\u0434\u043a\u0438', streakStart:'\u041f\u043e\u0442\u0440\u0435\u043d\u0443\u0439\u0441\u044f \u0441\u044c\u043e\u0433\u043e\u0434\u043d\u0456, \u0449\u043e\u0431 \u043f\u043e\u0447\u0430\u0442\u0438 \u0441\u0435\u0440\u0456\u044e', streakToday:'-\u0434\u0435\u043d\u043d\u0430 \u0441\u0435\u0440\u0456\u044f \u2014 \u043d\u0430 \u0441\u044c\u043e\u0433\u043e\u0434\u043d\u0456 \u0433\u043e\u0442\u043e\u0432\u043e!', streakKeep:'-\u0434\u0435\u043d\u043d\u0430 \u0441\u0435\u0440\u0456\u044f \u2014 \u043f\u043e\u0442\u0440\u0435\u043d\u0443\u0439\u0441\u044f \u0441\u044c\u043e\u0433\u043e\u0434\u043d\u0456', freezeBanked:'\u0437\u0430\u043c\u043e\u0440\u043e\u0437\u043a\u0430',
+  tabGrammar:'📐 Граматика', tabListen:'🎧 Слухання', listenNote:'Послухай речення і скажи, що воно означає, або надрукуй його — тренує слух.', listenModeLabel:'Режим:', listenComp:'Розуміння', listenDict:'Диктант', loadingClip:'Готую запис…', listenAskMeaning:'Що це означає? (українською)', listenAskType:'Надрукуй, що почув (англійською)', phMeaning:'значення українською…', phType:'друкуй англійською…', replayWord:'Ще раз', slowWord:'Повільно', matchLabel:'збіг', micListen:'Натисни «Новий запис»', grammarNote:'Короткі уроки граматики з миттєвою практикою.', loadingGrammar:'Пишу урок…', examples:'Приклади', practice:'Практика', grammarDone:'Вправи завершено!', micGrammar:'Вправи — друкуванням', freeChat:'Вільний чат', badgesTitle:'Значки', badgeEarned:'Отримано:', bW10:'10 слів', bW50:'50 слів', bW100:'100 слів', bS7:'7 днів поспіль', bS30:'30 днів поспіль', bM10:'10 засвоєно', bA50:'50 спроб', bA200:'200 спроб', bP90:'90+ середній',
   tabNumbers:'\ud83d\udd22 \u0427\u0438\u0441\u043b\u0430', tabTwisters:'\ud83d\udc3e \u0421\u043a\u043e\u0440\u043e\u043c\u043e\u0432\u043a\u0438',
   numbersNote:'\u041f\u043e\u0447\u0443\u0439 \u0447\u0438\u0441\u043b\u043e \u0442\u0430 \u0432\u0432\u0435\u0434\u0438 \u0446\u0438\u0444\u0440\u0438. \u0414\u0456\u0430\u043f\u0430\u0437\u043e\u043d \u0440\u043e\u0441\u0442\u0435 \u0437 \u0440\u0456\u0432\u043d\u0435\u043c.', numbersEyebrow:'\u042f\u043a\u0435 \u0446\u0435 \u0447\u0438\u0441\u043b\u043e?', micNumber:'\u0412\u0432\u0435\u0434\u0438 \u043f\u043e\u0447\u0443\u0442\u0435 \u0447\u0438\u0441\u043b\u043e',
   twistersNote:'\u0421\u043a\u043e\u0440\u043e\u043c\u043e\u0432\u043a\u0438 \u2014 \u0449\u043e\u0431 \u0432\u0456\u0434\u0442\u043e\u0447\u0438\u0442\u0438 \u0441\u043a\u043b\u0430\u0434\u043d\u0456 \u0437\u0432\u0443\u043a\u0438. \u041d\u0430\u0442\u0438\u0441\u043d\u0438 \u043c\u0456\u043a\u0440\u043e\u0444\u043e\u043d!', twisterEyebrow:'\u0421\u043a\u043e\u0440\u043e\u043c\u043e\u0432\u043a\u0430 \u2014 \u0441\u043a\u0430\u0436\u0438 \u0457\u0457!', loadingTwister:'\u0428\u0443\u043a\u0430\u044e \u0441\u043a\u043e\u0440\u043e\u043c\u043e\u0432\u043a\u0443\u2026', micTwister:'\u041d\u0430\u0442\u0438\u0441\u043d\u0438 \u0442\u0430 \u0441\u043a\u0430\u0436\u0438 \u0441\u043a\u043e\u0440\u043e\u043c\u043e\u0432\u043a\u0443',
@@ -612,6 +640,15 @@ function applyLang(){
   document.getElementById('cultureNote').textContent = T('cultureNote');
   document.getElementById('tab-numbers').textContent = T('tabNumbers');
   document.getElementById('tab-twisters').textContent = T('tabTwisters');
+  document.getElementById('tab-grammar').textContent = T('tabGrammar');
+  document.getElementById('tab-listen').textContent = T('tabListen');
+  document.getElementById('listenNote').textContent = T('listenNote');
+  document.getElementById('listenModeLabel').textContent = T('listenModeLabel');
+  document.getElementById('listenModeComp').textContent = T('listenComp');
+  document.getElementById('listenModeDict').textContent = T('listenDict');
+  document.getElementById('grammarNote').textContent = T('grammarNote');
+  document.getElementById('badgesTitle').textContent = T('badgesTitle');
+  renderGrammarGrid(); renderScenarioRow(); renderBadges();
   document.getElementById('numbersNote').textContent = T('numbersNote');
   document.getElementById('numbersEyebrow').textContent = T('numbersEyebrow');
   document.getElementById('twistersNote').textContent = T('twistersNote');
@@ -658,7 +695,7 @@ function resetChatIntro(){
 function setDir(d){
   if (!LANGS[d]) return;
   DB.dir = d;
-  lesson = null; review = null; currentPhrase = null; quiz = null;
+  lesson = null; review = null; currentPhrase = null; quiz = null; roleplay = null;
   speakLang = LC().target;
   document.getElementById('level').value = P().level || 'absolute beginner';
   saveDB();
@@ -1095,6 +1132,7 @@ function renderStats(){
   if ((DB.nav||'grid')==='menu') applyNav();
   document.getElementById('startReviewBtn').disabled = due === 0;
   document.getElementById('startReviewBtn').textContent = due ? `${T('startReview')} (${due})` : T('nothingDue');
+  checkBadges(); renderBadges();
 }
 
 /* ================= phrase card rendering ================= */
@@ -1243,6 +1281,186 @@ function doImport(){
   document.getElementById('importResult').textContent = T('imported').replace('%n', added);
   if (added) document.getElementById('importText').value = '';
 }
+
+/* ================= shared: fuzzy match for dictation/grammar ================= */
+function normStr(t){
+  return (t||'').toLowerCase().replace(/[.,!?;:\u2019'"\u2013\u2014()]/g,'').replace(/\s+/g,' ').trim();
+}
+function simRatio(a,b){
+  a=normStr(a); b=normStr(b);
+  if(!a&&!b) return 1; if(!a||!b) return 0;
+  const m=a.length,n=b.length,d=Array.from({length:m+1},()=>new Array(n+1).fill(0));
+  for(let i=0;i<=m;i++)d[i][0]=i; for(let j=0;j<=n;j++)d[0][j]=j;
+  for(let i=1;i<=m;i++)for(let j=1;j<=n;j++){
+    d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));
+  }
+  return 1 - d[m][n]/Math.max(m,n);
+}
+
+/* ================= LISTEN: comprehension + dictation ================= */
+let listenMode='comp', listenItem=null;
+function setListenMode(m){
+  listenMode=m;
+  document.getElementById('listenModeComp').setAttribute('aria-pressed', m==='comp');
+  document.getElementById('listenModeDict').setAttribute('aria-pressed', m==='dict');
+  document.getElementById('listenWrap').innerHTML='';
+  listenItem=null;
+}
+async function newListen(){
+  document.getElementById('listenWrap').innerHTML='<div class="empty">'+esc(T('loadingClip'))+'</div>';
+  currentPhrase=null;
+  try{
+    const it=await callClaude(
+      `You are a ${LC().targetName} listening-practice writer. Respond ONLY with minified JSON, no markdown.`,
+      [{role:'user',content:
+        `Give ONE natural ${LC().targetName} sentence for a ${getLevel()} learner (short and clear). `+
+        `Return JSON: {"ua":"the ${LC().targetName} sentence","translit":"${translitSpec()}","en":"${LC().helperName} meaning"}`
+      }]);
+    listenItem=it;
+    const prompt = listenMode==='comp' ? T('listenAskMeaning') : T('listenAskType');
+    document.getElementById('listenWrap').innerHTML=`
+      <div class="card" style="text-align:center">
+        <div class="eyebrow">${listenMode==='comp'?T('listenComp'):T('listenDict')}</div>
+        <div style="font-size:2.4rem">🎧</div>
+        <div class="row" style="justify-content:center;margin:8px 0 0">
+          <button class="btn" onclick="speakUa(listenItem.ua,0.9)">🔊 ${T('replayWord')}</button>
+          <button class="btn" onclick="speakUa(listenItem.ua,0.6)">🐢 ${T('slowWord')}</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="small-label" style="margin-bottom:6px">${prompt}</div>
+        <div class="text-row">
+          <input id="listenInput" placeholder="${listenMode==='comp'?T('phMeaning'):T('phType')}" onkeydown="if(event.key==='Enter')checkListen()">
+          <button class="btn primary" onclick="checkListen()">✓</button>
+        </div>
+        <div id="listenResult" class="fb-text" style="margin-top:10px"></div>
+      </div>`;
+    speakUa(it.ua,0.9);
+    setTimeout(()=>{const el=document.getElementById('listenInput');if(el)el.focus();},80);
+  }catch(e){
+    document.getElementById('listenWrap').innerHTML='<div class="empty">'+esc(tutorErrorMsg())+'</div>';
+  }
+}
+function revealListen(scoreHtml){
+  const it=listenItem;
+  document.getElementById('listenResult').innerHTML = scoreHtml +
+    `<div class="card" style="margin-top:10px;border-left:5px solid var(--sun)">
+       <div class="ua-big" style="font-size:1.15rem">${esc(it.ua)}</div>
+       <div class="translit">${esc(it.translit)}</div>
+       <div class="en">${esc(it.en)}</div>
+     </div>
+     <button class="btn" style="margin-top:8px" onclick="saveListen()">⭐ ${T('saveWord').replace('⭐ ','')}</button>
+     <button class="btn primary" style="margin-top:8px" onclick="newListen()">${T('next')}</button>`;
+}
+function saveListen(){ if(listenItem){ upsertCard({ua:listenItem.ua,translit:listenItem.translit,en:listenItem.en,hint:null},'listen'); saveDB(); renderWords(); renderStats(); } }
+async function checkListen(){
+  if(!listenItem) return;
+  const ans=(document.getElementById('listenInput')||{}).value||'';
+  if(listenMode==='dict'){
+    const r=simRatio(ans,listenItem.ua);
+    const score=Math.round(r*100);
+    const cls=score>=80?'good':score>=55?'mid':'low';
+    revealListen(`<div class="score-line"><div class="score-num ${cls}">${score}${score>=85?' 🎉':''}</div><div class="small-label">${T('matchLabel')}</div></div>`);
+    upsertCard({ua:listenItem.ua,translit:listenItem.translit,en:listenItem.en,hint:null},'listen');
+    const card=findCard(listenItem.ua); if(card) applyScore(card,score);
+    renderWords();
+  } else {
+    document.getElementById('listenResult').textContent=T('checking');
+    try{
+      const r=await callClaude(
+        'You grade listening comprehension. The learner heard a sentence and wrote what they think it MEANS. Judge whether they understood, allowing loose wording. Respond ONLY with minified JSON.',
+        [{role:'user',content:`Sentence (${LC().targetName}): "${listenItem.ua}". True meaning: "${listenItem.en}". Learner's understanding: "${ans}". Return JSON: {"score":<0-100>,"feedback":"1-2 sentences in ${LC().helperName}"}`}]);
+      const cls=r.score>=80?'good':r.score>=55?'mid':'low';
+      revealListen(`<div class="score-line"><div class="score-num ${cls}">${r.score}${r.score>=85?' 🎉':''}</div><div class="small-label">${T('outOf')}</div></div><div class="fb-text" style="margin-bottom:6px">${esc(r.feedback)}</div>`);
+      upsertCard({ua:listenItem.ua,translit:listenItem.translit,en:listenItem.en,hint:null},'listen');
+      const card=findCard(listenItem.ua); if(card) applyScore(card,r.score);
+      renderWords();
+    }catch(e){ document.getElementById('listenResult').textContent=tutorErrorMsg(); }
+  }
+}
+
+/* ================= GRAMMAR: micro-lessons + drills ================= */
+const GRAMMAR_UK=[
+  {id:'cases',emo:'🔤',name:'Cases (відмінки)',pn:'noun cases'},
+  {id:'aspect',emo:'⏳',name:'Verb aspect',pn:'verb aspect (perfective vs imperfective)'},
+  {id:'gender',emo:'⚥',name:'Gender & endings',pn:'noun gender and adjective agreement'},
+  {id:'plurals',emo:'🔢',name:'Plurals',pn:'forming plurals'},
+  {id:'pronouns',emo:'👤',name:'Pronouns',pn:'personal and possessive pronouns'},
+  {id:'verbs_uk',emo:'🏃',name:'Present tense',pn:'present-tense verb conjugation'}
+];
+const GRAMMAR_EN=[
+  {id:'articles',emo:'📰',name:'Артиклі a/an/the',pn:'articles a, an, the'},
+  {id:'tenses',emo:'⏱️',name:'Часи',pn:'verb tenses (present simple vs continuous vs past)'},
+  {id:'preps',emo:'🧭',name:'Прийменники',pn:'prepositions of time and place'},
+  {id:'word_order',emo:'🔀',name:'Порядок слів',pn:'English word order'},
+  {id:'phrasal',emo:'🔗',name:'Фразові дієслова',pn:'common phrasal verbs'},
+  {id:'plural_en',emo:'🔢',name:'Множина',pn:'irregular plurals'}
+];
+function grammarTopics(){ return DB.dir==='en'?GRAMMAR_EN:GRAMMAR_UK; }
+function grammarCache(){ P().grammar=P().grammar||{}; return P().grammar; }
+function renderGrammarGrid(){
+  const g=document.getElementById('grammarPicker'); if(!g) return;
+  g.classList.remove('hidden');
+  document.getElementById('grammarWrap').innerHTML='';
+  g.innerHTML=grammarTopics().map(t=>`<button class="lesson-tile" onclick="openGrammar('${t.id}')"><div class="emo">${t.emo}</div><div class="t">${esc(t.name)}</div></button>`).join('');
+}
+let grammarLesson=null;
+async function openGrammar(id){
+  const t=grammarTopics().find(x=>x.id===id);
+  document.getElementById('grammarPicker').classList.add('hidden');
+  document.getElementById('grammarWrap').innerHTML='<div class="empty">'+esc(T('loadingGrammar'))+'</div>';
+  currentPhrase=null;
+  try{
+    const g=await callClaude(
+      `You are a clear, concise ${LC().targetName} grammar teacher for ${LC().helperName} speakers. Respond ONLY with minified JSON, no markdown.`,
+      [{role:'user',content:
+        `Create a short micro-lesson on "${t.pn}" in ${LC().targetName} for a ${getLevel()} ${LC().helperName} speaker. `+
+        `Return JSON: {"title":"title in ${LC().helperName}","explain":"2 short clear paragraphs in ${LC().helperName} separated by \\n\\n","examples":[{"ua":"${LC().targetName} example","en":"${LC().helperName}"}],"drills":[{"q":"a fill-in-the-blank or translate prompt (in ${LC().helperName}, asking for a ${LC().targetName} answer)","a":"the correct ${LC().targetName} answer","hint":"short hint in ${LC().helperName}"}]}. Provide exactly 3 examples and 3 drills.`
+      }]);
+    grammarLesson={id,data:g,idx:0};
+    showGrammar(t,g);
+  }catch(e){ document.getElementById('grammarWrap').innerHTML='<div class="empty">'+esc(tutorErrorMsg())+'</div><div class="row" style="justify-content:center"><button class="btn" onclick="renderGrammarGrid()">'+esc(T('backTopics'))+'</button></div>'; }
+}
+function showGrammar(t,g){
+  const paras=String(g.explain||'').split(/\n\n+/).map(x=>'<p style="margin-bottom:8px">'+esc(x)+'</p>').join('');
+  const ex=(g.examples||[]).map(e=>`<div class="word-row"><div class="word-main"><div class="w-ua">${esc(e.ua)}</div><div class="w-en">${esc(e.en)}</div></div><button class="icon-btn" onclick="speakUa(${JSON.stringify(e.ua).replace(/"/g,'&quot;')},0.9)">🔊</button></div>`).join('');
+  document.getElementById('grammarWrap').innerHTML=`
+    <div class="row"><button class="btn" onclick="renderGrammarGrid()">${T('backTopics')}</button></div>
+    <div class="card">
+      <div class="eyebrow">${t.emo} ${esc(t.name)}</div>
+      <div class="ua-big" style="font-size:1.2rem;margin-bottom:10px">${esc(g.title)}</div>
+      <div class="fb-text">${paras}</div>
+    </div>
+    <div class="card"><div class="eyebrow">${T('examples')}</div>${ex}</div>
+    <div class="card"><div class="eyebrow">${T('practice')}</div><div id="grammarDrill"></div></div>`;
+  grammarLesson.idx=0; showDrill();
+}
+function showDrill(){
+  const g=grammarLesson.data, i=grammarLesson.idx, drills=g.drills||[];
+  if(i>=drills.length){
+    document.getElementById('grammarDrill').innerHTML=`<div style="text-align:center"><div style="font-size:1.6rem">🌟</div><div class="en">${T('grammarDone')}</div><button class="btn" style="margin-top:8px" onclick="renderGrammarGrid()">${T('backTopics')}</button></div>`;
+    return;
+  }
+  const dr=drills[i];
+  document.getElementById('grammarDrill').innerHTML=`
+    <div class="small-label">${i+1} / ${drills.length}</div>
+    <div style="font-size:1rem;margin:6px 0 8px">${esc(dr.q)}</div>
+    <div class="text-row"><input id="drillInput" placeholder="…" onkeydown="if(event.key==='Enter')checkDrill()"><button class="btn primary" onclick="checkDrill()">✓</button></div>
+    <div id="drillResult" class="fb-text" style="margin-top:8px"></div>`;
+  setTimeout(()=>{const el=document.getElementById('drillInput');if(el)el.focus();},60);
+}
+function checkDrill(){
+  const dr=grammarLesson.data.drills[grammarLesson.idx];
+  const ans=(document.getElementById('drillInput')||{}).value||'';
+  const r=simRatio(ans,dr.a);
+  const good=r>=0.8;
+  document.getElementById('drillResult').innerHTML =
+    (good?`<span style="color:var(--good)">✓ ${T('correct')}!</span> `:`<span style="color:var(--warn)">✗</span> `)+
+    `<b>${esc(dr.a)}</b>`+(dr.hint&&!good?`<br><span class="small-label">💡 ${esc(dr.hint)}</span>`:'')+
+    `<div><button class="btn" style="margin-top:8px" onclick="nextDrill()">${T('next')}</button></div>`;
+  if(good){ bumpStreak(); logActivity(); saveDB(); }
+}
+function nextDrill(){ grammarLesson.idx++; showDrill(); }
 
 /* ================= CULTURE ================= */
 const CULTURE_UK = [
@@ -1540,6 +1758,14 @@ function translitSpec(){
 }
 function chatSystem(){
   const L = LC();
+  if (roleplay){
+    const sc = scenarioById(roleplay) || {sit:''};
+    return `You are role-playing a short scene in ${L.targetName} with a native ${L.helperName} speaker at "${getLevel()}" level. SCENE: ${sc.sit} ` +
+      `Stay fully in character, speak only natural ${L.targetName}, keep each reply SHORT (1-2 sentences), and move the scene forward with a question. ` +
+      `The learner's ${L.targetName} arrives via speech recognition, so infer intent. If they use ${L.helperName}, gently nudge them back to ${L.targetName}. ` +
+      'Respond ONLY with minified JSON, no markdown: ' +
+      `{"ua":"your in-character reply in ${L.targetName}","translit":"${translitSpec()}","en":"${L.helperName} translation","note":"optional short correction of the learner's last ${L.targetName} in ${L.helperName}, or null"}`;
+  }
   return `You are Leya (Лея), a warm, patient ${L.targetName} tutor having a spoken conversation with a native ${L.helperName} speaker at "${getLevel()}" level, working toward fluent ${L.targetName}. ` +
   `Keep replies SHORT (1-2 ${L.targetName} sentences), slightly stretch the learner beyond their current level, and ask small follow-up questions to keep them producing language. ` +
   `The learner's ${L.targetName} arrives via speech recognition, so odd words may be mispronunciations — infer the intent. ` +
@@ -1557,6 +1783,87 @@ function addMsg(html, who){
   return d;
 }
 
+function renderTutorMsg(r){
+  const saveIdx = chatSaves.length;
+  chatSaves.push({ ua:r.ua, translit:r.translit, en:r.en, hint:null });
+  let html = '<div class="m-ua">'+esc(r.ua)+'</div><div class="m-translit">'+esc(r.translit)+'</div><div class="m-en">'+esc(r.en)+'</div>';
+  if (r.note) html += '<div class="m-note">'+esc(r.note)+'</div>';
+  html += '<div class="msg-actions"><button class="btn ghost" onclick="speakUa(this.dataset.ua,0.85)" data-ua="'+esc(r.ua)+'">'+esc(T('replay'))+'</button>'+
+          '<button class="btn ghost" onclick="saveFromChat('+saveIdx+', this)">'+esc(T('saveWord'))+'</button></div>';
+  addMsg(html,'tutor'); speakUa(r.ua,0.85);
+}
+
+/* ================= ROLEPLAY (scenario-driven chat) ================= */
+let roleplay=null;
+const SCENARIOS_UK=[
+  {id:'cafe',emo:'☕',name:'Café',sit:'You are a friendly barista at a Ukrainian café. Take the customer\'s order and chat lightly.'},
+  {id:'taxi',emo:'🚕',name:'Taxi',sit:'You are a taxi driver in Kyiv. Ask where the passenger is going and make small talk.'},
+  {id:'hotel',emo:'🏨',name:'Hotel',sit:'You are a hotel receptionist. Help the guest check in.'},
+  {id:'shop',emo:'🛒',name:'Market',sit:'You are a vendor at a Ukrainian market selling produce. Help the customer buy items and discuss prices.'},
+  {id:'doctor',emo:'🩺',name:'Doctor',sit:'You are a doctor. Ask the patient about their symptoms.'},
+  {id:'party',emo:'🎉',name:'Meeting people',sit:'You are a friendly stranger at a party. Get to know the learner.'}
+];
+const SCENARIOS_EN=[
+  {id:'cafe_e',emo:'☕',name:'Кав\'ярня',sit:'You are a barista at an American coffee shop. Take the order and chat.'},
+  {id:'interview',emo:'💼',name:'Співбесіда',sit:'You are a hiring manager conducting a friendly job interview.'},
+  {id:'phone',emo:'📞',name:'Телефон',sit:'You are a customer-service agent on the phone helping with a simple issue.'},
+  {id:'airport',emo:'✈️',name:'Аеропорт',sit:'You are an airport check-in agent. Help the traveler check in.'},
+  {id:'shop_e',emo:'🛒',name:'Магазин',sit:'You are a shop assistant in a clothing store helping a customer.'},
+  {id:'smalltalk_r',emo:'🗣️',name:'Знайомство',sit:'You are a friendly coworker making small talk by the coffee machine.'}
+];
+function scenarios(){ return DB.dir==='en'?SCENARIOS_EN:SCENARIOS_UK; }
+function scenarioById(id){ return scenarios().find(x=>x.id===id); }
+function renderScenarioRow(){
+  const row=document.getElementById('scenarioRow'); if(!row) return;
+  let html='<button class="pill" aria-pressed="'+(!roleplay)+'" onclick="clearRoleplay()">💬 '+esc(T('freeChat'))+'</button>';
+  html+=scenarios().map(sc=>'<button class="pill" aria-pressed="'+(roleplay===sc.id)+'" onclick="startRoleplay(\''+sc.id+'\')">'+sc.emo+' '+esc(sc.name)+'</button>').join('');
+  row.innerHTML=html;
+}
+async function startRoleplay(id){
+  roleplay=id; renderScenarioRow();
+  chatHistory=[]; chatSaves=[];
+  document.getElementById('chatLog').innerHTML='';
+  const typing=document.getElementById('typing'); typing.classList.remove('hidden');
+  try{
+    chatHistory.push({role:'user',content:'[Start the scene now. Greet me first, in character, in one short line.]'});
+    const r=await callClaude(chatSystem(),chatHistory);
+    chatHistory.push({role:'assistant',content:JSON.stringify(r)});
+    renderTutorMsg(r);
+  }catch(e){ addMsg('<div class="m-en">'+esc(tutorErrorMsg())+'</div>','tutor'); chatHistory=[]; }
+  finally{ typing.classList.add('hidden'); }
+}
+function clearRoleplay(){ roleplay=null; renderScenarioRow(); resetChatIntro(); }
+
+/* ================= BADGES / MILESTONES ================= */
+function streakAlive(){ const f=DB.streak.freezes||0; return DB.streak.last===dayStr(0)||DB.streak.last===dayStr(-1)||(DB.streak.last===dayStr(-2)&&f>0); }
+const BADGES=[
+  {id:'w10', icon:'📖', key:'bW10',  t:(p)=>p.deck.length>=10},
+  {id:'w50', icon:'📚', key:'bW50',  t:(p)=>p.deck.length>=50},
+  {id:'w100',icon:'🏆', key:'bW100', t:(p)=>p.deck.length>=100},
+  {id:'s7',  icon:'🔥', key:'bS7',   t:(p)=>DB.streak.count>=7 && streakAlive()},
+  {id:'s30', icon:'🌟', key:'bS30',  t:(p)=>DB.streak.count>=30 && streakAlive()},
+  {id:'m10', icon:'🌾', key:'bM10',  t:(p)=>p.deck.filter(c=>c.box>=4).length>=10},
+  {id:'a50', icon:'🎯', key:'bA50',  t:(p)=>p.stats.attempts>=50},
+  {id:'a200',icon:'💪', key:'bA200', t:(p)=>p.stats.attempts>=200},
+  {id:'p90', icon:'⭐', key:'bP90',  t:(p)=>p.stats.attempts>=10 && (p.stats.sumScore/p.stats.attempts)>=90}
+];
+function checkBadges(){
+  P().badges=P().badges||[];
+  let newly=null;
+  BADGES.forEach(b=>{ try{ if(b.t(P()) && P().badges.indexOf(b.id)<0){ P().badges.push(b.id); newly=b; } }catch(e){} });
+  if(newly){ saveDB(); setMicLabel('🏅 '+T('badgeEarned')+' '+newly.icon+' '+T(newly.key)); }
+}
+function renderBadges(){
+  const g=document.getElementById('badgesGrid'); if(!g) return;
+  P().badges=P().badges||[];
+  g.innerHTML=BADGES.map(b=>{
+    const earned=P().badges.indexOf(b.id)>=0;
+    return '<div title="'+esc(T(b.key))+'" style="text-align:center;opacity:'+(earned?1:.28)+';filter:'+(earned?'none':'grayscale(1)')+'">'+
+      '<div style="font-size:1.7rem">'+b.icon+'</div>'+
+      '<div class="small-label" style="font-size:.58rem;line-height:1.1">'+esc(T(b.key))+'</div></div>';
+  }).join('');
+}
+
 async function sendChat(text, spoken){
   addMsg(esc(text), 'user');
   chatHistory.push({role:'user', content: (speakLang===LC().target && spoken ? ('[spoke ' + LC().targetName + '] ') : '') + text});
@@ -1566,19 +1873,7 @@ async function sendChat(text, spoken){
     const r = await callClaude(chatSystem(), chatHistory);
     chatHistory.push({role:'assistant', content: JSON.stringify(r)});
     if (chatHistory.length > 24) chatHistory = chatHistory.slice(-24);
-    const saveIdx = chatSaves.length;
-    chatSaves.push({ ua: r.ua, translit: r.translit, en: r.en, hint: null });
-    let html =
-      '<div class="m-ua">' + esc(r.ua) + '</div>' +
-      '<div class="m-translit">' + esc(r.translit) + '</div>' +
-      '<div class="m-en">' + esc(r.en) + '</div>';
-    if (r.note) html += '<div class="m-note">' + esc(r.note) + '</div>';
-    html += '<div class="msg-actions">' +
-      '<button class="btn ghost" onclick="speakUa(this.dataset.ua,0.85)" data-ua="' + esc(r.ua) + '">' + esc(T('replay')) + '</button>' +
-      '<button class="btn ghost" onclick="saveFromChat(' + saveIdx + ', this)">' + esc(T('saveWord')) + '</button>' +
-      '</div>';
-    addMsg(html, 'tutor');
-    speakUa(r.ua, 0.85);
+    renderTutorMsg(r);
     bumpStreak(); logActivity(); saveDB();
   }catch(e){
     addMsg('<div class="m-en">' + esc(tutorErrorMsg()) + '</div>', 'tutor');
@@ -1603,7 +1898,7 @@ function sendTyped(){
 }
 
 /* ================= mode / toggles ================= */
-const MODES=[['lessons','tabLessons'],['alphabet','tabAlpha'],['culture','tabCulture'],['numbers','tabNumbers'],['twisters','tabTwisters'],['practice','tabPractice'],['chat','tabChat'],['review','tabReview'],['words','tabWords']];
+const MODES=[['lessons','tabLessons'],['alphabet','tabAlpha'],['culture','tabCulture'],['numbers','tabNumbers'],['twisters','tabTwisters'],['grammar','tabGrammar'],['practice','tabPractice'],['listen','tabListen'],['chat','tabChat'],['review','tabReview'],['words','tabWords']];
 function applyNav(){
   const style = DB.nav || 'grid';
   const strip = document.getElementById('tabStrip');
@@ -1627,7 +1922,7 @@ function applyNav(){
 function setNav(v){ DB.nav = v; saveDB(); applyNav(); }
 function setMode(m){
   mode = m;
-  ['lessons','alphabet','culture','numbers','twisters','practice','chat','review','words'].forEach(x=>{
+  ['lessons','alphabet','culture','numbers','twisters','grammar','practice','listen','chat','review','words'].forEach(x=>{
     document.getElementById('tab-'+x).setAttribute('aria-selected', x===m);
     document.getElementById(x+'Pane').classList.toggle('hidden', x!==m);
   });
@@ -1638,6 +1933,8 @@ function setMode(m){
     : m==='culture' ? T('micCulture')
     : m==='twisters' ? T('micTwister')
     : m==='numbers' ? T('micNumber')
+    : m==='listen' ? T('micListen')
+    : m==='grammar' ? T('micGrammar')
     : T('tapToSpeak'));
   if (m==='review'){ renderStats(); }
   if (m==='words'){ renderWords(); }
