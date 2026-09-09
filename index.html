@@ -286,6 +286,13 @@
   .tabs.nav-grid .tab{text-align:center;padding:9px 11px;font-size:.66rem;line-height:1.15;flex:0 0 auto}
   .navsel{margin:12px 20px 0;display:block;width:calc(100% - 40px);font-family:'Unbounded',sans-serif;font-weight:600;font-size:.9rem;padding:12px 14px;border-radius:13px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);box-shadow:var(--shadow-sm)}
   @media (max-width:520px){ .tabs.nav-grid .tab{font-size:.6rem;padding:8px 7px} }
+  /* tap-a-word to hear it */
+  .wtap{cursor:pointer;border-radius:7px;padding:0 3px;margin:0 -1px;transition:background .15s,color .15s;-webkit-tap-highlight-color:transparent}
+  .wtap:hover{background:var(--gold-soft)}
+  .wtap:focus-visible{outline:3px solid var(--sun);outline-offset:1px}
+  .wtap-hit{animation:wtapFlash .65s ease-out}
+  @keyframes wtapFlash{0%{background:var(--sun);color:var(--azure-ink)}100%{background:transparent}}
+  @media (prefers-reduced-motion:reduce){ .wtap-hit{animation:none;background:var(--gold-soft)} }
 </style>
 </head>
 <body>
@@ -582,7 +589,7 @@ function migrateDB(){
     delete DB.deck; delete DB.usedPhrases; delete DB.lessons; delete DB.stats; delete DB.level;
   }
 }
-const APP_V = 'v19';
+const APP_V = 'v20';
 const STR = {
 en: {
   tagline:'Speak Ukrainian out loud. Get corrected. Improve.',
@@ -618,7 +625,7 @@ en: {
   loadingCard:'Leya is writing your culture card\u2026', micCulture:'Open a card, then say its key phrase',
   chartTitle:'Last 14 days', gtOpen:'Opened Google Translate \u2014 tap the \ud83d\udd0a speaker there.', noExport:'No saved words yet.',
   voiceSpeed:'Voice speed', navStyle:'Menu style', navTiles:'▦ Tiles', navMenu2:'▾ Menu', navTabs:'— Tabs', streakStart:'Practice today to start a streak', streakToday:'-day streak \u2014 today is done!', streakKeep:'-day streak \u2014 practice today to keep it alive', freezeBanked:'freeze banked',
-  tabGrammar:'📐 Grammar', tabListen:'🎧 Listen', listenNote:'Hear a sentence, then say what it means or type it out — trains your ear for real speech.', listenModeLabel:'Mode:', listenComp:'Comprehension', listenDict:'Dictation', loadingClip:'Preparing a clip…', listenAskMeaning:'What does it mean? (type in English)', listenAskType:'Type exactly what you heard (in Ukrainian)', phMeaning:'meaning in English…', phType:'type in Ukrainian…', replayWord:'Replay', slowWord:'Slow', matchLabel:'match', micListen:'Tap New clip to hear a sentence', grammarNote:'Bite-size grammar lessons with instant practice drills.', loadingGrammar:'Writing your lesson…', examples:'Examples', practice:'Practice', grammarDone:'Drills complete!', micGrammar:'Grammar drills use typing', freeChat:'Free chat', tabPhoto:'📸 Photo', photoNote:'Snap a photo and learn the Ukrainian words for what you see.', photoBtnText:'Take a photo', photoAnalyzing:'Looking at your photo…', photoNone:'No clear objects found — try another photo.', photoSaveAll:'Save all to my words', photoAnother:'Another photo', photoSaved:'Saved to your words.', micPhoto:'Take a photo to learn words', tabMusic:'🎵 Music', musicNote:'Discover Ukrainian music, podcasts, and shows picked for your level.', musicKindLabel:'Find:', musicKindMusic:'🎵 Music', musicKindPod:'🎙 Podcasts', musicKindShow:'📺 Shows', musicLoading:'Finding recommendations…', musicFind:'Find it', musicNone:'No picks right now — try again.', recommend:'Recommend', micMusic:'Discover music, podcasts & shows', compareTitle:'Compare with a friend', compareNote:'Share your code or paste a friend\'s to compare progress — no account needed.', compareShare:'📤 Share', compareAdd:'📥 Add code', compareYourCode:'Copy this and send it to your friend:', copy:'Copy', copied:'Copied!', friendAdded:'Added %n.', friendBad:'That code didn\'t work — check you copied all of it.', name:'Name', yourName:'Your name', badgesTitle:'Badges', badgeEarned:'Earned:', bW10:'10 words', bW50:'50 words', bW100:'100 words', bS7:'7-day streak', bS30:'30-day streak', bM10:'10 mastered', bA50:'50 tries', bA200:'200 tries', bP90:'90+ average',
+  tabGrammar:'📐 Grammar', tabListen:'🎧 Listen', listenNote:'Hear a sentence, then say what it means or type it out — trains your ear for real speech.', listenModeLabel:'Mode:', listenComp:'Comprehension', listenDict:'Dictation', loadingClip:'Preparing a clip…', listenAskMeaning:'What does it mean? (type in English)', listenAskType:'Type exactly what you heard (in Ukrainian)', phMeaning:'meaning in English…', phType:'type in Ukrainian…', replayWord:'Replay', slowWord:'Slow', matchLabel:'match', micListen:'Tap New clip to hear a sentence', grammarNote:'Bite-size grammar lessons with instant practice drills.', loadingGrammar:'Writing your lesson…', examples:'Examples', practice:'Practice', grammarDone:'Drills complete!', micGrammar:'Grammar drills use typing', freeChat:'Free chat', tabPhoto:'📸 Photo', photoNote:'Snap a photo and learn the Ukrainian words for what you see.', photoBtnText:'Take a photo', photoAnalyzing:'Looking at your photo…', photoNone:'No clear objects found — try another photo.', photoSaveAll:'Save all to my words', photoAnother:'Another photo', photoSaved:'Saved to your words.', micPhoto:'Take a photo to learn words', micWarmup:'Getting the mic ready…', tapWordHint:'Tap any word to hear it', tabMusic:'🎵 Music', musicNote:'Discover Ukrainian music, podcasts, and shows picked for your level.', musicKindLabel:'Find:', musicKindMusic:'🎵 Music', musicKindPod:'🎙 Podcasts', musicKindShow:'📺 Shows', musicLoading:'Finding recommendations…', musicFind:'Find it', musicNone:'No picks right now — try again.', recommend:'Recommend', micMusic:'Discover music, podcasts & shows', compareTitle:'Compare with a friend', compareNote:'Share your code or paste a friend\'s to compare progress — no account needed.', compareShare:'📤 Share', compareAdd:'📥 Add code', compareYourCode:'Copy this and send it to your friend:', copy:'Copy', copied:'Copied!', friendAdded:'Added %n.', friendBad:'That code didn\'t work — check you copied all of it.', name:'Name', yourName:'Your name', badgesTitle:'Badges', badgeEarned:'Earned:', bW10:'10 words', bW50:'50 words', bW100:'100 words', bS7:'7-day streak', bS30:'30-day streak', bM10:'10 mastered', bA50:'50 tries', bA200:'200 tries', bP90:'90+ average',
   tabNumbers:'\ud83d\udd22 Numbers', tabTwisters:'\ud83d\udc3e Twisters',
   numbersNote:'Hear a number, type the digits. Range grows with your level.', numbersEyebrow:'What number is this?', micNumber:'Type the number you hear',
   twistersNote:'\u0421\u043a\u043e\u0440\u043e\u043c\u043e\u0432\u043a\u0438 \u2014 tricky twisters to sharpen tough sounds. Tap the mic and try!', twisterEyebrow:'Tongue-twister \u2014 say it!', loadingTwister:'Finding a twister\u2026', micTwister:'Tap and say the tongue-twister',
@@ -659,7 +666,7 @@ uk: {
   loadingCard:'\u041b\u0435\u044f \u043f\u0438\u0448\u0435 \u0442\u0432\u043e\u044e \u043a\u0443\u043b\u044c\u0442\u0443\u0440\u043d\u0443 \u043a\u0430\u0440\u0442\u043a\u0443\u2026', micCulture:'\u0412\u0456\u0434\u043a\u0440\u0438\u0439 \u043a\u0430\u0440\u0442\u043a\u0443 \u0456 \u0441\u043a\u0430\u0436\u0438 \u043a\u043b\u044e\u0447\u043e\u0432\u0443 \u0444\u0440\u0430\u0437\u0443',
   chartTitle:'\u041e\u0441\u0442\u0430\u043d\u043d\u0456 14 \u0434\u043d\u0456\u0432', gtOpen:'\u0412\u0456\u0434\u043a\u0440\u0438\u0442\u043e Google Translate \u2014 \u043d\u0430\u0442\u0438\u0441\u043d\u0438 \ud83d\udd0a \u0442\u0430\u043c.', noExport:'\u041f\u043e\u043a\u0438 \u043d\u0435\u043c\u0430\u0454 \u0441\u043b\u0456\u0432.',
   voiceSpeed:'\u0428\u0432\u0438\u0434\u043a\u0456\u0441\u0442\u044c \u0433\u043e\u043b\u043e\u0441\u0443', navStyle:'\u0421\u0442\u0438\u043b\u044c \u043c\u0435\u043d\u044e', navTiles:'▦ \u041f\u043b\u0438\u0442\u043a\u0438', navMenu2:'▾ \u041c\u0435\u043d\u044e', navTabs:'— \u0412\u043a\u043b\u0430\u0434\u043a\u0438', streakStart:'\u041f\u043e\u0442\u0440\u0435\u043d\u0443\u0439\u0441\u044f \u0441\u044c\u043e\u0433\u043e\u0434\u043d\u0456, \u0449\u043e\u0431 \u043f\u043e\u0447\u0430\u0442\u0438 \u0441\u0435\u0440\u0456\u044e', streakToday:'-\u0434\u0435\u043d\u043d\u0430 \u0441\u0435\u0440\u0456\u044f \u2014 \u043d\u0430 \u0441\u044c\u043e\u0433\u043e\u0434\u043d\u0456 \u0433\u043e\u0442\u043e\u0432\u043e!', streakKeep:'-\u0434\u0435\u043d\u043d\u0430 \u0441\u0435\u0440\u0456\u044f \u2014 \u043f\u043e\u0442\u0440\u0435\u043d\u0443\u0439\u0441\u044f \u0441\u044c\u043e\u0433\u043e\u0434\u043d\u0456', freezeBanked:'\u0437\u0430\u043c\u043e\u0440\u043e\u0437\u043a\u0430',
-  tabGrammar:'📐 Граматика', tabListen:'🎧 Слухання', listenNote:'Послухай речення і скажи, що воно означає, або надрукуй його — тренує слух.', listenModeLabel:'Режим:', listenComp:'Розуміння', listenDict:'Диктант', loadingClip:'Готую запис…', listenAskMeaning:'Що це означає? (українською)', listenAskType:'Надрукуй, що почув (англійською)', phMeaning:'значення українською…', phType:'друкуй англійською…', replayWord:'Ще раз', slowWord:'Повільно', matchLabel:'збіг', micListen:'Натисни «Новий запис»', grammarNote:'Короткі уроки граматики з миттєвою практикою.', loadingGrammar:'Пишу урок…', examples:'Приклади', practice:'Практика', grammarDone:'Вправи завершено!', micGrammar:'Вправи — друкуванням', freeChat:'Вільний чат', tabPhoto:'📸 Фото', photoNote:'Сфотографуй щось і вивчи англійські слова для того, що бачиш.', photoBtnText:'Зробити фото', photoAnalyzing:'Дивлюся на фото…', photoNone:'Чітких обʼєктів не знайдено — спробуй інше фото.', photoSaveAll:'Зберегти всі', photoAnother:'Інше фото', photoSaved:'Збережено.', micPhoto:'Зроби фото, щоб вивчати слова', tabMusic:'🎵 Музика', musicNote:'Відкривай англійську музику, подкасти та шоу для свого рівня.', musicKindLabel:'Знайти:', musicKindMusic:'🎵 Музика', musicKindPod:'🎙 Подкасти', musicKindShow:'📺 Шоу', musicLoading:'Шукаю рекомендації…', musicFind:'Знайти', musicNone:'Поки немає — спробуй ще.', recommend:'Порадити', micMusic:'Музика, подкасти та шоу', compareTitle:'Порівняння з другом', compareNote:'Поділись кодом або встав код друга, щоб порівняти прогрес — без акаунтів.', compareShare:'📤 Поділитися', compareAdd:'📥 Додати код', compareYourCode:'Скопіюй і надішли другові:', copy:'Копіювати', copied:'Скопійовано!', friendAdded:'Додано %n.', friendBad:'Код не спрацював — перевір, чи скопійовано повністю.', name:'Імʼя', yourName:'Твоє імʼя', badgesTitle:'Значки', badgeEarned:'Отримано:', bW10:'10 слів', bW50:'50 слів', bW100:'100 слів', bS7:'7 днів поспіль', bS30:'30 днів поспіль', bM10:'10 засвоєно', bA50:'50 спроб', bA200:'200 спроб', bP90:'90+ середній',
+  tabGrammar:'📐 Граматика', tabListen:'🎧 Слухання', listenNote:'Послухай речення і скажи, що воно означає, або надрукуй його — тренує слух.', listenModeLabel:'Режим:', listenComp:'Розуміння', listenDict:'Диктант', loadingClip:'Готую запис…', listenAskMeaning:'Що це означає? (українською)', listenAskType:'Надрукуй, що почув (англійською)', phMeaning:'значення українською…', phType:'друкуй англійською…', replayWord:'Ще раз', slowWord:'Повільно', matchLabel:'збіг', micListen:'Натисни «Новий запис»', grammarNote:'Короткі уроки граматики з миттєвою практикою.', loadingGrammar:'Пишу урок…', examples:'Приклади', practice:'Практика', grammarDone:'Вправи завершено!', micGrammar:'Вправи — друкуванням', freeChat:'Вільний чат', tabPhoto:'📸 Фото', photoNote:'Сфотографуй щось і вивчи англійські слова для того, що бачиш.', photoBtnText:'Зробити фото', photoAnalyzing:'Дивлюся на фото…', photoNone:'Чітких обʼєктів не знайдено — спробуй інше фото.', photoSaveAll:'Зберегти всі', photoAnother:'Інше фото', photoSaved:'Збережено.', micPhoto:'Зроби фото, щоб вивчати слова', micWarmup:'Готую мікрофон…', tapWordHint:'Торкнись будь-якого слова, щоб почути його', tabMusic:'🎵 Музика', musicNote:'Відкривай англійську музику, подкасти та шоу для свого рівня.', musicKindLabel:'Знайти:', musicKindMusic:'🎵 Музика', musicKindPod:'🎙 Подкасти', musicKindShow:'📺 Шоу', musicLoading:'Шукаю рекомендації…', musicFind:'Знайти', musicNone:'Поки немає — спробуй ще.', recommend:'Порадити', micMusic:'Музика, подкасти та шоу', compareTitle:'Порівняння з другом', compareNote:'Поділись кодом або встав код друга, щоб порівняти прогрес — без акаунтів.', compareShare:'📤 Поділитися', compareAdd:'📥 Додати код', compareYourCode:'Скопіюй і надішли другові:', copy:'Копіювати', copied:'Скопійовано!', friendAdded:'Додано %n.', friendBad:'Код не спрацював — перевір, чи скопійовано повністю.', name:'Імʼя', yourName:'Твоє імʼя', badgesTitle:'Значки', badgeEarned:'Отримано:', bW10:'10 слів', bW50:'50 слів', bW100:'100 слів', bS7:'7 днів поспіль', bS30:'30 днів поспіль', bM10:'10 засвоєно', bA50:'50 спроб', bA200:'200 спроб', bP90:'90+ середній',
   tabNumbers:'\ud83d\udd22 \u0427\u0438\u0441\u043b\u0430', tabTwisters:'\ud83d\udc3e \u0421\u043a\u043e\u0440\u043e\u043c\u043e\u0432\u043a\u0438',
   numbersNote:'\u041f\u043e\u0447\u0443\u0439 \u0447\u0438\u0441\u043b\u043e \u0442\u0430 \u0432\u0432\u0435\u0434\u0438 \u0446\u0438\u0444\u0440\u0438. \u0414\u0456\u0430\u043f\u0430\u0437\u043e\u043d \u0440\u043e\u0441\u0442\u0435 \u0437 \u0440\u0456\u0432\u043d\u0435\u043c.', numbersEyebrow:'\u042f\u043a\u0435 \u0446\u0435 \u0447\u0438\u0441\u043b\u043e?', micNumber:'\u0412\u0432\u0435\u0434\u0438 \u043f\u043e\u0447\u0443\u0442\u0435 \u0447\u0438\u0441\u043b\u043e',
   twistersNote:'\u0421\u043a\u043e\u0440\u043e\u043c\u043e\u0432\u043a\u0438 \u2014 \u0449\u043e\u0431 \u0432\u0456\u0434\u0442\u043e\u0447\u0438\u0442\u0438 \u0441\u043a\u043b\u0430\u0434\u043d\u0456 \u0437\u0432\u0443\u043a\u0438. \u041d\u0430\u0442\u0438\u0441\u043d\u0438 \u043c\u0456\u043a\u0440\u043e\u0444\u043e\u043d!', twisterEyebrow:'\u0421\u043a\u043e\u0440\u043e\u043c\u043e\u0432\u043a\u0430 \u2014 \u0441\u043a\u0430\u0436\u0438 \u0457\u0457!', loadingTwister:'\u0428\u0443\u043a\u0430\u044e \u0441\u043a\u043e\u0440\u043e\u043c\u043e\u0432\u043a\u0443\u2026', micTwister:'\u041d\u0430\u0442\u0438\u0441\u043d\u0438 \u0442\u0430 \u0441\u043a\u0430\u0436\u0438 \u0441\u043a\u043e\u0440\u043e\u043c\u043e\u0432\u043a\u0443',
@@ -1011,9 +1018,11 @@ let lastGesture = 0;
 document.addEventListener('pointerdown', ()=>{ lastGesture = Date.now(); }, true);
 
 /* ================= speech recognition ================= */
+let micStopRequested = false;
 async function toggleMic(){
-  if (listening){ try{recognition && recognition.stop();}catch(e){} return; }
+  if (listening){ micStopRequested = true; try{recognition && recognition.stop();}catch(e){} return; }
   await ensureMicPermission();
+  try{ speechSynthesis.cancel(); }catch(e){}   // never let a TTS tail bleed into the mic
   const lang = (mode === 'chat') ? speakLang : LC().target;
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SR){ setMicLabel('Speech recognition unavailable — use Chrome/Edge, or type in Chat.'); return; }
@@ -1022,9 +1031,12 @@ async function toggleMic(){
   recognition.interimResults = true;
   recognition.continuous = true;    // keep listening through natural pauses
   recognition.maxAlternatives = 3;
-  let finalText = '', finalsRaw = [], lastInterim = '';
+  micStopRequested = false;
+  let committed = [], finalsRaw = [], lastInterim = '';
+  let restarts = 0;
+  const HARD_DEADLINE = Date.now() + 60000;
   let idleTimer = null;
-  const stopSoon = (ms)=>{ clearTimeout(idleTimer); idleTimer = setTimeout(()=>{ try{ recognition.stop(); }catch(e){} }, ms); };
+  const stopSoon = (ms)=>{ clearTimeout(idleTimer); idleTimer = setTimeout(()=>{ micStopRequested = true; try{ recognition.stop(); }catch(e){} }, ms); };
   // Collapse Android's growing-snapshot/repeat finals; keep genuinely new segments.
   const collapseSegs = (arr)=>{
     const lower = t => t.trim().toLowerCase();
@@ -1039,7 +1051,20 @@ async function toggleMic(){
     }
     return out;
   };
-  recognition.onstart = ()=> stopSoon(8000);          // up to 8s to start talking
+  const allText = ()=> collapseSegs(committed.concat(finalsRaw, lastInterim ? [lastInterim] : [])).join(' ').trim();
+  const finishMic = ()=>{
+    clearTimeout(idleTimer);
+    listening = false;
+    document.getElementById('micBtn').classList.remove('listening');
+    const said = allText();
+    if (said){ setMicLabel(T('tapToSpeak')); handleSpeech(said); }
+    else setMicLabel(T('noCatch'));
+  };
+  recognition.onstart = ()=> stopSoon(9000);          // up to 9s to start talking
+  // Audio capture goes live only now - THIS is when it is safe to speak.
+  recognition.onaudiostart = ()=>{
+    if (!allText()) setMicLabel(lang === LC().target ? T('listening') : T('listeningHelper'));
+  };
   recognition.onresult = (e)=>{
     finalsRaw = []; let interim = '';
     for (let i = 0; i < e.results.length; i++){
@@ -1047,32 +1072,44 @@ async function toggleMic(){
       else interim += e.results[i][0].transcript;
     }
     lastInterim = interim;
-    finalText = collapseSegs(finalsRaw).join(' ');
-    setMicLabel('“' + ((finalText + ' ' + interim).trim()) + '”');
-    stopSoon(4000);                                    // finishes ~4s after you stop speaking
+    setMicLabel('“' + allText() + '”');
+    stopSoon(4500);                                    // finishes ~4.5s after you stop speaking
   };
   recognition.onend = ()=>{
-    clearTimeout(idleTimer);
-    listening = false;
-    document.getElementById('micBtn').classList.remove('listening');
-    // Include any interim tail Android never finalized — this was silently dropped before.
-    const said = collapseSegs(finalsRaw.concat(lastInterim ? [lastInterim] : [])).join(' ').trim();
-    if (said){ setMicLabel(T('tapToSpeak')); handleSpeech(said); }
-    else setMicLabel(T('noCatch'));
+    // Android Chrome ends the session after the FIRST utterance even when
+    // continuous=true - that is what truncated phrases to a single word.
+    // If the user has not tapped stop, bank what we heard and resume silently.
+    if (!micStopRequested && restarts < 8 && Date.now() < HARD_DEADLINE){
+      const seg = collapseSegs(finalsRaw.concat(lastInterim ? [lastInterim] : [])).join(' ').trim();
+      if (seg) committed.push(seg);
+      finalsRaw = []; lastInterim = '';
+      restarts++;
+      try{ recognition.start(); return; }catch(err){ /* fall through */ }
+    }
+    finishMic();
   };
   recognition.onerror = (e)=>{
-    clearTimeout(idleTimer);
-    listening = false;
-    document.getElementById('micBtn').classList.remove('listening');
-    setMicLabel(e.error === 'not-allowed'
-      ? 'Microphone blocked — allow mic access in your browser.'
-      : T('noCatch'));
+    if (e.error === 'not-allowed' || e.error === 'service-not-allowed' || e.error === 'audio-capture'){
+      micStopRequested = true;
+      clearTimeout(idleTimer);
+      listening = false;
+      document.getElementById('micBtn').classList.remove('listening');
+      setMicLabel(e.error === 'audio-capture'
+        ? 'No microphone found — check your device.'
+        : 'Microphone blocked — allow mic access in your browser.');
+      return;
+    }
+    // no-speech with nothing captured: stop cleanly instead of looping.
+    if (e.error === 'no-speech' && !allText()) micStopRequested = true;
+    // Otherwise let onend decide whether to resume - a mid-phrase pause is normal.
   };
   try{
     recognition.start();
     listening = true;
     document.getElementById('micBtn').classList.add('listening');
-    setMicLabel(lang === LC().target ? T('listening') : T('listeningHelper'));
+    // Do not say "Listening" yet: the mic is not capturing until onaudiostart
+    // fires, and speaking before then loses the first word.
+    setMicLabel(T('micWarmup'));
   }catch(e){ console.error(e); }
 }
 function setMicLabel(t){ document.getElementById('micLabel').textContent = t; }
@@ -1194,6 +1231,22 @@ function renderStats(){
 /* ================= phrase card rendering ================= */
 function esc(s){ return String(s ?? '').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
+/* ---- tap any word to hear it ---- */
+function wordsHtml(text, rate){
+  const r = rate || 0.55;
+  return String(text == null ? '' : text).split(/(\s+)/).map(tok=>{
+    if (!/\S/.test(tok)) return tok;
+    const bare = tok.replace(/[.,!?;:"\u201c\u201d\u00ab\u00bb()\u00a1\u00bf\u2026\u2014\u2013]/g,'').trim();
+    if (!bare) return esc(tok);
+    return '<span class="wtap" role="button" tabindex="0" data-w="'+esc(bare)+'" data-r="'+r+'" '+
+           'onclick="tapWord(event,this)" onkeydown="if(event.key===\'Enter\'){tapWord(event,this)}">'+esc(tok)+'</span>';
+  }).join('');
+}
+function tapWord(ev, el){
+  if (ev){ ev.preventDefault(); ev.stopPropagation(); }
+  speakUa(el.dataset.w, parseFloat(el.dataset.r) || 0.55);
+  el.classList.remove('wtap-hit'); void el.offsetWidth; el.classList.add('wtap-hit');
+}
 function phraseCardHtml(p, fbId, opts){
   opts = opts || {};
   return `
@@ -1201,11 +1254,12 @@ function phraseCardHtml(p, fbId, opts){
     <div class="eyebrow">${opts.eyebrow || T('sayThis')}</div>
     ${opts.hideUa
       ? `<div class="ua-big ua-blur" id="revealUa" onclick="revealAnswer()" title="Tap to reveal">${esc(p.ua)}</div>`
-      : `<div class="ua-big">${esc(p.ua)}</div>`}
+      : `<div class="ua-big">${wordsHtml(p.ua, 0.55)}</div>`}
     ${opts.hideUa
       ? `<div class="translit ua-blur" id="revealTr">${esc(p.translit)}</div>`
       : `<div class="translit">${esc(p.translit)}</div>`}
     <div class="en">${esc(p.en)}</div>
+    ${opts.hideUa ? '' : `<div class="small-label" style="margin-top:6px">${T('tapWordHint')}</div>`}
     ${p.hint ? `<div class="hint"><b>${T('tipLabel')}</b> ${esc(p.hint)}</div>` : ''}
     <div class="row" style="margin-top:16px;margin-bottom:0">
       ${opts.hideUa ? `<button class="btn" onclick="revealAnswer()">${T('reveal')}</button>` : ''}
@@ -1223,7 +1277,10 @@ function phraseCardHtml(p, fbId, opts){
 }
 function revealAnswer(){
   const a = document.getElementById('revealUa'), b = document.getElementById('revealTr');
-  if (a) a.classList.add('revealed');
+  if (a){
+    a.classList.add('revealed');
+    if (currentPhrase && !a.dataset.tappable){ a.dataset.tappable='1'; a.removeAttribute('onclick'); a.innerHTML = wordsHtml(currentPhrase.ua, 0.55); }
+  }
   if (b) b.classList.add('revealed');
 }
 
@@ -1410,7 +1467,7 @@ function revealListen(scoreHtml){
   const it=listenItem;
   document.getElementById('listenResult').innerHTML = scoreHtml +
     `<div class="card" style="margin-top:10px;border-left:5px solid var(--sun)">
-       <div class="ua-big" style="font-size:1.15rem">${esc(it.ua)}</div>
+       <div class="ua-big" style="font-size:1.15rem">${wordsHtml(it.ua, 0.55)}</div>
        <div class="translit">${esc(it.translit)}</div>
        <div class="en">${esc(it.en)}</div>
      </div>
@@ -1488,7 +1545,7 @@ async function openGrammar(id){
 }
 function showGrammar(t,g){
   const paras=String(g.explain||'').split(/\n\n+/).map(x=>'<p style="margin-bottom:8px">'+esc(x)+'</p>').join('');
-  const ex=(g.examples||[]).map(e=>`<div class="word-row"><div class="word-main"><div class="w-ua">${esc(e.ua)}</div><div class="w-en">${esc(e.en)}</div></div><button class="icon-btn" onclick="speakUa(${JSON.stringify(e.ua).replace(/"/g,'&quot;')},0.9)">🔊</button></div>`).join('');
+  const ex=(g.examples||[]).map(e=>`<div class="word-row"><div class="word-main"><div class="w-ua">${wordsHtml(e.ua, 0.55)}</div><div class="w-en">${esc(e.en)}</div></div><button class="icon-btn" onclick="speakUa(${JSON.stringify(e.ua).replace(/"/g,'&quot;')},0.9)">🔊</button></div>`).join('');
   document.getElementById('grammarWrap').innerHTML=`
     <div class="row"><button class="btn" onclick="renderGrammarGrid()">${T('backTopics')}</button></div>
     <div class="card">
@@ -1754,7 +1811,7 @@ function showCultureCard(id, card){
     </div>
     <div class="card" style="border-left:5px solid var(--sun)">
       <div class="eyebrow">${T('keyPhrase')}</div>
-      <div class="ua-big" style="font-size:1.25rem">${esc(card.phrase.ua)}</div>
+      <div class="ua-big" style="font-size:1.25rem">${wordsHtml(card.phrase.ua, 0.55)}</div>
       <div class="translit">${esc(card.phrase.translit)}</div>
       <div class="en">${esc(card.phrase.en)}</div>
       <div class="row" style="margin-top:14px;margin-bottom:0">
@@ -1997,7 +2054,7 @@ function addMsg(html, who){
 function renderTutorMsg(r){
   const saveIdx = chatSaves.length;
   chatSaves.push({ ua:r.ua, translit:r.translit, en:r.en, hint:null });
-  let html = '<div class="m-ua">'+esc(r.ua)+'</div><div class="m-translit">'+esc(r.translit)+'</div><div class="m-en">'+esc(r.en)+'</div>';
+  let html = '<div class="m-ua">'+wordsHtml(r.ua, 0.55)+'</div><div class="m-translit">'+esc(r.translit)+'</div><div class="m-en">'+esc(r.en)+'</div>';
   if (r.note) html += '<div class="m-note">'+esc(r.note)+'</div>';
   html += '<div class="msg-actions"><button class="btn ghost" onclick="speakUa(this.dataset.ua,0.85)" data-ua="'+esc(r.ua)+'">'+esc(T('replay'))+'</button>'+
           '<button class="btn ghost" onclick="saveFromChat('+saveIdx+', this)">'+esc(T('saveWord'))+'</button></div>';
