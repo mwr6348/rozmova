@@ -310,6 +310,26 @@
   /* navigation styles (v12) */
   .tabs.nav-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;overflow:visible}
   .tabs.nav-grid .tab{text-align:center;padding:9px 11px;font-size:.66rem;line-height:1.15;flex:0 0 auto}
+  /* collapsed nav: one slim bar instead of 14 tiles */
+  .nav-compact{
+    display:flex; align-items:center; gap:10px; margin:10px 20px 2px;
+    padding:8px 12px; border-radius:14px;
+    background:var(--card); border:1px solid var(--line); box-shadow:var(--shadow-sm);
+  }
+  .nav-compact.hidden{display:none}
+  .nav-toggle{
+    flex-shrink:0; cursor:pointer; font-size:1.05rem; line-height:1;
+    background:linear-gradient(180deg,#fff,#f6f1e6); color:var(--ink);
+    border:1px solid var(--line); border-radius:10px; padding:7px 11px;
+    transition:transform .1s, background .15s;
+  }
+  .nav-toggle:hover{background:var(--gold-soft)}
+  .nav-toggle:active{transform:scale(.95)}
+  .nav-toggle:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+  .nav-where{
+    font-family:'Unbounded',sans-serif; font-weight:600; font-size:.8rem; color:var(--azure-ink);
+    overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  }
   .navsel{margin:12px 20px 0;display:block;width:calc(100% - 40px);font-family:'Unbounded',sans-serif;font-weight:600;font-size:.9rem;padding:12px 14px;border-radius:13px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);box-shadow:var(--shadow-sm)}
   @media (max-width:520px){ .tabs.nav-grid .tab{font-size:.6rem;padding:8px 7px} }
   /* tap-a-word to hear it */
@@ -363,6 +383,10 @@
 </div>
 
 <main>
+  <div class="nav-compact hidden" id="navCompact">
+    <button class="nav-toggle" id="navToggle" onclick="toggleNavOpen()" aria-label="Show menu">☰</button>
+    <span class="nav-where" id="navWhere"></span>
+  </div>
   <select id="navMenu" class="navsel hidden" aria-label="Go to section" onchange="setMode(this.value)"></select>
 
   <div class="row" style="margin-bottom:10px">
@@ -623,7 +647,7 @@ function migrateDB(){
     delete DB.deck; delete DB.usedPhrases; delete DB.lessons; delete DB.stats; delete DB.level;
   }
 }
-const APP_V = 'v26';
+const APP_V = 'v27';
 const STR = {
 en: {
   tagline:'Speak Ukrainian out loud. Get corrected. Improve.',
@@ -802,6 +826,7 @@ function setDir(d){
   setSpeakLang(LC().target);
   document.getElementById('lessonActive').classList.add('hidden');
   document.getElementById('lessonPicker').classList.remove('hidden');
+  lesson = null; setNavOpen(true);
   document.getElementById('reviewActive').classList.add('hidden');
   document.getElementById('reviewIdle').classList.remove('hidden');
   document.getElementById('alphaQuiz').classList.add('hidden');
@@ -1811,9 +1836,10 @@ function startQuiz(){
   const qs=buildQuiz(8);
   if (!qs.length){ document.getElementById('quizWrap').innerHTML='<div class="empty">'+esc(T('quizEmpty'))+'</div>'; return; }
   quizState={qs, idx:0, right:0, answered:false};
+  setNavOpen(false);
   renderQuiz();
 }
-function stopQuiz(){ quizState=null; currentPhrase=null; renderQuiz(); }
+function stopQuiz(){ quizState=null; currentPhrase=null; setNavOpen(true); renderQuiz(); }
 // Multiple choice / audio answer
 function qzAnswer(i){
   if (!quizState || quizState.answered) return;
@@ -2228,6 +2254,7 @@ async function startLesson(themeId){
       }]
     );
     lesson = { theme: themeId, phrases: arr, idx: 0, scores: [] };
+    setNavOpen(false);
     showLessonPhrase();
   }catch(e){
     document.getElementById('lessonLoading').textContent = tutorErrorMsg();
@@ -2236,6 +2263,7 @@ async function startLesson(themeId){
 
 function showLessonPhrase(){
   if (lesson){ lesson.attempts = 0; lesson.graded = false; }
+  applyNav();
   document.getElementById('lessonLoading').classList.add('hidden');
   const theme = themes().find(t=>t.id===lesson.theme);
   if (lesson.idx >= lesson.phrases.length){ finishLesson(); return; }
@@ -2273,6 +2301,7 @@ function exitLesson(){
   lesson = null; currentPhrase = null;
   document.getElementById('lessonActive').classList.add('hidden');
   document.getElementById('lessonPicker').classList.remove('hidden');
+  lesson = null; setNavOpen(true);
 }
 
 /* ================= PRACTICE (random phrase) ================= */
@@ -2303,6 +2332,7 @@ async function newPhrase(){
 /* ================= REVIEW (SRS) ================= */
 function startReview(){
   reviewGraded = false;
+  setNavOpen(false);
   const cards = dueCards().sort((a,b)=>a.due-b.due).slice(0, 15);
   if (!cards.length) return;
   review = { cards, idx: 0 };
@@ -2312,6 +2342,7 @@ function startReview(){
 }
 function showReviewCard(){
   reviewGraded = false;
+  applyNav();
   if (review.idx >= review.cards.length){ endReview(true); return; }
   const c = review.cards[review.idx];
   currentPhrase = c;
@@ -2508,13 +2539,39 @@ function sendTyped(){
 
 /* ================= mode / toggles ================= */
 const MODES=[['lessons','tabLessons'],['alphabet','tabAlpha'],['culture','tabCulture'],['numbers','tabNumbers'],['twisters','tabTwisters'],['grammar','tabGrammar'],['practice','tabPractice'],['listen','tabListen'],['photo','tabPhoto'],['music','tabMusic'],['quiz','tabQuiz'],['chat','tabChat'],['review','tabReview'],['words','tabWords']];
+let navOpen = true;
+function activityActive(){
+  return (mode==='lessons' && lesson) || (mode==='review' && review) || (mode==='quiz' && quizState);
+}
+function setNavOpen(v){ navOpen = !!v; applyNav(); }
+function toggleNavOpen(){ setNavOpen(!navOpen); }
+function navWhereText(){
+  const entry = MODES.find(m=>m[0]===mode);
+  let label = entry ? T(entry[1]) : '';
+  if (mode==='lessons' && lesson){
+    const t = themes().find(x=>x.id===lesson.theme);
+    label = (t ? t.emo+' '+t.name : label) + ' \u00b7 ' + (lesson.idx+1) + '/' + lesson.phrases.length;
+  } else if (mode==='review' && review){
+    label = T('tabReview') + ' \u00b7 ' + Math.min(review.idx+1, review.cards.length) + '/' + review.cards.length;
+  } else if (mode==='quiz' && quizState){
+    label = T('tabQuiz') + ' \u00b7 ' + Math.min(quizState.idx+1, quizState.qs.length) + '/' + quizState.qs.length;
+  }
+  return label;
+}
 function applyNav(){
   const style = DB.nav || 'grid';
   const strip = document.getElementById('tabStrip');
   const menu = document.getElementById('navMenu');
-  strip.classList.toggle('hidden', style==='menu');
+  const compact = document.getElementById('navCompact');
+  // Collapse the big tile menu while you're actually working through something.
+  const collapsed = !navOpen && style!=='menu';
+  strip.classList.toggle('hidden', style==='menu' || collapsed);
   strip.classList.toggle('nav-grid', style==='grid');
   menu.classList.toggle('hidden', style!=='menu');
+  if (compact){
+    compact.classList.toggle('hidden', !collapsed);
+    const wh=document.getElementById('navWhere'); if (wh) wh.textContent = navWhereText();
+  }
   if (style==='menu'){
     const due = dueCards().length;
     menu.innerHTML = MODES.map(([m,key])=>{
@@ -2551,6 +2608,8 @@ function setMode(m){
   if (m==='quiz'){ renderQuiz(); }
   if (m==='review'){ renderStats(); }
   if (m==='words'){ renderWords(); }
+  if (!activityActive()) navOpen = true;
+  applyNav();
   updateDockNext();
 }
 function setSpeakLang(l){
