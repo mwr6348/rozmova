@@ -330,6 +330,7 @@
   <button class="tab" role="tab" id="tab-listen" aria-selected="false" onclick="setMode('listen')">🎧 Listen</button>
   <button class="tab" role="tab" id="tab-photo" aria-selected="false" onclick="setMode('photo')">📸 Photo</button>
   <button class="tab" role="tab" id="tab-music" aria-selected="false" onclick="setMode('music')">🎵 Music</button>
+  <button class="tab" role="tab" id="tab-quiz" aria-selected="false" onclick="setMode('quiz')">🧠 Quiz</button>
   <button class="tab" role="tab" id="tab-chat" aria-selected="false" onclick="setMode('chat')">💬 Chat</button>
   <button class="tab" role="tab" id="tab-review" aria-selected="false" onclick="setMode('review')">🔁 Review<span class="badge zero" id="dueBadge">0</span></button>
   <button class="tab" role="tab" id="tab-words" aria-selected="false" onclick="setMode('words')">⭐ My words</button>
@@ -456,6 +457,11 @@
     </div>
     <div class="row"><button class="btn primary" id="musicGetBtn" onclick="getMusic()">✨ Recommend</button></div>
     <div id="musicWrap"></div>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section id="quizPane" class="hidden">
+    <div id="quizWrap"></div>
   </section>
 
   <!-- ============ PRACTICE ============ -->
@@ -589,7 +595,7 @@ function migrateDB(){
     delete DB.deck; delete DB.usedPhrases; delete DB.lessons; delete DB.stats; delete DB.level;
   }
 }
-const APP_V = 'v23';
+const APP_V = 'v24';
 const STR = {
 en: {
   tagline:'Speak Ukrainian out loud. Get corrected. Improve.',
@@ -625,7 +631,7 @@ en: {
   loadingCard:'Leya is writing your culture card\u2026', micCulture:'Open a card, then say its key phrase',
   chartTitle:'Last 14 days', gtOpen:'Opened Google Translate \u2014 tap the \ud83d\udd0a speaker there.', noExport:'No saved words yet.',
   voiceSpeed:'Voice speed', navStyle:'Menu style', navTiles:'▦ Tiles', navMenu2:'▾ Menu', navTabs:'— Tabs', streakStart:'Practice today to start a streak', streakToday:'-day streak \u2014 today is done!', streakKeep:'-day streak \u2014 practice today to keep it alive', freezeBanked:'freeze banked',
-  tabGrammar:'📐 Grammar', tabListen:'🎧 Listen', listenNote:'Hear a sentence, then say what it means or type it out — trains your ear for real speech.', listenModeLabel:'Mode:', listenComp:'Comprehension', listenDict:'Dictation', loadingClip:'Preparing a clip…', listenAskMeaning:'What does it mean? (type in English)', listenAskType:'Type exactly what you heard (in Ukrainian)', phMeaning:'meaning in English…', phType:'type in Ukrainian…', replayWord:'Replay', slowWord:'Slow', matchLabel:'match', micListen:'Tap New clip to hear a sentence', grammarNote:'Bite-size grammar lessons with instant practice drills.', loadingGrammar:'Writing your lesson…', examples:'Examples', practice:'Practice', grammarDone:'Drills complete!', micGrammar:'Grammar drills use typing', freeChat:'Free chat', tabPhoto:'📸 Photo', photoNote:'Snap a photo and learn the Ukrainian words for what you see.', photoBtnText:'Take a photo', photoAnalyzing:'Looking at your photo…', photoNone:'No clear objects found — try another photo.', photoSaveAll:'Save all to my words', photoAnother:'Another photo', photoSaved:'Saved to your words.', micPhoto:'Take a photo to learn words', micWarmup:'Getting the mic ready…', wrongLangHeard:'Your phone heard that in the wrong language (“%s”) — not your pronunciation. Fix: Gboard → Voice typing → turn OFF “Faster voice typing” (on-device has no Ukrainian, so it falls back to English), and stay online. Then tap the mic again.', tapWordHint:'Tap any word to hear it', tabMusic:'🎵 Music', musicNote:'Discover Ukrainian music, podcasts, and shows picked for your level.', musicKindLabel:'Find:', musicKindMusic:'🎵 Music', musicKindPod:'🎙 Podcasts', musicKindShow:'📺 Shows', musicLoading:'Finding recommendations…', musicFind:'Find it', musicNone:'No picks right now — try again.', recommend:'Recommend', micMusic:'Discover music, podcasts & shows', compareTitle:'Compare with a friend', compareNote:'Share your code or paste a friend\'s to compare progress — no account needed.', compareShare:'📤 Share', compareAdd:'📥 Add code', compareYourCode:'Copy this and send it to your friend:', copy:'Copy', copied:'Copied!', friendAdded:'Added %n.', friendBad:'That code didn\'t work — check you copied all of it.', name:'Name', yourName:'Your name', badgesTitle:'Badges', badgeEarned:'Earned:', bW10:'10 words', bW50:'50 words', bW100:'100 words', bS7:'7-day streak', bS30:'30-day streak', bM10:'10 mastered', bA50:'50 tries', bA200:'200 tries', bP90:'90+ average',
+  tabGrammar:'📐 Grammar', tabListen:'🎧 Listen', listenNote:'Hear a sentence, then say what it means or type it out — trains your ear for real speech.', listenModeLabel:'Mode:', listenComp:'Comprehension', listenDict:'Dictation', loadingClip:'Preparing a clip…', listenAskMeaning:'What does it mean? (type in English)', listenAskType:'Type exactly what you heard (in Ukrainian)', phMeaning:'meaning in English…', phType:'type in Ukrainian…', replayWord:'Replay', slowWord:'Slow', matchLabel:'match', micListen:'Tap New clip to hear a sentence', grammarNote:'Bite-size grammar lessons with instant practice drills.', loadingGrammar:'Writing your lesson…', examples:'Examples', practice:'Practice', grammarDone:'Drills complete!', micGrammar:'Grammar drills use typing', freeChat:'Free chat', tabPhoto:'📸 Photo', photoNote:'Snap a photo and learn the Ukrainian words for what you see.', photoBtnText:'Take a photo', photoAnalyzing:'Looking at your photo…', photoNone:'No clear objects found — try another photo.', photoSaveAll:'Save all to my words', photoAnother:'Another photo', photoSaved:'Saved to your words.', micPhoto:'Take a photo to learn words', micWarmup:'Getting the mic ready…', tabQuiz:'🧠 Quiz', micQuiz:'Tap to speak your answer', quizIntro:'A short quiz built from what you\'ve been learning lately — your saved words, the alphabet, grammar drills, and numbers.', quizStart:'Start quiz', quizAgain:'Another quiz', quizExit:'Done', quizDone:'Quiz complete!', quizEmpty:'Nothing to quiz yet — try a lesson or save a few words first, then come back.', qSrcWords:'My words', qSrcAlpha:'Alphabet', qSrcGrammar:'Grammar', qSrcNumbers:'Numbers', qSrcSpeak:'Speaking', qWhatMeans:'What does «%w» mean?', qWhichIs:'Which one means “%m”?', qWhichLetter:'Which letter makes the sound %s?', qHearNumber:'Tap play, then choose the number you heard.', qSayThis:'Say this in Ukrainian', qSayHint:'Tap the mic and say it from memory.', qTeach:'Remember:', qCorrectIs:'The correct answer is', qWhyMeans:'«%w» is the word that means “%m”.', qWhySound:'«%L» makes the sound %s.', qWhyDrill:'That\'s the answer to a different question: “%q”.', qWhyNumber:'The audio said %h, not %p.', qLetterTeach:'«%L» makes the sound %s — as in %w (%m).', qNumberTeach:'The number was %h.', wrongLangHeard:'Your phone heard that in the wrong language (“%s”) — not your pronunciation. Fix: Gboard → Voice typing → turn OFF “Faster voice typing” (on-device has no Ukrainian, so it falls back to English), and stay online. Then tap the mic again.', tapWordHint:'Tap any word to hear it', tabMusic:'🎵 Music', musicNote:'Discover Ukrainian music, podcasts, and shows picked for your level.', musicKindLabel:'Find:', musicKindMusic:'🎵 Music', musicKindPod:'🎙 Podcasts', musicKindShow:'📺 Shows', musicLoading:'Finding recommendations…', musicFind:'Find it', musicNone:'No picks right now — try again.', recommend:'Recommend', micMusic:'Discover music, podcasts & shows', compareTitle:'Compare with a friend', compareNote:'Share your code or paste a friend\'s to compare progress — no account needed.', compareShare:'📤 Share', compareAdd:'📥 Add code', compareYourCode:'Copy this and send it to your friend:', copy:'Copy', copied:'Copied!', friendAdded:'Added %n.', friendBad:'That code didn\'t work — check you copied all of it.', name:'Name', yourName:'Your name', badgesTitle:'Badges', badgeEarned:'Earned:', bW10:'10 words', bW50:'50 words', bW100:'100 words', bS7:'7-day streak', bS30:'30-day streak', bM10:'10 mastered', bA50:'50 tries', bA200:'200 tries', bP90:'90+ average',
   tabNumbers:'\ud83d\udd22 Numbers', tabTwisters:'\ud83d\udc3e Twisters',
   numbersNote:'Hear a number, type the digits. Range grows with your level.', numbersEyebrow:'What number is this?', micNumber:'Type the number you hear',
   twistersNote:'\u0421\u043a\u043e\u0440\u043e\u043c\u043e\u0432\u043a\u0438 \u2014 tricky twisters to sharpen tough sounds. Tap the mic and try!', twisterEyebrow:'Tongue-twister \u2014 say it!', loadingTwister:'Finding a twister\u2026', micTwister:'Tap and say the tongue-twister',
@@ -666,7 +672,7 @@ uk: {
   loadingCard:'\u041b\u0435\u044f \u043f\u0438\u0448\u0435 \u0442\u0432\u043e\u044e \u043a\u0443\u043b\u044c\u0442\u0443\u0440\u043d\u0443 \u043a\u0430\u0440\u0442\u043a\u0443\u2026', micCulture:'\u0412\u0456\u0434\u043a\u0440\u0438\u0439 \u043a\u0430\u0440\u0442\u043a\u0443 \u0456 \u0441\u043a\u0430\u0436\u0438 \u043a\u043b\u044e\u0447\u043e\u0432\u0443 \u0444\u0440\u0430\u0437\u0443',
   chartTitle:'\u041e\u0441\u0442\u0430\u043d\u043d\u0456 14 \u0434\u043d\u0456\u0432', gtOpen:'\u0412\u0456\u0434\u043a\u0440\u0438\u0442\u043e Google Translate \u2014 \u043d\u0430\u0442\u0438\u0441\u043d\u0438 \ud83d\udd0a \u0442\u0430\u043c.', noExport:'\u041f\u043e\u043a\u0438 \u043d\u0435\u043c\u0430\u0454 \u0441\u043b\u0456\u0432.',
   voiceSpeed:'\u0428\u0432\u0438\u0434\u043a\u0456\u0441\u0442\u044c \u0433\u043e\u043b\u043e\u0441\u0443', navStyle:'\u0421\u0442\u0438\u043b\u044c \u043c\u0435\u043d\u044e', navTiles:'▦ \u041f\u043b\u0438\u0442\u043a\u0438', navMenu2:'▾ \u041c\u0435\u043d\u044e', navTabs:'— \u0412\u043a\u043b\u0430\u0434\u043a\u0438', streakStart:'\u041f\u043e\u0442\u0440\u0435\u043d\u0443\u0439\u0441\u044f \u0441\u044c\u043e\u0433\u043e\u0434\u043d\u0456, \u0449\u043e\u0431 \u043f\u043e\u0447\u0430\u0442\u0438 \u0441\u0435\u0440\u0456\u044e', streakToday:'-\u0434\u0435\u043d\u043d\u0430 \u0441\u0435\u0440\u0456\u044f \u2014 \u043d\u0430 \u0441\u044c\u043e\u0433\u043e\u0434\u043d\u0456 \u0433\u043e\u0442\u043e\u0432\u043e!', streakKeep:'-\u0434\u0435\u043d\u043d\u0430 \u0441\u0435\u0440\u0456\u044f \u2014 \u043f\u043e\u0442\u0440\u0435\u043d\u0443\u0439\u0441\u044f \u0441\u044c\u043e\u0433\u043e\u0434\u043d\u0456', freezeBanked:'\u0437\u0430\u043c\u043e\u0440\u043e\u0437\u043a\u0430',
-  tabGrammar:'📐 Граматика', tabListen:'🎧 Слухання', listenNote:'Послухай речення і скажи, що воно означає, або надрукуй його — тренує слух.', listenModeLabel:'Режим:', listenComp:'Розуміння', listenDict:'Диктант', loadingClip:'Готую запис…', listenAskMeaning:'Що це означає? (українською)', listenAskType:'Надрукуй, що почув (англійською)', phMeaning:'значення українською…', phType:'друкуй англійською…', replayWord:'Ще раз', slowWord:'Повільно', matchLabel:'збіг', micListen:'Натисни «Новий запис»', grammarNote:'Короткі уроки граматики з миттєвою практикою.', loadingGrammar:'Пишу урок…', examples:'Приклади', practice:'Практика', grammarDone:'Вправи завершено!', micGrammar:'Вправи — друкуванням', freeChat:'Вільний чат', tabPhoto:'📸 Фото', photoNote:'Сфотографуй щось і вивчи англійські слова для того, що бачиш.', photoBtnText:'Зробити фото', photoAnalyzing:'Дивлюся на фото…', photoNone:'Чітких обʼєктів не знайдено — спробуй інше фото.', photoSaveAll:'Зберегти всі', photoAnother:'Інше фото', photoSaved:'Збережено.', micPhoto:'Зроби фото, щоб вивчати слова', micWarmup:'Готую мікрофон…', wrongLangHeard:'Телефон розпізнав це іншою мовою («%s») — це не твоя вимова. Виправлення: Gboard → Голосове введення → вимкни «Швидке голосове введення», і будь онлайн. Потім натисни мікрофон ще раз.', tapWordHint:'Торкнись будь-якого слова, щоб почути його', tabMusic:'🎵 Музика', musicNote:'Відкривай англійську музику, подкасти та шоу для свого рівня.', musicKindLabel:'Знайти:', musicKindMusic:'🎵 Музика', musicKindPod:'🎙 Подкасти', musicKindShow:'📺 Шоу', musicLoading:'Шукаю рекомендації…', musicFind:'Знайти', musicNone:'Поки немає — спробуй ще.', recommend:'Порадити', micMusic:'Музика, подкасти та шоу', compareTitle:'Порівняння з другом', compareNote:'Поділись кодом або встав код друга, щоб порівняти прогрес — без акаунтів.', compareShare:'📤 Поділитися', compareAdd:'📥 Додати код', compareYourCode:'Скопіюй і надішли другові:', copy:'Копіювати', copied:'Скопійовано!', friendAdded:'Додано %n.', friendBad:'Код не спрацював — перевір, чи скопійовано повністю.', name:'Імʼя', yourName:'Твоє імʼя', badgesTitle:'Значки', badgeEarned:'Отримано:', bW10:'10 слів', bW50:'50 слів', bW100:'100 слів', bS7:'7 днів поспіль', bS30:'30 днів поспіль', bM10:'10 засвоєно', bA50:'50 спроб', bA200:'200 спроб', bP90:'90+ середній',
+  tabGrammar:'📐 Граматика', tabListen:'🎧 Слухання', listenNote:'Послухай речення і скажи, що воно означає, або надрукуй його — тренує слух.', listenModeLabel:'Режим:', listenComp:'Розуміння', listenDict:'Диктант', loadingClip:'Готую запис…', listenAskMeaning:'Що це означає? (українською)', listenAskType:'Надрукуй, що почув (англійською)', phMeaning:'значення українською…', phType:'друкуй англійською…', replayWord:'Ще раз', slowWord:'Повільно', matchLabel:'збіг', micListen:'Натисни «Новий запис»', grammarNote:'Короткі уроки граматики з миттєвою практикою.', loadingGrammar:'Пишу урок…', examples:'Приклади', practice:'Практика', grammarDone:'Вправи завершено!', micGrammar:'Вправи — друкуванням', freeChat:'Вільний чат', tabPhoto:'📸 Фото', photoNote:'Сфотографуй щось і вивчи англійські слова для того, що бачиш.', photoBtnText:'Зробити фото', photoAnalyzing:'Дивлюся на фото…', photoNone:'Чітких обʼєктів не знайдено — спробуй інше фото.', photoSaveAll:'Зберегти всі', photoAnother:'Інше фото', photoSaved:'Збережено.', micPhoto:'Зроби фото, щоб вивчати слова', micWarmup:'Готую мікрофон…', tabQuiz:'🧠 Вікторина', micQuiz:'Натисни, щоб сказати відповідь', quizIntro:'Коротка вікторина з того, що ти нещодавно вивчав — твої слова, алфавіт, граматика та числа.', quizStart:'Почати', quizAgain:'Ще одна', quizExit:'Готово', quizDone:'Вікторину завершено!', quizEmpty:'Поки немає матеріалу — пройди урок або збережи кілька слів, потім повертайся.', qSrcWords:'Мої слова', qSrcAlpha:'Алфавіт', qSrcGrammar:'Граматика', qSrcNumbers:'Числа', qSrcSpeak:'Мовлення', qWhatMeans:'Що означає «%w»?', qWhichIs:'Що означає “%m”?', qWhichLetter:'Яка літера дає звук %s?', qHearNumber:'Натисни відтворення і вибери число, яке почув.', qSayThis:'Скажи це англійською', qSayHint:'Натисни мікрофон і скажи з памʼяті.', qTeach:'Запамʼятай:', qCorrectIs:'Правильна відповідь —', qWhyMeans:'«%w» — це слово, яке означає “%m”.', qWhySound:'«%L» дає звук %s.', qWhyDrill:'Це відповідь на інше питання: “%q”.', qWhyNumber:'Прозвучало %h, а не %p.', qLetterTeach:'«%L» дає звук %s — як у %w (%m).', qNumberTeach:'Це було число %h.', wrongLangHeard:'Телефон розпізнав це іншою мовою («%s») — це не твоя вимова. Виправлення: Gboard → Голосове введення → вимкни «Швидке голосове введення», і будь онлайн. Потім натисни мікрофон ще раз.', tapWordHint:'Торкнись будь-якого слова, щоб почути його', tabMusic:'🎵 Музика', musicNote:'Відкривай англійську музику, подкасти та шоу для свого рівня.', musicKindLabel:'Знайти:', musicKindMusic:'🎵 Музика', musicKindPod:'🎙 Подкасти', musicKindShow:'📺 Шоу', musicLoading:'Шукаю рекомендації…', musicFind:'Знайти', musicNone:'Поки немає — спробуй ще.', recommend:'Порадити', micMusic:'Музика, подкасти та шоу', compareTitle:'Порівняння з другом', compareNote:'Поділись кодом або встав код друга, щоб порівняти прогрес — без акаунтів.', compareShare:'📤 Поділитися', compareAdd:'📥 Додати код', compareYourCode:'Скопіюй і надішли другові:', copy:'Копіювати', copied:'Скопійовано!', friendAdded:'Додано %n.', friendBad:'Код не спрацював — перевір, чи скопійовано повністю.', name:'Імʼя', yourName:'Твоє імʼя', badgesTitle:'Значки', badgeEarned:'Отримано:', bW10:'10 слів', bW50:'50 слів', bW100:'100 слів', bS7:'7 днів поспіль', bS30:'30 днів поспіль', bM10:'10 засвоєно', bA50:'50 спроб', bA200:'200 спроб', bP90:'90+ середній',
   tabNumbers:'\ud83d\udd22 \u0427\u0438\u0441\u043b\u0430', tabTwisters:'\ud83d\udc3e \u0421\u043a\u043e\u0440\u043e\u043c\u043e\u0432\u043a\u0438',
   numbersNote:'\u041f\u043e\u0447\u0443\u0439 \u0447\u0438\u0441\u043b\u043e \u0442\u0430 \u0432\u0432\u0435\u0434\u0438 \u0446\u0438\u0444\u0440\u0438. \u0414\u0456\u0430\u043f\u0430\u0437\u043e\u043d \u0440\u043e\u0441\u0442\u0435 \u0437 \u0440\u0456\u0432\u043d\u0435\u043c.', numbersEyebrow:'\u042f\u043a\u0435 \u0446\u0435 \u0447\u0438\u0441\u043b\u043e?', micNumber:'\u0412\u0432\u0435\u0434\u0438 \u043f\u043e\u0447\u0443\u0442\u0435 \u0447\u0438\u0441\u043b\u043e',
   twistersNote:'\u0421\u043a\u043e\u0440\u043e\u043c\u043e\u0432\u043a\u0438 \u2014 \u0449\u043e\u0431 \u0432\u0456\u0434\u0442\u043e\u0447\u0438\u0442\u0438 \u0441\u043a\u043b\u0430\u0434\u043d\u0456 \u0437\u0432\u0443\u043a\u0438. \u041d\u0430\u0442\u0438\u0441\u043d\u0438 \u043c\u0456\u043a\u0440\u043e\u0444\u043e\u043d!', twisterEyebrow:'\u0421\u043a\u043e\u0440\u043e\u043c\u043e\u0432\u043a\u0430 \u2014 \u0441\u043a\u0430\u0436\u0438 \u0457\u0457!', loadingTwister:'\u0428\u0443\u043a\u0430\u044e \u0441\u043a\u043e\u0440\u043e\u043c\u043e\u0432\u043a\u0443\u2026', micTwister:'\u041d\u0430\u0442\u0438\u0441\u043d\u0438 \u0442\u0430 \u0441\u043a\u0430\u0436\u0438 \u0441\u043a\u043e\u0440\u043e\u043c\u043e\u0432\u043a\u0443',
@@ -693,6 +699,8 @@ function applyLang(){
   document.getElementById('photoNote').textContent = T('photoNote');
   document.getElementById('photoBtnText').textContent = T('photoBtnText');
   document.getElementById('tab-music').textContent = T('tabMusic');
+  document.getElementById('tab-quiz').textContent = T('tabQuiz');
+  if (mode==='quiz') renderQuiz();
   document.getElementById('musicNote').textContent = T('musicNote');
   document.getElementById('musicKindLabel').textContent = T('musicKindLabel');
   document.getElementById('musicKindMusic').textContent = T('musicKindMusic');
@@ -1159,6 +1167,7 @@ function setMicLabel(t){ document.getElementById('micLabel').textContent = t; }
 
 function handleSpeech(text){
   if (mode === 'chat') sendChat(text, true);
+  else if (mode === 'quiz' && quizState && currentPhrase) gradeCurrent(text, 'quizFb');
   else if (mode === 'review' && review) gradeCurrent(text, 'reviewFb');
   else if (currentPhrase) gradeCurrent(text, mode === 'lessons' ? 'lessonFb' : mode === 'alphabet' ? 'alphaFb' : mode === 'culture' ? 'cultureFb' : mode === 'twisters' ? 'twisterFb' : 'practiceFb');
   else setMicLabel(mode === 'alphabet' ? 'Tap a letter first, then say its example word.' : 'Pick a phrase first, then tap to speak.');
@@ -1583,6 +1592,7 @@ async function openGrammar(id){
         `Return JSON: {"title":"title in ${LC().helperName}","explain":"2 short clear paragraphs in ${LC().helperName} separated by \\n\\n","examples":[{"ua":"${LC().targetName} example","en":"${LC().helperName}"}],"drills":[{"q":"a fill-in-the-blank or translate prompt (in ${LC().helperName}, asking for a ${LC().targetName} answer)","a":"the correct ${LC().targetName} answer","hint":"short hint in ${LC().helperName}"}]}. Provide exactly 3 examples and 3 drills.`
       }]);
     grammarLesson={id,data:g,idx:0};
+    grammarCache()[id]={title:g.title, drills:(g.drills||[]), examples:(g.examples||[])}; saveDB();
     showGrammar(t,g);
   }catch(e){ document.getElementById('grammarWrap').innerHTML='<div class="empty">'+esc(tutorErrorMsg())+'</div><div class="row" style="justify-content:center"><button class="btn" onclick="renderGrammarGrid()">'+esc(T('backTopics'))+'</button></div>'; }
 }
@@ -1626,6 +1636,228 @@ function checkDrill(){
   if(good){ bumpStreak(); logActivity(); saveDB(); }
 }
 function nextDrill(){ grammarLesson.idx++; showDrill(); }
+
+/* ================= QUIZ (drawn from what you've been learning) ================= */
+let quizState = null;
+function shuffleArr(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); const t=a[i]; a[i]=a[j]; a[j]=t;} return a; }
+function pickN(a,n){ return shuffleArr(a).slice(0,Math.max(0,n)); }
+// Weight toward what was learned recently and what is still shaky.
+function recentCards(limit){
+  const now=Date.now();
+  const d=(P().deck||[]).filter(c=>c && c.ua).map(c=>{
+    const ageDays=(now-(c.added||now))/DAY;
+    const shaky=(c.box||0)<=1 ? 2 : (c.box||0)<=3 ? 1 : 0;
+    return {c, w: Math.max(0,30-ageDays)/30*2 + shaky + Math.random()*1.2};
+  });
+  d.sort((x,y)=>y.w-x.w);
+  return d.slice(0, limit||40).map(x=>x.c);
+}
+function grammarDrillPool(){
+  const out=[], gc=grammarCache()||{};
+  Object.keys(gc).forEach(k=>{ const g=gc[k]; (g&&g.drills||[]).forEach(dr=>{ if(dr&&dr.q&&dr.a) out.push({dr,title:g.title||''}); }); });
+  return out;
+}
+function quizSources(){
+  return { words:(P().deck||[]).length, sounds:(alphaData()||[]).length, grammar:grammarDrillPool().length };
+}
+function buildQuiz(n){
+  n = n || 8;
+  const pool=[];
+  const cards=recentCards(40);
+  const withEn=cards.filter(c=>c.en && c.ua);
+
+  // --- My Words / Lessons: meaning ---
+  if (withEn.length>=4){
+    pickN(withEn,3).forEach(c=>{
+      const others=pickN(withEn.filter(x=>x.ua!==c.ua && x.en!==c.en),3);
+      if (others.length<3) return;
+      const opts=shuffleArr([{t:c.en,ok:true,why:''}].concat(
+        others.map(o=>({t:o.en,ok:false,why:T('qWhyMeans').replace('%w',o.ua).replace('%m',o.en)}))));
+      pool.push({kind:'mc',src:c.theme==='import'?'words':(c.theme||'words'),srcLabel:T('qSrcWords'),
+        q:T('qWhatMeans').replace('%w',c.ua), sub:c.translit, options:opts,
+        teach:'\u00ab'+c.ua+'\u00bb ('+(c.translit||'')+') = '+c.en, speak:c.ua});
+    });
+    // --- reverse direction ---
+    pickN(withEn,2).forEach(c=>{
+      const others=pickN(withEn.filter(x=>x.ua!==c.ua && x.en!==c.en),3);
+      if (others.length<3) return;
+      const opts=shuffleArr([{t:c.ua,ok:true,why:''}].concat(
+        others.map(o=>({t:o.ua,ok:false,why:T('qWhyMeans').replace('%w',o.ua).replace('%m',o.en)}))));
+      pool.push({kind:'mc',src:'words',srcLabel:T('qSrcWords'),
+        q:T('qWhichIs').replace('%m',c.en), options:opts,
+        teach:'\u00ab'+c.ua+'\u00bb ('+(c.translit||'')+') = '+c.en, speak:c.ua});
+    });
+  }
+  // --- speaking questions from the same material ---
+  if (withEn.length>=1){
+    pickN(withEn,2).forEach(c=>{
+      pool.push({kind:'say',src:'words',srcLabel:T('qSrcSpeak'),
+        q:T('qSayThis'), card:c, teach:'\u00ab'+c.ua+'\u00bb = '+c.en});
+    });
+  }
+  // --- Alphabet / Sounds ---
+  const A=(alphaData()||[]).filter(a=>a && a.L && a.s);
+  if (A.length>=4){
+    pickN(A,2).forEach(a=>{
+      const others=pickN(A.filter(x=>x.L!==a.L && x.s!==a.s),3);
+      if (others.length<3) return;
+      const opts=shuffleArr([{t:a.L,ok:true,why:''}].concat(
+        others.map(o=>({t:o.L,ok:false,why:T('qWhySound').replace('%L',o.L).replace('%s',o.s)}))));
+      pool.push({kind:'mc',src:'alphabet',srcLabel:T('qSrcAlpha'),
+        q:T('qWhichLetter').replace('%s',a.s), options:opts,
+        teach:T('qLetterTeach').replace('%L',a.L).replace('%s',a.s).replace('%w',a.w||'').replace('%m',a.we||''),
+        speak:a.w||''});
+    });
+  }
+  // --- Grammar drills ---
+  const G=grammarDrillPool();
+  if (G.length>=4){
+    pickN(G,2).forEach(item=>{
+      const others=pickN(G.filter(x=>x.dr.a!==item.dr.a),3);
+      if (others.length<3) return;
+      const opts=shuffleArr([{t:item.dr.a,ok:true,why:''}].concat(
+        others.map(o=>({t:o.dr.a,ok:false,why:T('qWhyDrill').replace('%q',o.dr.q)}))));
+      pool.push({kind:'mc',src:'grammar',srcLabel:T('qSrcGrammar'),
+        q:item.dr.q, options:opts,
+        teach:item.dr.hint ? item.dr.hint : (T('qCorrectIs')+' '+item.dr.a), speak:item.dr.a});
+    });
+  }
+  // --- Numbers: listen and choose ---
+  const nmax=numberRange();
+  for (let k=0;k<2;k++){
+    const num=Math.floor(Math.random()*nmax)+1;
+    const swap=Number(String(num).split('').reverse().join(''))||num+1;
+    const cand=[num+ (num<10?1:10), Math.max(1,num-1), swap, num+7].filter(x=>x>0 && x!==num);
+    const others=pickN(Array.from(new Set(cand)),3);
+    if (others.length<3) continue;
+    const opts=shuffleArr([{t:String(num),ok:true,why:''}].concat(
+      others.map(o=>({t:String(o),ok:false,why:T('qWhyNumber').replace('%h',String(num)).replace('%p',String(o))}))));
+    pool.push({kind:'audio',src:'numbers',srcLabel:T('qSrcNumbers'),
+      q:T('qHearNumber'), audio:String(num), options:opts,
+      teach:T('qNumberTeach').replace('%h',String(num))});
+  }
+
+  // variety: at most 3 per source, then trim to n
+  const perSrc={}, chosen=[];
+  shuffleArr(pool).forEach(q=>{
+    const k=q.srcLabel||q.src;
+    perSrc[k]=perSrc[k]||0;
+    if (perSrc[k]<3 && chosen.length<n){ perSrc[k]++; chosen.push(q); }
+  });
+  return chosen;
+}
+function startQuiz(){
+  const qs=buildQuiz(8);
+  if (!qs.length){ document.getElementById('quizWrap').innerHTML='<div class="empty">'+esc(T('quizEmpty'))+'</div>'; return; }
+  quizState={qs, idx:0, right:0, answered:false};
+  renderQuiz();
+}
+function stopQuiz(){ quizState=null; currentPhrase=null; renderQuiz(); }
+// Multiple choice / audio answer
+function qzAnswer(i){
+  if (!quizState || quizState.answered) return;
+  const q=quizState.qs[quizState.idx];
+  quizState.answered=true;
+  const picked=q.options[i];
+  if (picked.ok) quizState.right++;
+  // vocabulary recall nudges the SRS box without polluting pronunciation stats
+  if (q.speak){ const c=findCard(q.speak); if (c){ c.box = picked.ok ? Math.min(5,(c.box||0)+1) : Math.max(0,(c.box||0)-1); c.due=Date.now()+INTERVALS[c.box]*DAY; saveDB(); } }
+  if (picked.ok){ bumpStreak(); logActivity(); saveDB(); }
+  renderQuiz();
+}
+function nextQuiz(){
+  if (!quizState) return;
+  quizState.idx++; quizState.answered=false; currentPhrase=null;
+  renderQuiz();
+}
+
+function renderQuiz(){
+  const wrap=document.getElementById('quizWrap'); if(!wrap) return;
+  if (!quizState){
+    const src=quizSources();
+    const bits=[];
+    bits.push((src.words?'\u2713 ':'\u2013 ')+T('qSrcWords')+' ('+src.words+')');
+    bits.push((src.sounds?'\u2713 ':'\u2013 ')+T('qSrcAlpha')+' ('+src.sounds+')');
+    bits.push((src.grammar?'\u2713 ':'\u2013 ')+T('qSrcGrammar')+' ('+src.grammar+')');
+    bits.push('\u2713 '+T('qSrcNumbers'));
+    wrap.innerHTML='<div class="card"><div class="eyebrow">'+esc(T('tabQuiz'))+'</div>'+
+      '<div class="en" style="margin-bottom:10px">'+esc(T('quizIntro'))+'</div>'+
+      '<div class="small-label" style="line-height:1.8">'+bits.map(esc).join('<br>')+'</div>'+
+      '<div class="row" style="justify-content:center;margin-top:14px;margin-bottom:0">'+
+      '<button class="btn primary" onclick="startQuiz()">\u2728 '+esc(T('quizStart'))+'</button></div></div>';
+    return;
+  }
+  if (quizState.idx>=quizState.qs.length){
+    const total=quizState.qs.length, right=quizState.right;
+    const pct=Math.round(right/total*100);
+    const emo = pct>=80?'\ud83c\udf89' : pct>=50?'\ud83c\udf31' : '\ud83d\udcaa';
+    wrap.innerHTML='<div class="card" style="text-align:center">'+
+      '<div style="font-size:2.4rem">'+emo+'</div>'+
+      '<div class="ua-big" style="font-size:1.4rem">'+right+' / '+total+'</div>'+
+      '<div class="en">'+esc(T('quizDone'))+'</div>'+
+      '<div class="row" style="justify-content:center;margin-top:12px;margin-bottom:0">'+
+      '<button class="btn primary" onclick="startQuiz()">'+esc(T('quizAgain'))+'</button>'+
+      '<button class="btn" onclick="stopQuiz()">'+esc(T('quizExit'))+'</button></div></div>';
+    checkBadges(); renderBadges();
+    return;
+  }
+  const q=quizState.qs[quizState.idx], n=quizState.idx+1, total=quizState.qs.length;
+  let head='<div class="card">'+
+    '<div class="row" style="justify-content:space-between;margin-bottom:4px">'+
+      '<span class="small-label">'+n+' / '+total+'</span>'+
+      '<span class="small-label">'+esc(q.srcLabel||'')+'</span></div>'+
+    '<div class="prog-bar" style="margin-bottom:12px"><i style="width:'+Math.round((quizState.idx)/total*100)+'%"></i></div>';
+
+  if (q.kind==='say'){
+    const c=q.card;
+    currentPhrase={ua:c.ua,translit:c.translit,en:c.en,hint:c.hint,theme:c.theme};
+    head+='<div class="eyebrow">'+esc(q.q)+'</div>'+
+      '<div class="ua-big" style="font-size:1.35rem">'+esc(c.en)+'</div>'+
+      '<div class="small-label" style="margin-bottom:8px">'+esc(T('qSayHint'))+'</div>'+
+      '<div class="row" style="margin-bottom:0"><button class="btn" onclick="speakUa(currentPhrase.ua,0.6)">'+esc(T('slow'))+'</button>'+
+      '<button class="btn" onclick="quizRevealSay()">'+esc(T('reveal'))+'</button>'+
+      '<button class="btn" onclick="nextQuiz()">'+esc(T('next'))+'</button></div>'+
+      '<div id="quizSayReveal" style="margin-top:10px"></div></div>'+
+      '<div class="card feedback hidden" id="quizFb"><div class="eyebrow">'+esc(T('attempt'))+'</div>'+
+      '<div class="score-line"><div class="score-num" id="quizFbScore">\u2013</div><div class="small-label">'+esc(T('outOf'))+'</div></div>'+
+      '<div class="heard">'+esc(T('heard'))+' <b id="quizFbHeard"></b></div>'+
+      '<div class="fb-text" id="quizFbText"></div></div>';
+    wrap.innerHTML=head;
+    return;
+  }
+
+  head+='<div class="eyebrow">'+esc(q.q)+'</div>';
+  if (q.sub) head+='<div class="translit" style="margin-bottom:6px">'+esc(q.sub)+'</div>';
+  if (q.kind==='audio') head+='<div class="row" style="margin-bottom:8px"><button class="btn" onclick="speakUa('+JSON.stringify(q.audio).replace(/"/g,'&quot;')+',0.85)">\ud83d\udd0a '+esc(T('replayWord'))+'</button></div>';
+
+  head+='<div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">';
+  q.options.forEach((o,i)=>{
+    let style='text-align:left;padding:12px 14px';
+    if (quizState.answered){
+      if (o.ok) style+=';border-color:var(--good);background:#eaf6ef';
+      else style+=';opacity:.85';
+    }
+    head+='<button class="btn" style="'+style+'" '+(quizState.answered?'disabled':'')+' onclick="qzAnswer('+i+')">'+
+      (quizState.answered ? (o.ok?'\u2713 ':'\u2717 ') : '')+esc(o.t)+'</button>';
+    if (quizState.answered && !o.ok && o.why){
+      head+='<div class="small-label" style="margin:-4px 0 2px 6px;color:var(--warn)">'+esc(o.why)+'</div>';
+    }
+  });
+  head+='</div>';
+
+  if (quizState.answered){
+    head+='<div class="hint" style="margin-top:12px"><b>'+esc(T('qTeach'))+'</b> '+esc(q.teach||'')+'</div>'+
+      '<div class="row" style="justify-content:center;margin-top:12px;margin-bottom:0">'+
+      (q.speak?'<button class="btn" onclick="speakUa('+JSON.stringify(q.speak).replace(/"/g,'&quot;')+',0.6)">\ud83d\udd0a '+esc(T('hearIt'))+'</button>':'')+
+      '<button class="btn primary" onclick="nextQuiz()">'+esc(T('next'))+'</button></div>';
+  }
+  head+='</div>';
+  wrap.innerHTML=head;
+}
+function quizRevealSay(){
+  const el=document.getElementById('quizSayReveal');
+  if (el && currentPhrase) el.innerHTML='<div class="ua-big" style="font-size:1.2rem">'+wordsHtml(currentPhrase.ua,0.55)+'</div><div class="translit">'+esc(currentPhrase.translit||'')+'</div>';
+}
 
 /* ================= PHOTO VOCABULARY (camera + vision) ================= */
 let photoItems=[], lastPhoto=null;
@@ -2209,7 +2441,7 @@ function sendTyped(){
 }
 
 /* ================= mode / toggles ================= */
-const MODES=[['lessons','tabLessons'],['alphabet','tabAlpha'],['culture','tabCulture'],['numbers','tabNumbers'],['twisters','tabTwisters'],['grammar','tabGrammar'],['practice','tabPractice'],['listen','tabListen'],['photo','tabPhoto'],['music','tabMusic'],['chat','tabChat'],['review','tabReview'],['words','tabWords']];
+const MODES=[['lessons','tabLessons'],['alphabet','tabAlpha'],['culture','tabCulture'],['numbers','tabNumbers'],['twisters','tabTwisters'],['grammar','tabGrammar'],['practice','tabPractice'],['listen','tabListen'],['photo','tabPhoto'],['music','tabMusic'],['quiz','tabQuiz'],['chat','tabChat'],['review','tabReview'],['words','tabWords']];
 function applyNav(){
   const style = DB.nav || 'grid';
   const strip = document.getElementById('tabStrip');
@@ -2233,7 +2465,7 @@ function applyNav(){
 function setNav(v){ DB.nav = v; saveDB(); applyNav(); }
 function setMode(m){
   mode = m;
-  ['lessons','alphabet','culture','numbers','twisters','grammar','practice','listen','photo','music','chat','review','words'].forEach(x=>{
+  ['lessons','alphabet','culture','numbers','twisters','grammar','practice','listen','photo','music','quiz','chat','review','words'].forEach(x=>{
     document.getElementById('tab-'+x).setAttribute('aria-selected', x===m);
     document.getElementById(x+'Pane').classList.toggle('hidden', x!==m);
   });
@@ -2248,7 +2480,9 @@ function setMode(m){
     : m==='grammar' ? T('micGrammar')
     : m==='photo' ? T('micPhoto')
     : m==='music' ? T('micMusic')
+    : m==='quiz' ? T('micQuiz')
     : T('tapToSpeak'));
+  if (m==='quiz'){ renderQuiz(); }
   if (m==='review'){ renderStats(); }
   if (m==='words'){ renderWords(); }
 }
