@@ -310,6 +310,31 @@
   /* navigation styles (v12) */
   .tabs.nav-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;overflow:visible}
   .tabs.nav-grid .tab{text-align:center;padding:9px 11px;font-size:.66rem;line-height:1.15;flex:0 0 auto}
+  /* quiz — same card / pill language as the rest of the app */
+  .quiz-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}
+  .quiz-q{
+    font-family:'Unbounded',sans-serif;font-weight:600;font-size:clamp(1.02rem,3.4vw,1.22rem);
+    color:var(--azure-ink);line-height:1.38;margin:2px 0 4px;letter-spacing:-.01em;
+  }
+  .quiz-choices{display:flex;flex-direction:column;gap:10px;margin-top:14px}
+  .quiz-choice{
+    width:100%;text-align:center;cursor:pointer;
+    font-family:'IBM Plex Sans',sans-serif;font-weight:600;font-size:.95rem;color:var(--ink);
+    background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:13px 16px;
+    box-shadow:var(--shadow-sm);transition:transform .1s ease,box-shadow .15s,background .15s,border-color .15s;
+  }
+  .quiz-choice:hover:not(:disabled){background:#f6f1e6;transform:translateY(-1px);box-shadow:var(--shadow)}
+  .quiz-choice:active:not(:disabled){transform:translateY(0) scale(.99)}
+  .quiz-choice:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+  .quiz-choice.correct{border-color:var(--good);background:#edf7f1;color:#14603a;box-shadow:0 4px 14px rgba(31,138,84,.18)}
+  .quiz-choice.wrong{border-color:var(--warn);background:#fdf0ee;color:#8f2419}
+  .quiz-choice.muted{opacity:.55;box-shadow:none}
+  .quiz-choice .mk{font-weight:700;margin-right:6px}
+  .quiz-why{
+    font-size:.78rem;color:var(--ink-soft);line-height:1.5;
+    margin:-4px 6px 0;padding:0 2px;text-align:center;
+  }
+  .quiz-score{font-family:'Unbounded',sans-serif;font-weight:700;font-size:2rem;color:var(--azure-ink);line-height:1.1}
   /* collapsed nav: one slim bar instead of 14 tiles */
   .nav-compact{
     display:flex; align-items:center; gap:10px; margin:10px 20px 2px;
@@ -647,7 +672,7 @@ function migrateDB(){
     delete DB.deck; delete DB.usedPhrases; delete DB.lessons; delete DB.stats; delete DB.level;
   }
 }
-const APP_V = 'v27';
+const APP_V = 'v28';
 const STR = {
 en: {
   tagline:'Speak Ukrainian out loud. Get corrected. Improve.',
@@ -1137,7 +1162,24 @@ async function toggleMic(){
     }
     return out;
   };
-  const allText = ()=> collapseSegs(committed.concat(finalsRaw, lastInterim ? [lastInterim] : [])).join(' ').trim();
+  // Stitch segments together, removing repeated words where two recognition
+  // sessions overlap (Android re-reports the tail after a silent restart).
+  const joinSegs = (arr)=>{
+    let out='';
+    (arr||[]).forEach(raw=>{
+      const f=String(raw||'').trim(); if(!f) return;
+      if(!out){ out=f; return; }
+      const ow=out.split(/\s+/), fw=f.split(/\s+/);
+      let ov=0;
+      const max=Math.min(8, ow.length, fw.length);
+      for (let k=max;k>0;k--){
+        if (ow.slice(-k).join(' ').toLowerCase() === fw.slice(0,k).join(' ').toLowerCase()){ ov=k; break; }
+      }
+      out = ow.concat(fw.slice(ov)).join(' ');
+    });
+    return out.trim();
+  };
+  const allText = ()=> joinSegs(collapseSegs(committed.concat(finalsRaw, lastInterim ? [lastInterim] : [])));
   const finishMic = ()=>{
     if (finished) return;                 // exactly once per session
     finished = true;
@@ -1158,7 +1200,7 @@ async function toggleMic(){
   };
   // Once something has been captured, silence should END the session quickly.
   // (Resetting to the full 9s on every silent restart is what hung the mic.)
-  recognition.onstart = ()=> stopSoon(allText() ? 2500 : 9000);
+  recognition.onstart = ()=> stopSoon(allText() ? 3200 : 9000);
   // Audio capture goes live only now - THIS is when it is safe to speak.
   recognition.onaudiostart = ()=>{
     if (!allText()) setMicLabel(lang === LC().target ? T('listening') : T('listeningHelper'));
@@ -1171,7 +1213,7 @@ async function toggleMic(){
     }
     lastInterim = interim;
     setMicLabel('“' + allText() + '”');
-    stopSoon(3000);                                    // finishes ~3s after you stop speaking
+    stopSoon(3400);                                    // finishes ~3.4s after you stop speaking
   };
   recognition.onend = ()=>{
     // Android Chrome ends the session after the FIRST utterance even when
@@ -1179,7 +1221,7 @@ async function toggleMic(){
     // Resume ONLY when this session actually captured something (the classic
     // mid-phrase cutoff). A session that ended on silence means the speaker
     // is done, so we finish instead of resuming forever.
-    const seg = collapseSegs(finalsRaw.concat(lastInterim ? [lastInterim] : [])).join(' ').trim();
+    const seg = joinSegs(collapseSegs(finalsRaw.concat(lastInterim ? [lastInterim] : [])));
     if (!micStopRequested && seg && restarts < 5 && Date.now() < HARD_DEADLINE){
       committed.push(seg);
       finalsRaw = []; lastInterim = '';
@@ -1823,19 +1865,28 @@ function buildQuiz(n){
       teach:T('qNumberTeach').replace('%h',String(num))});
   }
 
-  // variety: at most 3 per source, then trim to n
-  const perSrc={}, chosen=[];
-  shuffleArr(pool).forEach(q=>{
-    const k=q.srcLabel||q.src;
-    perSrc[k]=perSrc[k]||0;
-    if (perSrc[k]<3 && chosen.length<n){ perSrc[k]++; chosen.push(q); }
-  });
-  return chosen;
+  // Round-robin across sources so every kind you've studied is represented
+  // (a quiz with no speaking question, or no numbers, misses the point).
+  const groups={};
+  shuffleArr(pool).forEach(q=>{ const k=q.srcLabel||q.src; (groups[k]=groups[k]||[]).push(q); });
+  const keys=shuffleArr(Object.keys(groups));
+  const chosen=[], perSrc={};
+  let added=true;
+  while (chosen.length<n && added){
+    added=false;
+    for (let i=0;i<keys.length;i++){
+      const k=keys[i];
+      if (chosen.length>=n) break;
+      perSrc[k]=perSrc[k]||0;
+      if (perSrc[k]<3 && groups[k].length){ chosen.push(groups[k].shift()); perSrc[k]++; added=true; }
+    }
+  }
+  return shuffleArr(chosen);
 }
 function startQuiz(){
   const qs=buildQuiz(8);
   if (!qs.length){ document.getElementById('quizWrap').innerHTML='<div class="empty">'+esc(T('quizEmpty'))+'</div>'; return; }
-  quizState={qs, idx:0, right:0, answered:false};
+  quizState={qs, idx:0, right:0, answered:false, picked:-1};
   setNavOpen(false);
   renderQuiz();
 }
@@ -1846,6 +1897,7 @@ function qzAnswer(i){
   const q=quizState.qs[quizState.idx];
   quizState.answered=true;
   const picked=q.options[i];
+  quizState.picked=i;
   if (picked.ok) quizState.right++;
   // vocabulary recall nudges the SRS box without polluting pronunciation stats
   if (q.speak){ const c=findCard(q.speak); if (c){ c.box = picked.ok ? Math.min(5,(c.box||0)+1) : Math.max(0,(c.box||0)-1); c.due=Date.now()+INTERVALS[c.box]*DAY; saveDB(); } }
@@ -1854,92 +1906,119 @@ function qzAnswer(i){
 }
 function nextQuiz(){
   if (!quizState) return;
-  quizState.idx++; quizState.answered=false; currentPhrase=null;
+  quizState.idx++; quizState.answered=false; quizState.picked=-1; currentPhrase=null;
   renderQuiz();
 }
 
 function renderQuiz(){
   const wrap=document.getElementById('quizWrap'); if(!wrap) return;
+
+  // ---- start screen ----
   if (!quizState){
     const src=quizSources();
-    const bits=[];
-    bits.push((src.words?'\u2713 ':'\u2013 ')+T('qSrcWords')+' ('+src.words+')');
-    bits.push((src.sounds?'\u2713 ':'\u2013 ')+T('qSrcAlpha')+' ('+src.sounds+')');
-    bits.push((src.grammar?'\u2713 ':'\u2013 ')+T('qSrcGrammar')+' ('+src.grammar+')');
-    bits.push('\u2713 '+T('qSrcNumbers'));
-    wrap.innerHTML='<div class="card"><div class="eyebrow">'+esc(T('tabQuiz'))+'</div>'+
-      '<div class="en" style="margin-bottom:10px">'+esc(T('quizIntro'))+'</div>'+
-      '<div class="small-label" style="line-height:1.8">'+bits.map(esc).join('<br>')+'</div>'+
-      '<div class="row" style="justify-content:center;margin-top:14px;margin-bottom:0">'+
-      '<button class="btn primary" onclick="startQuiz()">\u2728 '+esc(T('quizStart'))+'</button></div></div>';
+    const row=(on,label,count)=>'<div class="stat"><div class="n">'+(count===null?(on?'\u2713':'\u2013'):count)+'</div><div class="l">'+esc(label)+'</div></div>';
+    wrap.innerHTML=
+      '<div class="card">'+
+        '<div class="eyebrow">'+esc(T('tabQuiz'))+'</div>'+
+        '<div class="quiz-q">'+esc(T('quizIntro'))+'</div>'+
+        '<div class="stat-row" style="margin-top:14px">'+
+          row(src.words>0,T('qSrcWords'),src.words)+
+          row(src.sounds>0,T('qSrcAlpha'),src.sounds)+
+          row(src.grammar>0,T('qSrcGrammar'),src.grammar)+
+          row(true,T('qSrcNumbers'),null)+
+        '</div>'+
+        '<div class="row" style="justify-content:center;margin-top:16px;margin-bottom:0">'+
+          '<button class="btn primary" onclick="startQuiz()">\u2728 '+esc(T('quizStart'))+'</button>'+
+        '</div>'+
+      '</div>';
     return;
   }
+
+  // ---- results ----
   if (quizState.idx>=quizState.qs.length){
     const total=quizState.qs.length, right=quizState.right;
-    const pct=Math.round(right/total*100);
+    const pct=total?Math.round(right/total*100):0;
     const emo = pct>=80?'\ud83c\udf89' : pct>=50?'\ud83c\udf31' : '\ud83d\udcaa';
-    wrap.innerHTML='<div class="card" style="text-align:center">'+
-      '<div style="font-size:2.4rem">'+emo+'</div>'+
-      '<div class="ua-big" style="font-size:1.4rem">'+right+' / '+total+'</div>'+
-      '<div class="en">'+esc(T('quizDone'))+'</div>'+
-      '<div class="row" style="justify-content:center;margin-top:12px;margin-bottom:0">'+
-      '<button class="btn primary" onclick="startQuiz()">'+esc(T('quizAgain'))+'</button>'+
-      '<button class="btn" onclick="stopQuiz()">'+esc(T('quizExit'))+'</button></div></div>';
+    wrap.innerHTML=
+      '<div class="card">'+
+        '<div class="eyebrow">'+esc(T('quizDone'))+'</div>'+
+        '<div style="font-size:2.6rem;line-height:1.2">'+emo+'</div>'+
+        '<div class="quiz-score">'+right+' / '+total+'</div>'+
+        '<div class="prog-bar" style="margin:12px auto 0;max-width:260px"><i style="width:'+pct+'%"></i></div>'+
+        '<div class="row" style="justify-content:center;margin-top:16px;margin-bottom:0">'+
+          '<button class="btn primary" onclick="startQuiz()">'+esc(T('quizAgain'))+'</button>'+
+          '<button class="btn" onclick="stopQuiz()">'+esc(T('quizExit'))+'</button>'+
+        '</div>'+
+      '</div>';
     checkBadges(); renderBadges();
     return;
   }
-  const q=quizState.qs[quizState.idx], n=quizState.idx+1, total=quizState.qs.length;
-  let head='<div class="card">'+
-    '<div class="row" style="justify-content:space-between;margin-bottom:4px">'+
-      '<span class="small-label">'+n+' / '+total+'</span>'+
-      '<span class="small-label">'+esc(q.srcLabel||'')+'</span></div>'+
-    '<div class="prog-bar" style="margin-bottom:12px"><i style="width:'+Math.round((quizState.idx)/total*100)+'%"></i></div>';
 
+  // ---- one question ----
+  const q=quizState.qs[quizState.idx], n=quizState.idx+1, total=quizState.qs.length;
+  const done=Math.round(quizState.idx/total*100);
+  let h='<div class="card">'+
+    '<div class="quiz-head">'+
+      '<span class="small-label">'+n+' / '+total+'</span>'+
+      '<span class="eyebrow" style="margin:0">'+esc(q.srcLabel||'')+'</span>'+
+    '</div>'+
+    '<div class="prog-bar" style="margin-bottom:14px"><i style="width:'+done+'%"></i></div>';
+
+  // speaking question
   if (q.kind==='say'){
     const c=q.card;
     currentPhrase={ua:c.ua,translit:c.translit,en:c.en,hint:c.hint,theme:c.theme};
-    head+='<div class="eyebrow">'+esc(q.q)+'</div>'+
-      '<div class="ua-big" style="font-size:1.35rem">'+esc(c.en)+'</div>'+
-      '<div class="small-label" style="margin-bottom:8px">'+esc(T('qSayHint'))+'</div>'+
-      '<div class="row" style="margin-bottom:0"><button class="btn" onclick="speakUa(currentPhrase.ua,0.6)">'+esc(T('slow'))+'</button>'+
-      '<button class="btn" onclick="quizRevealSay()">'+esc(T('reveal'))+'</button>'+
-      '<button class="btn" onclick="nextQuiz()">'+esc(T('next'))+'</button></div>'+
-      '<div id="quizSayReveal" style="margin-top:10px"></div></div>'+
-      '<div class="card feedback hidden" id="quizFb"><div class="eyebrow">'+esc(T('attempt'))+'</div>'+
-      '<div class="score-line"><div class="score-num" id="quizFbScore">\u2013</div><div class="small-label">'+esc(T('outOf'))+'</div></div>'+
-      '<div class="heard">'+esc(T('heard'))+' <b id="quizFbHeard"></b></div>'+
-      '<div class="fb-text" id="quizFbText"></div></div>';
-    wrap.innerHTML=head;
+    h+= '<div class="eyebrow">'+esc(q.q)+'</div>'+
+        '<div class="ua-big" style="font-size:1.3rem">'+esc(c.en)+'</div>'+
+        '<div class="small-label" style="margin-bottom:4px">'+esc(T('qSayHint'))+'</div>'+
+        '<div class="row" style="margin-top:14px;margin-bottom:0">'+
+          '<button class="btn" onclick="speakUa(currentPhrase.ua,0.6)">'+esc(T('slow'))+'</button>'+
+          '<button class="btn" onclick="quizRevealSay()">'+esc(T('reveal'))+'</button>'+
+          '<button class="btn primary" onclick="nextQuiz()">'+esc(T('next'))+'</button>'+
+        '</div>'+
+        '<div id="quizSayReveal" style="margin-top:12px"></div>'+
+      '</div>'+
+      '<div class="card feedback hidden" id="quizFb">'+
+        '<div class="eyebrow">'+esc(T('attempt'))+'</div>'+
+        '<div class="score-line"><div class="score-num" id="quizFbScore">\u2013</div><div class="small-label">'+esc(T('outOf'))+'</div></div>'+
+        '<div class="heard">'+esc(T('heard'))+' <b id="quizFbHeard"></b></div>'+
+        '<div class="fb-text" id="quizFbText"></div>'+
+      '</div>';
+    wrap.innerHTML=h;
     return;
   }
 
-  head+='<div class="eyebrow">'+esc(q.q)+'</div>';
-  if (q.sub) head+='<div class="translit" style="margin-bottom:6px">'+esc(q.sub)+'</div>';
-  if (q.kind==='audio') head+='<div class="row" style="margin-bottom:8px"><button class="btn" onclick="speakUa('+JSON.stringify(q.audio).replace(/"/g,'&quot;')+',0.85)">\ud83d\udd0a '+esc(T('replayWord'))+'</button></div>';
+  // multiple choice / listen-and-choose
+  h+='<div class="quiz-q">'+esc(q.q)+'</div>';
+  if (q.sub) h+='<div class="translit">'+esc(q.sub)+'</div>';
+  if (q.kind==='audio'){
+    h+='<div class="row" style="justify-content:center;margin-top:10px;margin-bottom:0">'+
+       '<button class="btn" onclick="speakUa('+JSON.stringify(q.audio).replace(/"/g,'&quot;')+',0.85)">\ud83d\udd0a '+esc(T('replayWord'))+'</button></div>';
+  }
 
-  head+='<div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">';
+  h+='<div class="quiz-choices">';
   q.options.forEach((o,i)=>{
-    let style='text-align:left;padding:12px 14px';
+    let cls='quiz-choice', mark='';
     if (quizState.answered){
-      if (o.ok) style+=';border-color:var(--good);background:#eaf6ef';
-      else style+=';opacity:.85';
+      if (o.ok){ cls+=' correct'; mark='<span class="mk">\u2713</span>'; }
+      else if (i===quizState.picked){ cls+=' wrong'; mark='<span class="mk">\u2717</span>'; }
+      else cls+=' muted';
     }
-    head+='<button class="btn" style="'+style+'" '+(quizState.answered?'disabled':'')+' onclick="qzAnswer('+i+')">'+
-      (quizState.answered ? (o.ok?'\u2713 ':'\u2717 ') : '')+esc(o.t)+'</button>';
+    h+='<button class="'+cls+'" '+(quizState.answered?'disabled':'')+' onclick="qzAnswer('+i+')">'+mark+esc(o.t)+'</button>';
     if (quizState.answered && !o.ok && o.why){
-      head+='<div class="small-label" style="margin:-4px 0 2px 6px;color:var(--warn)">'+esc(o.why)+'</div>';
+      h+='<div class="quiz-why">'+esc(o.why)+'</div>';
     }
   });
-  head+='</div>';
+  h+='</div>';
 
   if (quizState.answered){
-    head+='<div class="hint" style="margin-top:12px"><b>'+esc(T('qTeach'))+'</b> '+esc(q.teach||'')+'</div>'+
-      '<div class="row" style="justify-content:center;margin-top:12px;margin-bottom:0">'+
-      (q.speak?'<button class="btn" onclick="speakUa('+JSON.stringify(q.speak).replace(/"/g,'&quot;')+',0.6)">\ud83d\udd0a '+esc(T('hearIt'))+'</button>':'')+
-      '<button class="btn primary" onclick="nextQuiz()">'+esc(T('next'))+'</button></div>';
+    h+='<div class="hint" style="margin-top:14px"><b>'+esc(T('qTeach'))+'</b> '+esc(q.teach||'')+'</div>'+
+       '<div class="row" style="justify-content:center;margin-top:14px;margin-bottom:0">'+
+       (q.speak?'<button class="btn" onclick="speakUa('+JSON.stringify(q.speak).replace(/"/g,'&quot;')+',0.6)">\ud83d\udd0a '+esc(T('hearIt'))+'</button>':'')+
+       '<button class="btn primary" onclick="nextQuiz()">'+esc(T('next'))+'</button></div>';
   }
-  head+='</div>';
-  wrap.innerHTML=head;
+  h+='</div>';
+  wrap.innerHTML=h;
 }
 function quizRevealSay(){
   const el=document.getElementById('quizSayReveal');
