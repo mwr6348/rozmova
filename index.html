@@ -67,7 +67,7 @@
     background:var(--warn);color:#fff;font-size:.65rem;font-family:'IBM Plex Sans';font-weight:600;
   }
   .badge.zero{background:var(--good)}
-  main{flex:1;overflow-y:auto;padding:16px 20px 130px;max-width:760px;width:100%;margin:0 auto;text-align:center}
+  main{flex:1;overflow-y:auto;padding:16px 20px 176px;max-width:760px;width:100%;margin:0 auto;text-align:center}
   .row{justify-content:center}
   .msg,.chat-log,.word-row,.word-main{text-align:left}
   .hidden{display:none !important}
@@ -116,6 +116,25 @@
     background:linear-gradient(180deg,rgba(244,241,234,0) 0%,var(--paper) 45%);
   }
   .mic-label{font-size:.78rem;color:var(--ink-soft);margin-top:6px;min-height:1.1em;max-width:90%;text-align:center}
+  /* Next sits under the mic so finishing the phrase comes first */
+  .dock-next{
+    pointer-events:auto; margin-top:10px;
+    font-family:'Unbounded',sans-serif; font-weight:600; font-size:.85rem; letter-spacing:.01em;
+    color:#fff; cursor:pointer; padding:11px 26px; border-radius:999px;
+    border:1.5px solid var(--sky-deep);
+    background:linear-gradient(180deg,#1a72d6,var(--sky-deep));
+    box-shadow:0 5px 16px rgba(12,78,168,.34);
+    transition:transform .1s ease, box-shadow .15s, filter .15s;
+  }
+  .dock-next:hover{filter:brightness(1.06); box-shadow:0 7px 20px rgba(12,78,168,.42)}
+  .dock-next:active{transform:translateY(1px) scale(.98)}
+  .dock-next:focus-visible{outline:3px solid var(--sun);outline-offset:3px}
+  .dock-next.ready{animation:dockPulse 1.9s ease-in-out infinite}
+  @keyframes dockPulse{
+    0%,100%{box-shadow:0 5px 16px rgba(12,78,168,.34), 0 0 0 0 rgba(26,114,214,0)}
+    50%{box-shadow:0 6px 20px rgba(12,78,168,.44), 0 0 0 9px rgba(26,114,214,.10)}
+  }
+  @media (prefers-reduced-motion:reduce){ .dock-next.ready{animation:none} }
   .mic{
     pointer-events:auto;width:80px;height:80px;border-radius:50%;border:none;cursor:pointer;
     background:radial-gradient(circle at 35% 30%, #ffd94d 0%, var(--sun) 45%, var(--sun-deep) 100%);
@@ -573,6 +592,7 @@
     <svg viewBox="0 0 24 24"><path d="M12 15a4 4 0 0 0 4-4V6a4 4 0 1 0-8 0v5a4 4 0 0 0 4 4zm6-4a6 6 0 0 1-12 0H4a8 8 0 0 0 7 7.94V22h2v-3.06A8 8 0 0 0 20 11h-2z"/></svg>
   </button>
   <div class="mic-label" id="micLabel">Tap to speak</div>
+  <button class="dock-next hidden" id="dockNext" onclick="dockNextGo()">Next →</button>
 </div>
 
 <script>
@@ -595,7 +615,7 @@ function migrateDB(){
     delete DB.deck; delete DB.usedPhrases; delete DB.lessons; delete DB.stats; delete DB.level;
   }
 }
-const APP_V = 'v24';
+const APP_V = 'v25';
 const STR = {
 en: {
   tagline:'Speak Ukrainian out loud. Get corrected. Improve.',
@@ -789,6 +809,7 @@ let remoteAudio = null, remoteBlocked = false;   // Google Translate audio strea
 let currentPhrase = null;           // phrase object currently on screen (practice or lesson)
 let lesson = null;                  // {theme, phrases:[], idx, scores:[]}
 let review = null;                  // {cards:[], idx}
+let reviewGraded = false;           // has the current review card been answered?
 const INTERVALS = [0, 1, 3, 7, 14, 30];   // days per box
 const GROWTH = ['🌱','🌱','🌿','🌻','🌾','🌾'];
 const DAY = 86400000;
@@ -1164,6 +1185,24 @@ async function toggleMic(){
   }catch(e){ console.error(e); }
 }
 function setMicLabel(t){ document.getElementById('micLabel').textContent = t; }
+/* ---- Next button in the dock (deliberately away from the phrase card) ---- */
+let dockNextFn = null;
+function updateDockNext(){
+  const b = document.getElementById('dockNext'); if (!b) return;
+  let show=false, label=T('next'), fn=null, ready=false;
+  if (mode==='lessons' && lesson){
+    show=true; fn=nextLessonPhrase;
+    label = (lesson.idx+1 === lesson.phrases.length) ? T('finish') : T('next');
+    ready = !!lesson.attempted;
+  } else if (mode==='review' && review && reviewGraded){
+    show=true; fn=nextReviewCard; label=T('next'); ready=true;
+  }
+  dockNextFn = fn;
+  b.textContent = label;
+  b.classList.toggle('hidden', !show);
+  b.classList.toggle('ready', show && ready);
+}
+function dockNextGo(){ if (typeof dockNextFn === 'function') dockNextFn(); }
 
 function handleSpeech(text){
   if (mode === 'chat') sendChat(text, true);
@@ -1368,12 +1407,13 @@ async function gradeCurrent(heard, fbId){
     }
     document.getElementById(fbId+'Text').innerHTML =
       esc(r.feedback) + '<span class="tip">💡 ' + esc(r.tip) + '</span>' + extra;
-    const card = upsertCard(currentPhrase, currentPhrase.theme);
+    if (fbId==='lessonFb' && lesson) lesson.attempted = true;
+  updateDockNext();
+  const card = upsertCard(currentPhrase, currentPhrase.theme);
     applyScore(card, r.score);
     if (mode === 'lessons' && lesson) lesson.scores[lesson.idx] = r.score;
     if (mode === 'review' && review){
-      const nextBtn = document.getElementById('reviewNextBtn');
-      if (nextBtn) nextBtn.classList.remove('hidden');
+      reviewGraded = true; updateDockNext();
     }
     renderWords();
   }catch(e){
@@ -2174,6 +2214,7 @@ async function startLesson(themeId){
 }
 
 function showLessonPhrase(){
+  if (lesson) lesson.attempted = false;
   document.getElementById('lessonLoading').classList.add('hidden');
   const theme = themes().find(t=>t.id===lesson.theme);
   if (lesson.idx >= lesson.phrases.length){ finishLesson(); return; }
@@ -2183,11 +2224,12 @@ function showLessonPhrase(){
   document.getElementById('lessonCount').textContent = `${theme.emo} ${lesson.idx+1} / ${lesson.phrases.length}`;
   document.getElementById('lessonPhraseWrap').innerHTML = phraseCardHtml(p, 'lessonFb', {
     eyebrow: theme.name + ' — ' + T('sayThis').toLowerCase(),
-    nextBtn: `<button class="btn primary" onclick="nextLessonPhrase()">${lesson.idx+1===lesson.phrases.length?T('finish'):T('next')}</button>`
+    nextBtn: ''
   });
   speakUa(p.ua, 0.85);
+  updateDockNext();
 }
-function nextLessonPhrase(){ lesson.idx++; showLessonPhrase(); }
+function nextLessonPhrase(){ lesson.idx++; showLessonPhrase(); updateDockNext(); }
 function finishLesson(){
   const scores = lesson.scores.filter(s=>typeof s==='number');
   const avg = scores.length ? Math.round(scores.reduce((a,b)=>a+b,0)/scores.length) : 0;
@@ -2239,6 +2281,7 @@ async function newPhrase(){
 
 /* ================= REVIEW (SRS) ================= */
 function startReview(){
+  reviewGraded = false;
   const cards = dueCards().sort((a,b)=>a.due-b.due).slice(0, 15);
   if (!cards.length) return;
   review = { cards, idx: 0 };
@@ -2247,6 +2290,7 @@ function startReview(){
   showReviewCard();
 }
 function showReviewCard(){
+  reviewGraded = false;
   if (review.idx >= review.cards.length){ endReview(true); return; }
   const c = review.cards[review.idx];
   currentPhrase = c;
@@ -2254,10 +2298,11 @@ function showReviewCard(){
   document.getElementById('reviewCardWrap').innerHTML = phraseCardHtml(c, 'reviewFb', {
     eyebrow: T('fromMemory'),
     hideUa: true,
-    nextBtn: `<button class="btn primary hidden" id="reviewNextBtn" onclick="nextReviewCard()">${T('next')}</button>`
+    nextBtn: ''
   });
+  updateDockNext();
 }
-function nextReviewCard(){ review.idx++; showReviewCard(); }
+function nextReviewCard(){ review.idx++; showReviewCard(); updateDockNext(); }
 function endReview(done){
   document.getElementById('reviewActive').classList.add('hidden');
   document.getElementById('reviewIdle').classList.remove('hidden');
@@ -2485,6 +2530,7 @@ function setMode(m){
   if (m==='quiz'){ renderQuiz(); }
   if (m==='review'){ renderStats(); }
   if (m==='words'){ renderWords(); }
+  updateDockNext();
 }
 function setSpeakLang(l){
   speakLang = l;
