@@ -589,7 +589,7 @@ function migrateDB(){
     delete DB.deck; delete DB.usedPhrases; delete DB.lessons; delete DB.stats; delete DB.level;
   }
 }
-const APP_V = 'v20';
+const APP_V = 'v21';
 const STR = {
 en: {
   tagline:'Speak Ukrainian out loud. Get corrected. Improve.',
@@ -1033,9 +1033,9 @@ async function toggleMic(){
   recognition.maxAlternatives = 3;
   micStopRequested = false;
   let committed = [], finalsRaw = [], lastInterim = '';
-  let restarts = 0;
-  const HARD_DEADLINE = Date.now() + 60000;
-  let idleTimer = null;
+  let restarts = 0, finished = false;
+  const HARD_DEADLINE = Date.now() + 25000;
+  let idleTimer = null, hardTimer = null;
   const stopSoon = (ms)=>{ clearTimeout(idleTimer); idleTimer = setTimeout(()=>{ micStopRequested = true; try{ recognition.stop(); }catch(e){} }, ms); };
   // Collapse Android's growing-snapshot/repeat finals; keep genuinely new segments.
   const collapseSegs = (arr)=>{
@@ -1053,14 +1053,19 @@ async function toggleMic(){
   };
   const allText = ()=> collapseSegs(committed.concat(finalsRaw, lastInterim ? [lastInterim] : [])).join(' ').trim();
   const finishMic = ()=>{
-    clearTimeout(idleTimer);
+    if (finished) return;                 // exactly once per session
+    finished = true;
+    micStopRequested = true;
+    clearTimeout(idleTimer); clearTimeout(hardTimer);
     listening = false;
     document.getElementById('micBtn').classList.remove('listening');
     const said = allText();
     if (said){ setMicLabel(T('tapToSpeak')); handleSpeech(said); }
     else setMicLabel(T('noCatch'));
   };
-  recognition.onstart = ()=> stopSoon(9000);          // up to 9s to start talking
+  // Once something has been captured, silence should END the session quickly.
+  // (Resetting to the full 9s on every silent restart is what hung the mic.)
+  recognition.onstart = ()=> stopSoon(allText() ? 2500 : 9000);
   // Audio capture goes live only now - THIS is when it is safe to speak.
   recognition.onaudiostart = ()=>{
     if (!allText()) setMicLabel(lang === LC().target ? T('listening') : T('listeningHelper'));
@@ -1073,15 +1078,17 @@ async function toggleMic(){
     }
     lastInterim = interim;
     setMicLabel('“' + allText() + '”');
-    stopSoon(4500);                                    // finishes ~4.5s after you stop speaking
+    stopSoon(3000);                                    // finishes ~3s after you stop speaking
   };
   recognition.onend = ()=>{
     // Android Chrome ends the session after the FIRST utterance even when
     // continuous=true - that is what truncated phrases to a single word.
-    // If the user has not tapped stop, bank what we heard and resume silently.
-    if (!micStopRequested && restarts < 8 && Date.now() < HARD_DEADLINE){
-      const seg = collapseSegs(finalsRaw.concat(lastInterim ? [lastInterim] : [])).join(' ').trim();
-      if (seg) committed.push(seg);
+    // Resume ONLY when this session actually captured something (the classic
+    // mid-phrase cutoff). A session that ended on silence means the speaker
+    // is done, so we finish instead of resuming forever.
+    const seg = collapseSegs(finalsRaw.concat(lastInterim ? [lastInterim] : [])).join(' ').trim();
+    if (!micStopRequested && seg && restarts < 5 && Date.now() < HARD_DEADLINE){
+      committed.push(seg);
       finalsRaw = []; lastInterim = '';
       restarts++;
       try{ recognition.start(); return; }catch(err){ /* fall through */ }
@@ -1099,13 +1106,19 @@ async function toggleMic(){
         : 'Microphone blocked — allow mic access in your browser.');
       return;
     }
-    // no-speech with nothing captured: stop cleanly instead of looping.
-    if (e.error === 'no-speech' && !allText()) micStopRequested = true;
-    // Otherwise let onend decide whether to resume - a mid-phrase pause is normal.
+    // Silence means the speaker is done - never resume on it, with or
+    // without captured text. (Resuming here is what looped forever.)
+    if (e.error === 'no-speech' || e.error === 'aborted') micStopRequested = true;
   };
   try{
     recognition.start();
     listening = true;
+    // Absolute guard: no matter what the recognizer does, this session ends.
+    hardTimer = setTimeout(()=>{
+      micStopRequested = true;
+      try{ recognition.abort ? recognition.abort() : recognition.stop(); }catch(e){}
+      setTimeout(finishMic, 250);        // finish even if onend never fires
+    }, 25000);
     document.getElementById('micBtn').classList.add('listening');
     // Do not say "Listening" yet: the mic is not capturing until onaudiostart
     // fires, and speaking before then loses the first word.
