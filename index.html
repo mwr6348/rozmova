@@ -673,7 +673,7 @@ function migrateDB(){
     delete DB.deck; delete DB.usedPhrases; delete DB.lessons; delete DB.stats; delete DB.level;
   }
 }
-const APP_V = 'v30';
+const APP_V = 'v31';
 const STR = {
 en: {
   tagline:'Speak Ukrainian out loud. Get corrected. Improve.',
@@ -1504,15 +1504,22 @@ function revealAnswer(){
   if (b) b.classList.add('revealed');
 }
 
+function scrollToFeedback(el){
+  if (!el || typeof el.scrollIntoView !== 'function') return;
+  const reduce = (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  try{ el.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' }); }
+  catch(e){ try{ el.scrollIntoView(); }catch(_){} }
+}
 async function gradeCurrent(heard, fbId){
   const fb = document.getElementById(fbId);
   if (!fb) return;
   fb.classList.remove('hidden');
+  // your attempt just landed - show it without making you scroll
+  setTimeout(()=>scrollToFeedback(fb), 60);
   document.getElementById(fbId+'Heard').textContent = heard;
   const scoreEl = document.getElementById(fbId+'Score');
   scoreEl.textContent = '…'; scoreEl.className = 'score-num';
   document.getElementById(fbId+'Text').textContent = T('checking');
-  fb.scrollIntoView({behavior:'smooth', block:'nearest'});
   revealAnswer();
   try{
     const r = await callClaude(
@@ -1973,7 +1980,7 @@ function qzAnswer(i){
     if (q.speak){ const c=findCard(q.speak); if (c){ c.box=Math.min(5,(c.box||0)+1); c.due=Date.now()+INTERVALS[c.box]*DAY; } }
     bumpStreak(); logActivity(); saveDB();
     renderQuiz(); updateDockNext();
-    qzSchedule(1400);                    // right answer: move along briskly
+    qzSchedule(2000);                    // right answer: hold it on screen for a beat
     return;
   }
 
