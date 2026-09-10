@@ -673,7 +673,7 @@ function migrateDB(){
     delete DB.deck; delete DB.usedPhrases; delete DB.lessons; delete DB.stats; delete DB.level;
   }
 }
-const APP_V = 'v29';
+const APP_V = 'v30';
 const STR = {
 en: {
   tagline:'Speak Ukrainian out loud. Get corrected. Improve.',
@@ -1071,7 +1071,13 @@ function syncSpeedUI(){
   if (sl){ sl.value = DB.voiceSpeed || 100; document.getElementById('speedVal').textContent = ((DB.voiceSpeed||100)/100).toFixed(2).replace(/0$/,'') + '\u00d7'; }
   const lab = document.getElementById('speedLabel'); if (lab) lab.textContent = T('voiceSpeed');
 }
+let ttsBusy = false, ttsDoneAt = 0;
+function ttsIdle(){ return !ttsBusy && (Date.now() - ttsDoneAt) > 350; }   // let the audio settle
+function markTtsEnd(){ ttsBusy = false; ttsDoneAt = Date.now(); }
 function speakUa(text, rate){
+  // If the mic is open, close it WITHOUT grading - otherwise the app's own
+  // voice gets transcribed and scored as if the learner had spoken it.
+  stopMicNoGrade();
   if (!uaVoice){ playRemote(text, rate); return; }
   try{
     speechSynthesis.cancel();
@@ -1079,21 +1085,30 @@ function speakUa(text, rate){
     u.lang = LC().target;
     if (uaVoice) u.voice = uaVoice;
     u.rate = (rate || 0.9) * speedMult();
+    ttsBusy = true;
+    u.onend = markTtsEnd;
+    u.onerror = markTtsEnd;
     speechSynthesis.speak(u);
-  }catch(e){ console.error(e); }
+    // safety net: some Android voices never fire onend
+    setTimeout(()=>{ if (ttsBusy) markTtsEnd(); }, Math.max(2500, String(text||'').length * 140));
+  }catch(e){ markTtsEnd(); console.error(e); }
 }
 /* No Ukrainian voice in the browser: stream native audio from Google Translate
    and play it in-app. If streaming is blocked, fall back to opening the tab. */
 function playRemote(text, rate){
+  stopMicNoGrade();
   if (remoteBlocked){ openGT(text); return; }
   try{
     if (remoteAudio){ remoteAudio.pause(); remoteAudio = null; }
+    ttsBusy = true;
     const url = 'https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=' + LC().t2 + '&q=' + encodeURIComponent(text);
     remoteAudio = new Audio(url);
     remoteAudio.playbackRate = Math.max(0.5, Math.min(1, (rate && rate < 0.8 ? 0.65 : 1) * speedMult()));   // 🐢 Slow + speed slider
-    remoteAudio.onerror = ()=>{ remoteBlocked = true; pickVoice(); openGT(text); };
-    remoteAudio.play().catch(()=>{ remoteBlocked = true; pickVoice(); openGT(text); });
-  }catch(e){ remoteBlocked = true; openGT(text); }
+    remoteAudio.onended = markTtsEnd;
+    remoteAudio.onerror = ()=>{ markTtsEnd(); remoteBlocked = true; pickVoice(); openGT(text); };
+    remoteAudio.play().catch(()=>{ markTtsEnd(); remoteBlocked = true; pickVoice(); openGT(text); });
+    setTimeout(()=>{ if (ttsBusy) markTtsEnd(); }, Math.max(2500, String(text||'').length * 140));
+  }catch(e){ markTtsEnd(); remoteBlocked = true; openGT(text); }
 }
 function openGT(text){
   if (Date.now() - lastGesture < 2500){
@@ -1130,11 +1145,23 @@ function pickAlt(res, langCode){
   }
   return String((res[0] && res[0].transcript) || '').trim();
 }
-let micStopRequested = false;
+let micStopRequested = false, micDiscard = false;
+// Close an open mic session and throw away whatever it heard (used when the
+// app is about to speak, so playback is never mistaken for the learner).
+function stopMicNoGrade(){
+  if (!listening) return;
+  micDiscard = true; micStopRequested = true;
+  try{ if (recognition) recognition.abort ? recognition.abort() : recognition.stop(); }catch(e){}
+}
 async function toggleMic(){
   if (listening){ micStopRequested = true; try{recognition && recognition.stop();}catch(e){} return; }
   await ensureMicPermission();
-  try{ speechSynthesis.cancel(); }catch(e){}   // never let a TTS tail bleed into the mic
+  // Stop any playback and give the audio pipeline a moment, so the tail of the
+  // app's own voice can't land in the transcript.
+  try{ speechSynthesis.cancel(); }catch(e){}
+  try{ if (remoteAudio){ remoteAudio.pause(); remoteAudio=null; } }catch(e){}
+  markTtsEnd();
+  await new Promise(r=>setTimeout(r, 220));
   const lang = (mode === 'chat') ? speakLang : LC().target;
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SR){ setMicLabel('Speech recognition unavailable — use Chrome/Edge, or type in Chat.'); return; }
@@ -1187,6 +1214,12 @@ async function toggleMic(){
     micStopRequested = true;
     clearTimeout(idleTimer); clearTimeout(hardTimer);
     listening = false;
+    if (micDiscard){                       // aborted because the app started speaking
+      micDiscard = false;
+      document.getElementById('micBtn').classList.remove('listening');
+      setMicLabel(T('tapToSpeak'));
+      return;
+    }
     document.getElementById('micBtn').classList.remove('listening');
     const said = allText();
     noteMicAttempt();
@@ -1908,6 +1941,18 @@ function qzSchedule(ms){
     if (quizState && quizState.idx===at && quizState.answered && mode==='quiz') nextQuiz();
   }, ms);
 }
+function qzArmMic(atIdx){
+  clearTimeout(qzMicTimer);
+  const stillHere = ()=> mode==='quiz' && quizState && quizState.idx===atIdx
+                      && !quizState.answered && quizState.qs[atIdx] && quizState.qs[atIdx].kind==='say';
+  const tick = ()=>{
+    if (!stillHere()) return;
+    if (listening) return;                      // already going
+    if (!ttsIdle()){ qzMicTimer=setTimeout(tick, 250); return; }   // wait out the voice
+    toggleMic();
+  };
+  qzMicTimer=setTimeout(tick, 1000);
+}
 function qzPlayAudio(){
   if (!quizState) return;
   const q=quizState.qs[quizState.idx]; if(!q || !q.audio) return;
@@ -2030,12 +2075,9 @@ function renderQuiz(){
         '<div class="fb-text" id="quizFbText"></div>'+
       '</div>';
     wrap.innerHTML=h;
-    // give the screen a beat, then open the mic for you
-    clearTimeout(qzMicTimer);
-    const atIdx=quizState.idx;
-    qzMicTimer=setTimeout(()=>{
-      if (mode==='quiz' && quizState && quizState.idx===atIdx && !listening && !quizState.answered) toggleMic();
-    }, 1000);
+    // Open the mic for you after a beat - but only once the app has finished
+    // talking, so playback is never captured as your answer.
+    qzArmMic(quizState.idx);
     updateDockNext();
     return;
   }
