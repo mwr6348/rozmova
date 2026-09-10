@@ -329,6 +329,7 @@
   .quiz-choice.correct{border-color:var(--good);background:#edf7f1;color:#14603a;box-shadow:0 4px 14px rgba(31,138,84,.18)}
   .quiz-choice.wrong{border-color:var(--warn);background:#fdf0ee;color:#8f2419}
   .quiz-choice.muted{opacity:.55;box-shadow:none}
+  .quiz-choice.ruled{opacity:.5;border-color:var(--warn);background:#fdf3f1;text-decoration:line-through;box-shadow:none}
   .quiz-choice .mk{font-weight:700;margin-right:6px}
   .quiz-why{
     font-size:.78rem;color:var(--ink-soft);line-height:1.5;
@@ -672,7 +673,7 @@ function migrateDB(){
     delete DB.deck; delete DB.usedPhrases; delete DB.lessons; delete DB.stats; delete DB.level;
   }
 }
-const APP_V = 'v28';
+const APP_V = 'v29';
 const STR = {
 en: {
   tagline:'Speak Ukrainian out loud. Get corrected. Improve.',
@@ -708,7 +709,7 @@ en: {
   loadingCard:'Leya is writing your culture card\u2026', micCulture:'Open a card, then say its key phrase',
   chartTitle:'Last 14 days', gtOpen:'Opened Google Translate \u2014 tap the \ud83d\udd0a speaker there.', noExport:'No saved words yet.',
   voiceSpeed:'Voice speed', navStyle:'Menu style', navTiles:'▦ Tiles', navMenu2:'▾ Menu', navTabs:'— Tabs', streakStart:'Practice today to start a streak', streakToday:'-day streak \u2014 today is done!', streakKeep:'-day streak \u2014 practice today to keep it alive', freezeBanked:'freeze banked',
-  tabGrammar:'📐 Grammar', tabListen:'🎧 Listen', listenNote:'Hear a sentence, then say what it means or type it out — trains your ear for real speech.', listenModeLabel:'Mode:', listenComp:'Comprehension', listenDict:'Dictation', loadingClip:'Preparing a clip…', listenAskMeaning:'What does it mean? (type in English)', listenAskType:'Type exactly what you heard (in Ukrainian)', phMeaning:'meaning in English…', phType:'type in Ukrainian…', replayWord:'Replay', slowWord:'Slow', matchLabel:'match', micListen:'Tap New clip to hear a sentence', grammarNote:'Bite-size grammar lessons with instant practice drills.', loadingGrammar:'Writing your lesson…', examples:'Examples', practice:'Practice', grammarDone:'Drills complete!', micGrammar:'Grammar drills use typing', freeChat:'Free chat', tabPhoto:'📸 Photo', photoNote:'Snap a photo and learn the Ukrainian words for what you see.', photoBtnText:'Take a photo', photoAnalyzing:'Looking at your photo…', photoNone:'No clear objects found — try another photo.', photoSaveAll:'Save all to my words', photoAnother:'Another photo', photoSaved:'Saved to your words.', micPhoto:'Take a photo to learn words', micWarmup:'Getting the mic ready…', skipOne:'Skip this one', tabQuiz:'🧠 Quiz', micQuiz:'Tap to speak your answer', quizIntro:'A short quiz built from what you\'ve been learning lately — your saved words, the alphabet, grammar drills, and numbers.', quizStart:'Start quiz', quizAgain:'Another quiz', quizExit:'Done', quizDone:'Quiz complete!', quizEmpty:'Nothing to quiz yet — try a lesson or save a few words first, then come back.', qSrcWords:'My words', qSrcAlpha:'Alphabet', qSrcGrammar:'Grammar', qSrcNumbers:'Numbers', qSrcSpeak:'Speaking', qWhatMeans:'What does «%w» mean?', qWhichIs:'Which one means “%m”?', qWhichLetter:'Which letter makes the sound %s?', qHearNumber:'Tap play, then choose the number you heard.', qSayThis:'Say this in Ukrainian', qSayHint:'Tap the mic and say it from memory.', qTeach:'Remember:', qCorrectIs:'The correct answer is', qWhyMeans:'«%w» is the word that means “%m”.', qWhySound:'«%L» makes the sound %s.', qWhyDrill:'That\'s the answer to a different question: “%q”.', qWhyNumber:'The audio said %h, not %p.', qLetterTeach:'«%L» makes the sound %s — as in %w (%m).', qNumberTeach:'The number was %h.', wrongLangHeard:'Your phone heard that in the wrong language (“%s”) — not your pronunciation. Fix: Gboard → Voice typing → turn OFF “Faster voice typing” (on-device has no Ukrainian, so it falls back to English), and stay online. Then tap the mic again.', tapWordHint:'Tap any word to hear it', tabMusic:'🎵 Music', musicNote:'Discover Ukrainian music, podcasts, and shows picked for your level.', musicKindLabel:'Find:', musicKindMusic:'🎵 Music', musicKindPod:'🎙 Podcasts', musicKindShow:'📺 Shows', musicLoading:'Finding recommendations…', musicFind:'Find it', musicNone:'No picks right now — try again.', recommend:'Recommend', micMusic:'Discover music, podcasts & shows', compareTitle:'Compare with a friend', compareNote:'Share your code or paste a friend\'s to compare progress — no account needed.', compareShare:'📤 Share', compareAdd:'📥 Add code', compareYourCode:'Copy this and send it to your friend:', copy:'Copy', copied:'Copied!', friendAdded:'Added %n.', friendBad:'That code didn\'t work — check you copied all of it.', name:'Name', yourName:'Your name', badgesTitle:'Badges', badgeEarned:'Earned:', bW10:'10 words', bW50:'50 words', bW100:'100 words', bS7:'7-day streak', bS30:'30-day streak', bM10:'10 mastered', bA50:'50 tries', bA200:'200 tries', bP90:'90+ average',
+  tabGrammar:'📐 Grammar', tabListen:'🎧 Listen', listenNote:'Hear a sentence, then say what it means or type it out — trains your ear for real speech.', listenModeLabel:'Mode:', listenComp:'Comprehension', listenDict:'Dictation', loadingClip:'Preparing a clip…', listenAskMeaning:'What does it mean? (type in English)', listenAskType:'Type exactly what you heard (in Ukrainian)', phMeaning:'meaning in English…', phType:'type in Ukrainian…', replayWord:'Replay', slowWord:'Slow', matchLabel:'match', micListen:'Tap New clip to hear a sentence', grammarNote:'Bite-size grammar lessons with instant practice drills.', loadingGrammar:'Writing your lesson…', examples:'Examples', practice:'Practice', grammarDone:'Drills complete!', micGrammar:'Grammar drills use typing', freeChat:'Free chat', tabPhoto:'📸 Photo', photoNote:'Snap a photo and learn the Ukrainian words for what you see.', photoBtnText:'Take a photo', photoAnalyzing:'Looking at your photo…', photoNone:'No clear objects found — try another photo.', photoSaveAll:'Save all to my words', photoAnother:'Another photo', photoSaved:'Saved to your words.', micPhoto:'Take a photo to learn words', micWarmup:'Getting the mic ready…', listenWord:'Listen', qTryAgain:'Not quite — try one more.', qSecondTry:'%n on the second try', skipOne:'Skip this one', tabQuiz:'🧠 Quiz', micQuiz:'Tap to speak your answer', quizIntro:'A short quiz built from what you\'ve been learning lately — your saved words, the alphabet, grammar drills, and numbers.', quizStart:'Start quiz', quizAgain:'Another quiz', quizExit:'Done', quizDone:'Quiz complete!', quizEmpty:'Nothing to quiz yet — try a lesson or save a few words first, then come back.', qSrcWords:'My words', qSrcAlpha:'Alphabet', qSrcGrammar:'Grammar', qSrcNumbers:'Numbers', qSrcSpeak:'Speaking', qWhatMeans:'What does «%w» mean?', qWhichIs:'Which one means “%m”?', qWhichLetter:'Which letter makes the sound %s?', qHearNumber:'Tap play, then choose the number you heard.', qSayThis:'Say this in Ukrainian', qSayHint:'Tap the mic and say it from memory.', qTeach:'Remember:', qCorrectIs:'The correct answer is', qWhyMeans:'«%w» is the word that means “%m”.', qWhySound:'«%L» makes the sound %s.', qWhyDrill:'That\'s the answer to a different question: “%q”.', qWhyNumber:'The audio said %h, not %p.', qLetterTeach:'«%L» makes the sound %s — as in %w (%m).', qNumberTeach:'The number was %h.', wrongLangHeard:'Your phone heard that in the wrong language (“%s”) — not your pronunciation. Fix: Gboard → Voice typing → turn OFF “Faster voice typing” (on-device has no Ukrainian, so it falls back to English), and stay online. Then tap the mic again.', tapWordHint:'Tap any word to hear it', tabMusic:'🎵 Music', musicNote:'Discover Ukrainian music, podcasts, and shows picked for your level.', musicKindLabel:'Find:', musicKindMusic:'🎵 Music', musicKindPod:'🎙 Podcasts', musicKindShow:'📺 Shows', musicLoading:'Finding recommendations…', musicFind:'Find it', musicNone:'No picks right now — try again.', recommend:'Recommend', micMusic:'Discover music, podcasts & shows', compareTitle:'Compare with a friend', compareNote:'Share your code or paste a friend\'s to compare progress — no account needed.', compareShare:'📤 Share', compareAdd:'📥 Add code', compareYourCode:'Copy this and send it to your friend:', copy:'Copy', copied:'Copied!', friendAdded:'Added %n.', friendBad:'That code didn\'t work — check you copied all of it.', name:'Name', yourName:'Your name', badgesTitle:'Badges', badgeEarned:'Earned:', bW10:'10 words', bW50:'50 words', bW100:'100 words', bS7:'7-day streak', bS30:'30-day streak', bM10:'10 mastered', bA50:'50 tries', bA200:'200 tries', bP90:'90+ average',
   tabNumbers:'\ud83d\udd22 Numbers', tabTwisters:'\ud83d\udc3e Twisters',
   numbersNote:'Hear a number, type the digits. Range grows with your level.', numbersEyebrow:'What number is this?', micNumber:'Type the number you hear',
   twistersNote:'\u0421\u043a\u043e\u0440\u043e\u043c\u043e\u0432\u043a\u0438 \u2014 tricky twisters to sharpen tough sounds. Tap the mic and try!', twisterEyebrow:'Tongue-twister \u2014 say it!', loadingTwister:'Finding a twister\u2026', micTwister:'Tap and say the tongue-twister',
@@ -749,7 +750,7 @@ uk: {
   loadingCard:'\u041b\u0435\u044f \u043f\u0438\u0448\u0435 \u0442\u0432\u043e\u044e \u043a\u0443\u043b\u044c\u0442\u0443\u0440\u043d\u0443 \u043a\u0430\u0440\u0442\u043a\u0443\u2026', micCulture:'\u0412\u0456\u0434\u043a\u0440\u0438\u0439 \u043a\u0430\u0440\u0442\u043a\u0443 \u0456 \u0441\u043a\u0430\u0436\u0438 \u043a\u043b\u044e\u0447\u043e\u0432\u0443 \u0444\u0440\u0430\u0437\u0443',
   chartTitle:'\u041e\u0441\u0442\u0430\u043d\u043d\u0456 14 \u0434\u043d\u0456\u0432', gtOpen:'\u0412\u0456\u0434\u043a\u0440\u0438\u0442\u043e Google Translate \u2014 \u043d\u0430\u0442\u0438\u0441\u043d\u0438 \ud83d\udd0a \u0442\u0430\u043c.', noExport:'\u041f\u043e\u043a\u0438 \u043d\u0435\u043c\u0430\u0454 \u0441\u043b\u0456\u0432.',
   voiceSpeed:'\u0428\u0432\u0438\u0434\u043a\u0456\u0441\u0442\u044c \u0433\u043e\u043b\u043e\u0441\u0443', navStyle:'\u0421\u0442\u0438\u043b\u044c \u043c\u0435\u043d\u044e', navTiles:'▦ \u041f\u043b\u0438\u0442\u043a\u0438', navMenu2:'▾ \u041c\u0435\u043d\u044e', navTabs:'— \u0412\u043a\u043b\u0430\u0434\u043a\u0438', streakStart:'\u041f\u043e\u0442\u0440\u0435\u043d\u0443\u0439\u0441\u044f \u0441\u044c\u043e\u0433\u043e\u0434\u043d\u0456, \u0449\u043e\u0431 \u043f\u043e\u0447\u0430\u0442\u0438 \u0441\u0435\u0440\u0456\u044e', streakToday:'-\u0434\u0435\u043d\u043d\u0430 \u0441\u0435\u0440\u0456\u044f \u2014 \u043d\u0430 \u0441\u044c\u043e\u0433\u043e\u0434\u043d\u0456 \u0433\u043e\u0442\u043e\u0432\u043e!', streakKeep:'-\u0434\u0435\u043d\u043d\u0430 \u0441\u0435\u0440\u0456\u044f \u2014 \u043f\u043e\u0442\u0440\u0435\u043d\u0443\u0439\u0441\u044f \u0441\u044c\u043e\u0433\u043e\u0434\u043d\u0456', freezeBanked:'\u0437\u0430\u043c\u043e\u0440\u043e\u0437\u043a\u0430',
-  tabGrammar:'📐 Граматика', tabListen:'🎧 Слухання', listenNote:'Послухай речення і скажи, що воно означає, або надрукуй його — тренує слух.', listenModeLabel:'Режим:', listenComp:'Розуміння', listenDict:'Диктант', loadingClip:'Готую запис…', listenAskMeaning:'Що це означає? (українською)', listenAskType:'Надрукуй, що почув (англійською)', phMeaning:'значення українською…', phType:'друкуй англійською…', replayWord:'Ще раз', slowWord:'Повільно', matchLabel:'збіг', micListen:'Натисни «Новий запис»', grammarNote:'Короткі уроки граматики з миттєвою практикою.', loadingGrammar:'Пишу урок…', examples:'Приклади', practice:'Практика', grammarDone:'Вправи завершено!', micGrammar:'Вправи — друкуванням', freeChat:'Вільний чат', tabPhoto:'📸 Фото', photoNote:'Сфотографуй щось і вивчи англійські слова для того, що бачиш.', photoBtnText:'Зробити фото', photoAnalyzing:'Дивлюся на фото…', photoNone:'Чітких обʼєктів не знайдено — спробуй інше фото.', photoSaveAll:'Зберегти всі', photoAnother:'Інше фото', photoSaved:'Збережено.', micPhoto:'Зроби фото, щоб вивчати слова', micWarmup:'Готую мікрофон…', skipOne:'Пропустити', tabQuiz:'🧠 Вікторина', micQuiz:'Натисни, щоб сказати відповідь', quizIntro:'Коротка вікторина з того, що ти нещодавно вивчав — твої слова, алфавіт, граматика та числа.', quizStart:'Почати', quizAgain:'Ще одна', quizExit:'Готово', quizDone:'Вікторину завершено!', quizEmpty:'Поки немає матеріалу — пройди урок або збережи кілька слів, потім повертайся.', qSrcWords:'Мої слова', qSrcAlpha:'Алфавіт', qSrcGrammar:'Граматика', qSrcNumbers:'Числа', qSrcSpeak:'Мовлення', qWhatMeans:'Що означає «%w»?', qWhichIs:'Що означає “%m”?', qWhichLetter:'Яка літера дає звук %s?', qHearNumber:'Натисни відтворення і вибери число, яке почув.', qSayThis:'Скажи це англійською', qSayHint:'Натисни мікрофон і скажи з памʼяті.', qTeach:'Запамʼятай:', qCorrectIs:'Правильна відповідь —', qWhyMeans:'«%w» — це слово, яке означає “%m”.', qWhySound:'«%L» дає звук %s.', qWhyDrill:'Це відповідь на інше питання: “%q”.', qWhyNumber:'Прозвучало %h, а не %p.', qLetterTeach:'«%L» дає звук %s — як у %w (%m).', qNumberTeach:'Це було число %h.', wrongLangHeard:'Телефон розпізнав це іншою мовою («%s») — це не твоя вимова. Виправлення: Gboard → Голосове введення → вимкни «Швидке голосове введення», і будь онлайн. Потім натисни мікрофон ще раз.', tapWordHint:'Торкнись будь-якого слова, щоб почути його', tabMusic:'🎵 Музика', musicNote:'Відкривай англійську музику, подкасти та шоу для свого рівня.', musicKindLabel:'Знайти:', musicKindMusic:'🎵 Музика', musicKindPod:'🎙 Подкасти', musicKindShow:'📺 Шоу', musicLoading:'Шукаю рекомендації…', musicFind:'Знайти', musicNone:'Поки немає — спробуй ще.', recommend:'Порадити', micMusic:'Музика, подкасти та шоу', compareTitle:'Порівняння з другом', compareNote:'Поділись кодом або встав код друга, щоб порівняти прогрес — без акаунтів.', compareShare:'📤 Поділитися', compareAdd:'📥 Додати код', compareYourCode:'Скопіюй і надішли другові:', copy:'Копіювати', copied:'Скопійовано!', friendAdded:'Додано %n.', friendBad:'Код не спрацював — перевір, чи скопійовано повністю.', name:'Імʼя', yourName:'Твоє імʼя', badgesTitle:'Значки', badgeEarned:'Отримано:', bW10:'10 слів', bW50:'50 слів', bW100:'100 слів', bS7:'7 днів поспіль', bS30:'30 днів поспіль', bM10:'10 засвоєно', bA50:'50 спроб', bA200:'200 спроб', bP90:'90+ середній',
+  tabGrammar:'📐 Граматика', tabListen:'🎧 Слухання', listenNote:'Послухай речення і скажи, що воно означає, або надрукуй його — тренує слух.', listenModeLabel:'Режим:', listenComp:'Розуміння', listenDict:'Диктант', loadingClip:'Готую запис…', listenAskMeaning:'Що це означає? (українською)', listenAskType:'Надрукуй, що почув (англійською)', phMeaning:'значення українською…', phType:'друкуй англійською…', replayWord:'Ще раз', slowWord:'Повільно', matchLabel:'збіг', micListen:'Натисни «Новий запис»', grammarNote:'Короткі уроки граматики з миттєвою практикою.', loadingGrammar:'Пишу урок…', examples:'Приклади', practice:'Практика', grammarDone:'Вправи завершено!', micGrammar:'Вправи — друкуванням', freeChat:'Вільний чат', tabPhoto:'📸 Фото', photoNote:'Сфотографуй щось і вивчи англійські слова для того, що бачиш.', photoBtnText:'Зробити фото', photoAnalyzing:'Дивлюся на фото…', photoNone:'Чітких обʼєктів не знайдено — спробуй інше фото.', photoSaveAll:'Зберегти всі', photoAnother:'Інше фото', photoSaved:'Збережено.', micPhoto:'Зроби фото, щоб вивчати слова', micWarmup:'Готую мікрофон…', listenWord:'Прослухати', qTryAgain:'Не зовсім — спробуй ще раз.', qSecondTry:'%n з другої спроби', skipOne:'Пропустити', tabQuiz:'🧠 Вікторина', micQuiz:'Натисни, щоб сказати відповідь', quizIntro:'Коротка вікторина з того, що ти нещодавно вивчав — твої слова, алфавіт, граматика та числа.', quizStart:'Почати', quizAgain:'Ще одна', quizExit:'Готово', quizDone:'Вікторину завершено!', quizEmpty:'Поки немає матеріалу — пройди урок або збережи кілька слів, потім повертайся.', qSrcWords:'Мої слова', qSrcAlpha:'Алфавіт', qSrcGrammar:'Граматика', qSrcNumbers:'Числа', qSrcSpeak:'Мовлення', qWhatMeans:'Що означає «%w»?', qWhichIs:'Що означає “%m”?', qWhichLetter:'Яка літера дає звук %s?', qHearNumber:'Натисни відтворення і вибери число, яке почув.', qSayThis:'Скажи це англійською', qSayHint:'Натисни мікрофон і скажи з памʼяті.', qTeach:'Запамʼятай:', qCorrectIs:'Правильна відповідь —', qWhyMeans:'«%w» — це слово, яке означає “%m”.', qWhySound:'«%L» дає звук %s.', qWhyDrill:'Це відповідь на інше питання: “%q”.', qWhyNumber:'Прозвучало %h, а не %p.', qLetterTeach:'«%L» дає звук %s — як у %w (%m).', qNumberTeach:'Це було число %h.', wrongLangHeard:'Телефон розпізнав це іншою мовою («%s») — це не твоя вимова. Виправлення: Gboard → Голосове введення → вимкни «Швидке голосове введення», і будь онлайн. Потім натисни мікрофон ще раз.', tapWordHint:'Торкнись будь-якого слова, щоб почути його', tabMusic:'🎵 Музика', musicNote:'Відкривай англійську музику, подкасти та шоу для свого рівня.', musicKindLabel:'Знайти:', musicKindMusic:'🎵 Музика', musicKindPod:'🎙 Подкасти', musicKindShow:'📺 Шоу', musicLoading:'Шукаю рекомендації…', musicFind:'Знайти', musicNone:'Поки немає — спробуй ще.', recommend:'Порадити', micMusic:'Музика, подкасти та шоу', compareTitle:'Порівняння з другом', compareNote:'Поділись кодом або встав код друга, щоб порівняти прогрес — без акаунтів.', compareShare:'📤 Поділитися', compareAdd:'📥 Додати код', compareYourCode:'Скопіюй і надішли другові:', copy:'Копіювати', copied:'Скопійовано!', friendAdded:'Додано %n.', friendBad:'Код не спрацював — перевір, чи скопійовано повністю.', name:'Імʼя', yourName:'Твоє імʼя', badgesTitle:'Значки', badgeEarned:'Отримано:', bW10:'10 слів', bW50:'50 слів', bW100:'100 слів', bS7:'7 днів поспіль', bS30:'30 днів поспіль', bM10:'10 засвоєно', bA50:'50 спроб', bA200:'200 спроб', bP90:'90+ середній',
   tabNumbers:'\ud83d\udd22 \u0427\u0438\u0441\u043b\u0430', tabTwisters:'\ud83d\udc3e \u0421\u043a\u043e\u0440\u043e\u043c\u043e\u0432\u043a\u0438',
   numbersNote:'\u041f\u043e\u0447\u0443\u0439 \u0447\u0438\u0441\u043b\u043e \u0442\u0430 \u0432\u0432\u0435\u0434\u0438 \u0446\u0438\u0444\u0440\u0438. \u0414\u0456\u0430\u043f\u0430\u0437\u043e\u043d \u0440\u043e\u0441\u0442\u0435 \u0437 \u0440\u0456\u0432\u043d\u0435\u043c.', numbersEyebrow:'\u042f\u043a\u0435 \u0446\u0435 \u0447\u0438\u0441\u043b\u043e?', micNumber:'\u0412\u0432\u0435\u0434\u0438 \u043f\u043e\u0447\u0443\u0442\u0435 \u0447\u0438\u0441\u043b\u043e',
   twistersNote:'\u0421\u043a\u043e\u0440\u043e\u043c\u043e\u0432\u043a\u0438 \u2014 \u0449\u043e\u0431 \u0432\u0456\u0434\u0442\u043e\u0447\u0438\u0442\u0438 \u0441\u043a\u043b\u0430\u0434\u043d\u0456 \u0437\u0432\u0443\u043a\u0438. \u041d\u0430\u0442\u0438\u0441\u043d\u0438 \u043c\u0456\u043a\u0440\u043e\u0444\u043e\u043d!', twisterEyebrow:'\u0421\u043a\u043e\u0440\u043e\u043c\u043e\u0432\u043a\u0430 \u2014 \u0441\u043a\u0430\u0436\u0438 \u0457\u0457!', loadingTwister:'\u0428\u0443\u043a\u0430\u044e \u0441\u043a\u043e\u0440\u043e\u043c\u043e\u0432\u043a\u0443\u2026', micTwister:'\u041d\u0430\u0442\u0438\u0441\u043d\u0438 \u0442\u0430 \u0441\u043a\u0430\u0436\u0438 \u0441\u043a\u043e\u0440\u043e\u043c\u043e\u0432\u043a\u0443',
@@ -1278,6 +1279,13 @@ function updateDockNext(){
     showSkip = !lesson.graded && (lesson.attempts||0) > 0;
   } else if (mode==='review' && review && reviewGraded){
     show=true; fn=nextReviewCard; label=T('next'); ready=true;
+  } else if (mode==='quiz' && quizState && quizState.idx < quizState.qs.length){
+    const q = quizState.qs[quizState.idx];
+    fn = nextQuiz;
+    label = (quizState.idx+1 === quizState.qs.length) ? T('finish') : T('next');
+    // speaking questions can always be passed; choices unlock once resolved
+    show  = (q.kind==='say') || !!quizState.answered;
+    ready = !!quizState.answered;
   }
   dockNextFn = fn;
   b.textContent = label;
@@ -1886,27 +1894,64 @@ function buildQuiz(n){
 function startQuiz(){
   const qs=buildQuiz(8);
   if (!qs.length){ document.getElementById('quizWrap').innerHTML='<div class="empty">'+esc(T('quizEmpty'))+'</div>'; return; }
-  quizState={qs, idx:0, right:0, answered:false, picked:-1};
+  quizState={qs, idx:0, right:0, second:0, answered:false, picked:-1, tries:0, wrong:[], played:false};
   setNavOpen(false);
   renderQuiz();
 }
 function stopQuiz(){ quizState=null; currentPhrase=null; setNavOpen(true); renderQuiz(); }
 // Multiple choice / audio answer
+let qzTimer=null, qzMicTimer=null;
+function qzSchedule(ms){
+  clearTimeout(qzTimer);
+  const at = quizState ? quizState.idx : -1;
+  qzTimer = setTimeout(()=>{
+    if (quizState && quizState.idx===at && quizState.answered && mode==='quiz') nextQuiz();
+  }, ms);
+}
+function qzPlayAudio(){
+  if (!quizState) return;
+  const q=quizState.qs[quizState.idx]; if(!q || !q.audio) return;
+  speakUa(q.audio, 0.85);
+  quizState.played = true;
+  const b=document.getElementById('qzAudioBtn');
+  if (b) b.textContent='\ud83d\udd0a '+T('replayWord');
+}
 function qzAnswer(i){
   if (!quizState || quizState.answered) return;
   const q=quizState.qs[quizState.idx];
-  quizState.answered=true;
   const picked=q.options[i];
-  quizState.picked=i;
-  if (picked.ok) quizState.right++;
-  // vocabulary recall nudges the SRS box without polluting pronunciation stats
-  if (q.speak){ const c=findCard(q.speak); if (c){ c.box = picked.ok ? Math.min(5,(c.box||0)+1) : Math.max(0,(c.box||0)-1); c.due=Date.now()+INTERVALS[c.box]*DAY; saveDB(); } }
-  if (picked.ok){ bumpStreak(); logActivity(); saveDB(); }
-  renderQuiz();
+  quizState.tries = (quizState.tries||0) + 1;
+
+  if (picked.ok){
+    quizState.answered = true; quizState.picked = i;
+    if (quizState.tries===1) quizState.right++; else quizState.second=(quizState.second||0)+1;
+    if (q.speak){ const c=findCard(q.speak); if (c){ c.box=Math.min(5,(c.box||0)+1); c.due=Date.now()+INTERVALS[c.box]*DAY; } }
+    bumpStreak(); logActivity(); saveDB();
+    renderQuiz(); updateDockNext();
+    qzSchedule(1400);                    // right answer: move along briskly
+    return;
+  }
+
+  // wrong
+  quizState.wrong = quizState.wrong || [];
+  if (quizState.wrong.indexOf(i)<0) quizState.wrong.push(i);
+  if (quizState.tries < 2){
+    // one more go before anything is revealed
+    renderQuiz(); updateDockNext();
+    return;
+  }
+  quizState.answered = true; quizState.picked = i;
+  if (q.speak){ const c=findCard(q.speak); if (c){ c.box=Math.max(0,(c.box||0)-1); c.due=Date.now()+INTERVALS[c.box]*DAY; } }
+  saveDB();
+  renderQuiz(); updateDockNext();
+  qzSchedule(4600);                      // longer, so the explanations can be read
 }
 function nextQuiz(){
   if (!quizState) return;
-  quizState.idx++; quizState.answered=false; quizState.picked=-1; currentPhrase=null;
+  clearTimeout(qzTimer);
+  quizState.idx++; quizState.answered=false; quizState.picked=-1;
+  quizState.tries=0; quizState.wrong=[]; quizState.played=false;
+  currentPhrase=null;
   renderQuiz();
 }
 
@@ -1944,6 +1989,7 @@ function renderQuiz(){
         '<div class="eyebrow">'+esc(T('quizDone'))+'</div>'+
         '<div style="font-size:2.6rem;line-height:1.2">'+emo+'</div>'+
         '<div class="quiz-score">'+right+' / '+total+'</div>'+
+        ((quizState.second||0) ? '<div class="small-label">'+esc(T('qSecondTry').replace('%n',String(quizState.second)))+'</div>' : '')+
         '<div class="prog-bar" style="margin:12px auto 0;max-width:260px"><i style="width:'+pct+'%"></i></div>'+
         '<div class="row" style="justify-content:center;margin-top:16px;margin-bottom:0">'+
           '<button class="btn primary" onclick="startQuiz()">'+esc(T('quizAgain'))+'</button>'+
@@ -1974,7 +2020,6 @@ function renderQuiz(){
         '<div class="row" style="margin-top:14px;margin-bottom:0">'+
           '<button class="btn" onclick="speakUa(currentPhrase.ua,0.6)">'+esc(T('slow'))+'</button>'+
           '<button class="btn" onclick="quizRevealSay()">'+esc(T('reveal'))+'</button>'+
-          '<button class="btn primary" onclick="nextQuiz()">'+esc(T('next'))+'</button>'+
         '</div>'+
         '<div id="quizSayReveal" style="margin-top:12px"></div>'+
       '</div>'+
@@ -1985,6 +2030,13 @@ function renderQuiz(){
         '<div class="fb-text" id="quizFbText"></div>'+
       '</div>';
     wrap.innerHTML=h;
+    // give the screen a beat, then open the mic for you
+    clearTimeout(qzMicTimer);
+    const atIdx=quizState.idx;
+    qzMicTimer=setTimeout(()=>{
+      if (mode==='quiz' && quizState && quizState.idx===atIdx && !listening && !quizState.answered) toggleMic();
+    }, 1000);
+    updateDockNext();
     return;
   }
 
@@ -1993,32 +2045,42 @@ function renderQuiz(){
   if (q.sub) h+='<div class="translit">'+esc(q.sub)+'</div>';
   if (q.kind==='audio'){
     h+='<div class="row" style="justify-content:center;margin-top:10px;margin-bottom:0">'+
-       '<button class="btn" onclick="speakUa('+JSON.stringify(q.audio).replace(/"/g,'&quot;')+',0.85)">\ud83d\udd0a '+esc(T('replayWord'))+'</button></div>';
+       '<button class="btn" id="qzAudioBtn" onclick="qzPlayAudio()">\ud83d\udd0a '+
+       esc(quizState.played ? T('replayWord') : T('listenWord'))+'</button></div>';
   }
 
   h+='<div class="quiz-choices">';
+  const tried=quizState.wrong||[];
   q.options.forEach((o,i)=>{
-    let cls='quiz-choice', mark='';
+    let cls='quiz-choice', mark='', dis=quizState.answered;
     if (quizState.answered){
       if (o.ok){ cls+=' correct'; mark='<span class="mk">\u2713</span>'; }
-      else if (i===quizState.picked){ cls+=' wrong'; mark='<span class="mk">\u2717</span>'; }
+      else if (i===quizState.picked || tried.indexOf(i)>=0){ cls+=' wrong'; mark='<span class="mk">\u2717</span>'; }
       else cls+=' muted';
+    } else if (tried.indexOf(i)>=0){
+      // first guess was wrong: rule it out, but reveal nothing yet
+      cls+=' ruled'; mark='<span class="mk">\u2717</span>'; dis=true;
     }
-    h+='<button class="'+cls+'" '+(quizState.answered?'disabled':'')+' onclick="qzAnswer('+i+')">'+mark+esc(o.t)+'</button>';
+    h+='<button class="'+cls+'" '+(dis?'disabled':'')+' onclick="qzAnswer('+i+')">'+mark+esc(o.t)+'</button>';
     if (quizState.answered && !o.ok && o.why){
       h+='<div class="quiz-why">'+esc(o.why)+'</div>';
     }
   });
   h+='</div>';
+  if (!quizState.answered && tried.length){
+    h+='<div class="hint" style="margin-top:12px;text-align:center"><b>'+esc(T('qTryAgain'))+'</b></div>';
+  }
 
   if (quizState.answered){
-    h+='<div class="hint" style="margin-top:14px"><b>'+esc(T('qTeach'))+'</b> '+esc(q.teach||'')+'</div>'+
-       '<div class="row" style="justify-content:center;margin-top:14px;margin-bottom:0">'+
-       (q.speak?'<button class="btn" onclick="speakUa('+JSON.stringify(q.speak).replace(/"/g,'&quot;')+',0.6)">\ud83d\udd0a '+esc(T('hearIt'))+'</button>':'')+
-       '<button class="btn primary" onclick="nextQuiz()">'+esc(T('next'))+'</button></div>';
+    h+='<div class="hint" style="margin-top:14px"><b>'+esc(T('qTeach'))+'</b> '+esc(q.teach||'')+'</div>';
+    if (q.speak){
+      h+='<div class="row" style="justify-content:center;margin-top:14px;margin-bottom:0">'+
+         '<button class="btn" onclick="speakUa('+JSON.stringify(q.speak).replace(/"/g,'&quot;')+',0.6)">\ud83d\udd0a '+esc(T('hearIt'))+'</button></div>';
+    }
   }
   h+='</div>';
   wrap.innerHTML=h;
+  updateDockNext();
 }
 function quizRevealSay(){
   const el=document.getElementById('quizSayReveal');
@@ -2685,6 +2747,7 @@ function setMode(m){
     : m==='quiz' ? T('micQuiz')
     : T('tapToSpeak'));
   if (m==='quiz'){ renderQuiz(); }
+  if (m!=='quiz'){ clearTimeout(qzTimer); clearTimeout(qzMicTimer); }
   if (m==='review'){ renderStats(); }
   if (m==='words'){ renderWords(); }
   if (!activityActive()) navOpen = true;
