@@ -160,7 +160,7 @@
   @media (prefers-reduced-motion:reduce){.mic.listening::before{animation:none}}
 
   /* feedback */
-  .feedback{border-left:5px solid var(--sun)}
+  .feedback{border-left:5px solid var(--sun); scroll-margin-top:12px; scroll-margin-bottom:180px}
   .score-line{display:flex;align-items:center;gap:14px;margin-bottom:10px}
   .score-num{font-family:'Unbounded',sans-serif;font-weight:800;font-size:1.9rem}
   .score-num.good{color:var(--good)} .score-num.mid{color:var(--sun-deep)} .score-num.low{color:var(--warn)}
@@ -673,7 +673,7 @@ function migrateDB(){
     delete DB.deck; delete DB.usedPhrases; delete DB.lessons; delete DB.stats; delete DB.level;
   }
 }
-const APP_V = 'v31';
+const APP_V = 'v32';
 const STR = {
 en: {
   tagline:'Speak Ukrainian out loud. Get corrected. Improve.',
@@ -1507,7 +1507,7 @@ function revealAnswer(){
 function scrollToFeedback(el){
   if (!el || typeof el.scrollIntoView !== 'function') return;
   const reduce = (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
-  try{ el.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' }); }
+  try{ el.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' }); }
   catch(e){ try{ el.scrollIntoView(); }catch(_){} }
 }
 async function gradeCurrent(heard, fbId){
