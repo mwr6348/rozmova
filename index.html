@@ -160,7 +160,8 @@
   @media (prefers-reduced-motion:reduce){.mic.listening::before{animation:none}}
 
   /* feedback */
-  .feedback{border-left:5px solid var(--sun); scroll-margin-top:12px; scroll-margin-bottom:180px}
+  .feedback{border-left:5px solid var(--sun); scroll-margin-top:12px}
+  .feedback:last-child{margin-bottom:60vh}
   .score-line{display:flex;align-items:center;gap:14px;margin-bottom:10px}
   .score-num{font-family:'Unbounded',sans-serif;font-weight:800;font-size:1.9rem}
   .score-num.good{color:var(--good)} .score-num.mid{color:var(--sun-deep)} .score-num.low{color:var(--warn)}
@@ -673,7 +674,7 @@ function migrateDB(){
     delete DB.deck; delete DB.usedPhrases; delete DB.lessons; delete DB.stats; delete DB.level;
   }
 }
-const APP_V = 'v32';
+const APP_V = 'v33';
 const STR = {
 en: {
   tagline:'Speak Ukrainian out loud. Get corrected. Improve.',
@@ -1543,6 +1544,7 @@ async function gradeCurrent(heard, fbId){
     }
     document.getElementById(fbId+'Text').innerHTML =
       esc(r.feedback) + '<span class="tip">💡 ' + esc(r.tip) + '</span>' + extra;
+    requestAnimationFrame(()=>scrollToFeedback(fb));
     if (fbId==='lessonFb' && lesson) lesson.graded = true;
   updateDockNext();
   const card = upsertCard(currentPhrase, currentPhrase.theme);
@@ -1555,6 +1557,7 @@ async function gradeCurrent(heard, fbId){
   }catch(e){
     scoreEl.textContent = '–';
     document.getElementById(fbId+'Text').textContent = tutorErrorMsg();
+    requestAnimationFrame(()=>scrollToFeedback(fb));
   }
 }
 
