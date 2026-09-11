@@ -1,7 +1,7 @@
 /* Rozmova service worker.
    HTML is network-first so a new version can never be pinned by a stale cache;
    static assets stay cache-first for speed. Cache is only a fallback offline. */
-const CACHE = 'rozmova-v34';
+const CACHE = 'rozmova-v35';
 const ASSETS = ['./', './index.html', './manifest.webmanifest', './icon-192-v14.png', './icon-512-v14.png', './icon-maskable-512-v14.png'];
 
 self.addEventListener('install', e => {
