@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Rozmova — Speak Ukrainian</title>
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#0c4ea8">
+<meta name="theme-color" content="#07122a">
+<script>try{var __d=JSON.parse(localStorage.getItem('rozmova-data')||'{}');var __c=__d.theme||'night';if(__c==='auto')__c=(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches)?'night':'light';document.documentElement.setAttribute('data-theme',__c)}catch(e){document.documentElement.setAttribute('data-theme','night')}</script>
 <link rel="apple-touch-icon" href="icon-192-v14.png">
 <link rel="icon" href="icon-512-v14.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -366,6 +367,91 @@
   .wtap-hit{animation:wtapFlash .65s ease-out}
   @keyframes wtapFlash{0%{background:var(--sun);color:var(--azure-ink)}100%{background:transparent}}
   @media (prefers-reduced-motion:reduce){ .wtap-hit{animation:none;background:var(--gold-soft)} }
+
+  /* ================= v37 · Night × Indigo ================= */
+  /* shared polish (both themes) */
+  .card{position:relative}
+  .card::before{content:"";position:absolute;top:-1px;left:26px;right:26px;height:3px;border-radius:0 0 3px 3px;background:linear-gradient(90deg,transparent,var(--sun),transparent);pointer-events:none}
+  .logo{width:40px;height:40px}
+  header::after{height:16px;background-size:auto 16px}
+  @keyframes micAura{
+    0%,100%{box-shadow:0 6px 18px rgba(217,148,0,.42), 0 0 0 7px rgba(244,179,31,.12), 0 0 22px rgba(244,179,31,.25), inset 0 0 0 6px rgba(255,255,255,.35)}
+    50%{box-shadow:0 9px 24px rgba(217,148,0,.52), 0 0 0 12px rgba(244,179,31,.16), 0 0 34px rgba(244,179,31,.38), inset 0 0 0 6px rgba(255,255,255,.42)}
+  }
+  .nav-prog{flex:1;min-width:34px;height:4px;border-radius:999px;background:var(--line);overflow:hidden}
+  .nav-prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--sun),#ffd466);border-radius:999px;transition:width .3s ease}
+  .due-strip{display:flex;align-items:center;gap:12px;margin:2px 0 14px;padding:12px 14px;border-radius:18px;cursor:pointer;text-align:left;
+    background:rgba(244,179,31,.14);border:1px solid rgba(217,148,0,.45)}
+  .due-strip:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+  .due-n{width:40px;height:40px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+    font-family:'Unbounded',sans-serif;font-weight:700;font-size:.95rem;color:#0b1b36;
+    background:radial-gradient(circle at 36% 28%,#ffe08a,#f4b31f 60%,#c48c00)}
+  .due-t{flex:1;display:flex;flex-direction:column;gap:2px;min-width:0}
+  .due-t b{font-family:'Unbounded',sans-serif;font-weight:600;font-size:.74rem;color:var(--azure-ink)}
+  .due-t small{font-size:.74rem;color:var(--ink-soft);line-height:1.3}
+  .due-go{font-family:'Unbounded',sans-serif;font-weight:600;font-size:.74rem;color:var(--sky-deep)}
+
+  /* section tiles */
+  .tabs.nav-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;max-width:500px;margin:0 auto;padding:14px 14px 0}
+  .tabs.nav-grid .tab{
+    flex:0 0 calc(25% - 6px);min-height:78px;padding:9px 3px 8px;border-radius:16px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;
+    font-size:.56rem;line-height:1.15;white-space:normal;word-break:break-word;position:relative;box-shadow:var(--shadow);
+  }
+  .tab .ti{display:inline-block;margin-right:5px}
+  .tabs.nav-grid .tab .ti{margin:0;width:32px;height:32px;border-radius:50%;background:rgba(12,78,168,.10);
+    display:flex;align-items:center;justify-content:center;font-size:1.05rem;line-height:1}
+  .tabs.nav-grid .tab[aria-selected="true"] .ti{background:rgba(255,255,255,.22)}
+  .tabs.nav-grid .tab .badge{position:absolute;top:4px;right:6px;margin:0}
+  .tabs.nav-grid #tab-quiz:not([aria-selected="true"]){
+    background:linear-gradient(165deg,#f6c445,#e0a010);border-color:rgba(255,226,140,.9);color:#2b2000}
+  .tabs.nav-grid #tab-quiz:not([aria-selected="true"]) .ti{background:rgba(255,255,255,.55)}
+
+  /* ---------- Night theme ---------- */
+  :root[data-theme="night"]{
+    color-scheme:dark;
+    --ink:#eef3fc; --ink-soft:#b8c7e0;
+    --paper:#0b1b36; --card:#fffaf0; --wheat:#f6ecd0; --gold-soft:#fbeec8; --linen-well:#efe6d0;
+    --line:#e4dac2; --azure-ink:#0c2551;
+    --shadow-sm:0 2px 6px rgba(0,0,0,.28);
+    --shadow:0 10px 24px rgba(0,0,0,.38);
+    --stitch:url("data:image/svg+xml,<svg%20xmlns='http://www.w3.org/2000/svg'%20width='44'%20height='22'><path%20d='M0%2011L22%200L44%2011L22%2022Z'%20fill='none'%20stroke='%23f4b31f'%20stroke-width='2'/><path%20d='M22%205L28%2011L22%2017L16%2011Z'%20fill='%23c1362f'/><path%20d='M22%209L24%2011L22%2013L20%2011Z'%20fill='%23f4b31f'/></svg>");
+  }
+  :root[data-theme="night"] html, :root[data-theme="night"]{background:#0b1b36}
+  :root[data-theme="night"] body{background:linear-gradient(180deg,#10274b 0%,#0b1b36 100%);color:var(--ink)}
+  /* cream reading surfaces keep dark text */
+  :root[data-theme="night"] :is(.card,.lesson-tile,.letter-tile,.word-row,.msg.tutor,.stat,.btn,.tab,.pill,.status,select,.text-row input,.mic,.quiz-opt,.navsel){
+    --ink:#16233d; --ink-soft:#44536f;
+  }
+  :root[data-theme="night"] header{background:linear-gradient(180deg,#0a1830 0%,#07122a 100%);border-bottom:1px solid rgba(244,179,31,.35)}
+  :root[data-theme="night"] .brand-uk{color:#fff8e8}
+  :root[data-theme="night"] .brand-en{color:var(--sun)}
+  :root[data-theme="night"] .ver{color:#b8c7e0;opacity:.8}
+  :root[data-theme="night"] .streak{background:rgba(244,179,31,.16);border-color:rgba(244,179,31,.55);color:#ffd466;box-shadow:none}
+  :root[data-theme="night"] header select{background:rgba(255,255,255,.07);border-color:rgba(244,179,31,.38);color:#eef3fc}
+  :root[data-theme="night"] header select option{background:#0f2447;color:#eef3fc}
+  :root[data-theme="night"] .card{border-color:rgba(244,179,31,.5)}
+  :root[data-theme="night"] .card.feedback{border-left-color:var(--sun)}
+  :root[data-theme="night"] .lesson-tile,:root[data-theme="night"] .letter-tile,:root[data-theme="night"] .word-row,:root[data-theme="night"] .stat{border-color:rgba(244,179,31,.38)}
+  :root[data-theme="night"] .tab{border-color:rgba(244,179,31,.5)}
+  :root[data-theme="night"] .tab[aria-selected="true"]{border-color:#5aa0f5}
+  :root[data-theme="night"] .nav-compact{background:rgba(255,255,255,.07);border-color:rgba(244,179,31,.3);box-shadow:none}
+  :root[data-theme="night"] .nav-toggle{background:transparent;color:#eef3fc;border-color:rgba(244,179,31,.35)}
+  :root[data-theme="night"] .nav-toggle:hover{background:rgba(244,179,31,.14)}
+  :root[data-theme="night"] .nav-where{color:#ffd466}
+  :root[data-theme="night"] .nav-prog{background:rgba(255,255,255,.14)}
+  :root[data-theme="night"] .lesson-count,:root[data-theme="night"] .quiz-head .quiz-score{color:#ffd466}
+  :root[data-theme="night"] .due-strip{background:rgba(244,179,31,.1);border-color:rgba(244,179,31,.35)}
+  :root[data-theme="night"] .due-t b,:root[data-theme="night"] .due-go{color:#ffd466}
+  :root[data-theme="night"] .due-t small{color:#dbe6f6}
+  :root[data-theme="night"] .dock-next{border-color:#5aa0f5;box-shadow:0 6px 16px rgba(12,78,168,.5)}
+  :root[data-theme="night"] .dock-skip:hover{color:#ffd466}
+  :root[data-theme="night"] .mic svg{fill:#0b1b36}
+  :root[data-theme="night"] .mic-label{color:#b8c7e0}
+  :root[data-theme="night"] .mic.listening svg{fill:#fff}
+  :root[data-theme="night"] .lesson-tile,:root[data-theme="night"] .letter-tile,:root[data-theme="night"] .icon-btn{color:var(--ink)}
+  :root[data-theme="night"] .small-label,:root[data-theme="night"] .typing{color:#b8c7e0}
+  @media (prefers-reduced-motion:reduce){ .mic{animation:none} }
 </style>
 </head>
 <body>
@@ -373,7 +459,7 @@
 <header>
   <div class="brandrow">
     <span class="brand brand-uk">Розмова</span>
-    <svg class="logo" viewBox="0 0 512 512" width="40" height="40" aria-hidden="true"><rect width="512" height="512" rx="120" fill="#0c4ea8"/><path d="M148 96L140 130L140 300L168 312Q168 380 226 414L256 436L286 414Q344 380 344 312L372 300L372 130L364 96Q332 106 328 152L328 296L278 296L278 150L298 140L256 82L214 140L234 150L234 296L184 296L184 152Q180 106 148 96ZM206 322Q196 356 224 382Q234 352 224 322ZM306 322Q316 356 288 382Q278 352 288 322ZM249 308L263 308L263 398Q256 405 249 398Z" fill="#f4b31f" stroke="#d99400" stroke-width="6" stroke-linejoin="round"/></svg>
+    <svg class="logo" viewBox="0 0 100 100" width="40" height="40" aria-hidden="true"><defs><radialGradient id="coinG" cx="34%" cy="28%" r="80%"><stop offset="0" stop-color="#ffe79e"/><stop offset=".55" stop-color="#f4b31f"/><stop offset="1" stop-color="#c48c00"/></radialGradient></defs><circle cx="50" cy="50" r="48" fill="url(#coinG)"/><circle cx="50" cy="50" r="48" fill="none" stroke="#c89200" stroke-width="2.5"/><circle cx="50" cy="50" r="40" fill="none" stroke="#c89200" stroke-width="1.2" opacity=".55"/><path d="M31 24L29 31L29 59L35 62Q35 75 45 81L50 85L55 81Q65 75 65 62L71 59L71 31L69 24Q62 26 61 34L61 59L52 59L52 33L56 31L50 20L44 31L48 33L48 59L39 59L39 34Q38 26 31 24Z" fill="#0b1b36"/></svg>
     <span class="brand brand-en">Rozmova</span>
   </div>
   <div class="ver" id="ver">v17</div>
@@ -413,6 +499,12 @@
   <div class="nav-compact hidden" id="navCompact">
     <button class="nav-toggle" id="navToggle" onclick="toggleNavOpen()" aria-label="Show menu">☰</button>
     <span class="nav-where" id="navWhere"></span>
+    <span class="nav-prog" aria-hidden="true"><i id="navProg"></i></span>
+  </div>
+  <div class="due-strip hidden" id="dueStrip" role="button" tabindex="0" onclick="setMode('review')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();setMode('review')}">
+    <span class="due-n" id="dueN">0</span>
+    <span class="due-t"><b id="dueT">Cards due today</b><small id="dueS"></small></span>
+    <span class="due-go" id="dueGo">Go →</span>
   </div>
   <select id="navMenu" class="navsel hidden" aria-label="Go to section" onchange="setMode(this.value)"></select>
 
@@ -425,6 +517,12 @@
       <button class="btn" id="navBtnTiles" onclick="setNav('grid')">▦ Tiles</button>
       <button class="btn" id="navBtnMenu" onclick="setNav('menu')">▾ Menu</button>
       <button class="btn" id="navBtnTabs" onclick="setNav('tabs')">— Tabs</button>
+    </div>
+    <div class="status" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+      <span id="themeLabel">Theme</span>
+      <button class="btn" id="themeBtn-night" onclick="setTheme('night')">🌙 Night</button>
+      <button class="btn" id="themeBtn-light" onclick="setTheme('light')">☀️ Light</button>
+      <button class="btn" id="themeBtn-auto" onclick="setTheme('auto')">◐ Auto</button>
     </div>
     <div class="status" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
       <span id="speedLabel">Voice speed</span>
@@ -629,9 +727,9 @@
       <button class="btn" id="copyCsvBtn" onclick="copyCSV()">📋 Copy CSV</button>
       <button class="btn" id="importBtn" onclick="toggleImport()">⬆ Import</button>
       <button class="btn" id="backupBtn" onclick="backupAll()">💾 Backup</button>
-      <button class="btn" id="restoreBtn" onclick="document.getElementById('restoreFile').click()">♻ Restore</button>
-      <input type="file" id="importFile" accept=".csv,.txt,text/csv,text/plain" style="display:none" onchange="onImportFile(event)">
-      <input type="file" id="restoreFile" accept=".json,application/json" style="display:none" onchange="onRestoreFile(event)">
+      <button class="btn" id="restoreBtn" onclick="document.getElementById('restoreFile').click()">♻ Restore / load file</button>
+      <input type="file" id="importFile" style="display:none" onchange="onDataFile(event)">
+      <input type="file" id="restoreFile" style="display:none" onchange="onDataFile(event)">
       <span class="small-label" id="wordsNote"></span>
     </div>
     <div id="importBox" class="hidden">
@@ -679,7 +777,7 @@ function migrateDB(){
     delete DB.deck; delete DB.usedPhrases; delete DB.lessons; delete DB.stats; delete DB.level;
   }
 }
-const APP_V = 'v35';
+const APP_V = 'v37';
 const STR = {
 en: {
   tagline:'Speak Ukrainian out loud. Get corrected. Improve.',
@@ -714,7 +812,7 @@ en: {
   newCard:'\u2728 New card', backTopics:'\u2190 Topics', keyPhrase:'Key phrase \u2014 say it!', funFact:'\ud83d\udca1 Fun fact:', factSerious:'\ud83d\udd6f\ufe0f Worth knowing:', focusWordLabel:'Word to practice:', hearIt:'Hear it', tryAgainWord:'Tap the mic to try the whole phrase again.',
   loadingCard:'Leya is writing your culture card\u2026', micCulture:'Open a card, then say its key phrase',
   chartTitle:'Last 14 days', gtOpen:'Opened Google Translate \u2014 tap the \ud83d\udd0a speaker there.', noExport:'No saved words yet.',
-  voiceSpeed:'Voice speed', navStyle:'Menu style', navTiles:'▦ Tiles', navMenu2:'▾ Menu', navTabs:'— Tabs', streakStart:'Practice today to start a streak', streakToday:'-day streak \u2014 today is done!', streakKeep:'-day streak \u2014 practice today to keep it alive', freezeBanked:'freeze banked',
+  voiceSpeed:'Voice speed', themeLabel:'Theme', themeNight:'🌙 Night', themeLight:'☀️ Light', themeAuto:'◐ Auto', dueT:'Cards due today', dueS:'A 3-minute review keeps your streak.', dueGo:'Go →', navStyle:'Menu style', navTiles:'▦ Tiles', navMenu2:'▾ Menu', navTabs:'— Tabs', streakStart:'Practice today to start a streak', streakToday:'-day streak \u2014 today is done!', streakKeep:'-day streak \u2014 practice today to keep it alive', freezeBanked:'freeze banked',
   tabGrammar:'📐 Grammar', tabListen:'🎧 Listen', listenNote:'Hear a sentence, then say what it means or type it out — trains your ear for real speech.', listenModeLabel:'Mode:', listenComp:'Comprehension', listenDict:'Dictation', loadingClip:'Preparing a clip…', listenAskMeaning:'What does it mean? (type in English)', listenAskType:'Type exactly what you heard (in Ukrainian)', phMeaning:'meaning in English…', phType:'type in Ukrainian…', replayWord:'Replay', slowWord:'Slow', matchLabel:'match', micListen:'Tap New clip to hear a sentence', grammarNote:'Bite-size grammar lessons with instant practice drills.', loadingGrammar:'Writing your lesson…', examples:'Examples', practice:'Practice', grammarDone:'Drills complete!', micGrammar:'Grammar drills use typing', freeChat:'Free chat', tabPhoto:'📸 Photo', photoNote:'Snap a photo and learn the Ukrainian words for what you see.', photoBtnText:'Take a photo', photoAnalyzing:'Looking at your photo…', photoNone:'No clear objects found — try another photo.', photoSaveAll:'Save all to my words', photoAnother:'Another photo', photoSaved:'Saved to your words.', micPhoto:'Take a photo to learn words', micWarmup:'Getting the mic ready…', listenWord:'Listen', qTryAgain:'Not quite — try one more.', qSecondTry:'%n on the second try', skipOne:'Skip this one', tabQuiz:'🧠 Quiz', micQuiz:'Tap to speak your answer', quizIntro:'A short quiz built from what you\'ve been learning lately — your saved words, the alphabet, grammar drills, and numbers.', quizStart:'Start quiz', quizAgain:'Another quiz', quizExit:'Done', quizDone:'Quiz complete!', quizEmpty:'Nothing to quiz yet — try a lesson or save a few words first, then come back.', qSrcWords:'My words', qSrcAlpha:'Alphabet', qSrcGrammar:'Grammar', qSrcNumbers:'Numbers', qSrcSpeak:'Speaking', qWhatMeans:'What does «%w» mean?', qWhichIs:'Which one means “%m”?', qWhichLetter:'Which letter makes the sound %s?', qHearNumber:'Tap play, then choose the number you heard.', qSayThis:'Say this in Ukrainian', qSayHint:'Tap the mic and say it from memory.', qTeach:'Remember:', qCorrectIs:'The correct answer is', qWhyMeans:'«%w» is the word that means “%m”.', qWhySound:'«%L» makes the sound %s.', qWhyDrill:'That\'s the answer to a different question: “%q”.', qWhyNumber:'The audio said %h, not %p.', qLetterTeach:'«%L» makes the sound %s — as in %w (%m).', qNumberTeach:'The number was %h.', wrongLangHeard:'Your phone heard that in the wrong language (“%s”) — not your pronunciation. Fix: Gboard → Voice typing → turn OFF “Faster voice typing” (on-device has no Ukrainian, so it falls back to English), and stay online. Then tap the mic again.', tapWordHint:'Tap any word to hear it', tabMusic:'🎵 Music', musicNote:'Discover Ukrainian music, podcasts, and shows picked for your level.', musicKindLabel:'Find:', musicKindMusic:'🎵 Music', musicKindPod:'🎙 Podcasts', musicKindShow:'📺 Shows', musicLoading:'Finding recommendations…', musicFind:'Find it', musicNone:'No picks right now — try again.', recommend:'Recommend', micMusic:'Discover music, podcasts & shows', compareTitle:'Compare with a friend', compareNote:'Share your code or paste a friend\'s to compare progress — no account needed.', compareShare:'📤 Share', compareAdd:'📥 Add code', compareYourCode:'Copy this and send it to your friend:', copy:'Copy', copied:'Copied!', friendAdded:'Added %n.', friendBad:'That code didn\'t work — check you copied all of it.', name:'Name', yourName:'Your name', badgesTitle:'Badges', badgeEarned:'Earned:', bW10:'10 words', bW50:'50 words', bW100:'100 words', bS7:'7-day streak', bS30:'30-day streak', bM10:'10 mastered', bA50:'50 tries', bA200:'200 tries', bP90:'90+ average',
   tabNumbers:'\ud83d\udd22 Numbers', tabTwisters:'\ud83d\udc3e Twisters',
   numbersNote:'Hear a number, type the digits. Range grows with your level.', numbersEyebrow:'What number is this?', micNumber:'Type the number you hear',
@@ -755,7 +853,7 @@ uk: {
   newCard:'\u2728 \u041d\u043e\u0432\u0430 \u043a\u0430\u0440\u0442\u043a\u0430', backTopics:'\u2190 \u0422\u0435\u043c\u0438', keyPhrase:'\u041a\u043b\u044e\u0447\u043e\u0432\u0430 \u0444\u0440\u0430\u0437\u0430 \u2014 \u0441\u043a\u0430\u0436\u0438 \u0457\u0457!', funFact:'\ud83d\udca1 \u0426\u0456\u043a\u0430\u0432\u0438\u0439 \u0444\u0430\u043a\u0442:', factSerious:'\ud83d\udd6f\ufe0f \u0412\u0430\u0440\u0442\u043e \u0437\u043d\u0430\u0442\u0438:', focusWordLabel:'\u0421\u043b\u043e\u0432\u043e \u0434\u043b\u044f \u043f\u0440\u0430\u043a\u0442\u0438\u043a\u0438:', hearIt:'\u041f\u0440\u043e\u0441\u043b\u0443\u0445\u0430\u0442\u0438', tryAgainWord:'\u041d\u0430\u0442\u0438\u0441\u043d\u0438 \u043c\u0456\u043a\u0440\u043e\u0444\u043e\u043d, \u0449\u043e\u0431 \u0441\u043f\u0440\u043e\u0431\u0443\u0432\u0430\u0442\u0438 \u0444\u0440\u0430\u0437\u0443 \u0449\u0435 \u0440\u0430\u0437.',
   loadingCard:'\u041b\u0435\u044f \u043f\u0438\u0448\u0435 \u0442\u0432\u043e\u044e \u043a\u0443\u043b\u044c\u0442\u0443\u0440\u043d\u0443 \u043a\u0430\u0440\u0442\u043a\u0443\u2026', micCulture:'\u0412\u0456\u0434\u043a\u0440\u0438\u0439 \u043a\u0430\u0440\u0442\u043a\u0443 \u0456 \u0441\u043a\u0430\u0436\u0438 \u043a\u043b\u044e\u0447\u043e\u0432\u0443 \u0444\u0440\u0430\u0437\u0443',
   chartTitle:'\u041e\u0441\u0442\u0430\u043d\u043d\u0456 14 \u0434\u043d\u0456\u0432', gtOpen:'\u0412\u0456\u0434\u043a\u0440\u0438\u0442\u043e Google Translate \u2014 \u043d\u0430\u0442\u0438\u0441\u043d\u0438 \ud83d\udd0a \u0442\u0430\u043c.', noExport:'\u041f\u043e\u043a\u0438 \u043d\u0435\u043c\u0430\u0454 \u0441\u043b\u0456\u0432.',
-  voiceSpeed:'\u0428\u0432\u0438\u0434\u043a\u0456\u0441\u0442\u044c \u0433\u043e\u043b\u043e\u0441\u0443', navStyle:'\u0421\u0442\u0438\u043b\u044c \u043c\u0435\u043d\u044e', navTiles:'▦ \u041f\u043b\u0438\u0442\u043a\u0438', navMenu2:'▾ \u041c\u0435\u043d\u044e', navTabs:'— \u0412\u043a\u043b\u0430\u0434\u043a\u0438', streakStart:'\u041f\u043e\u0442\u0440\u0435\u043d\u0443\u0439\u0441\u044f \u0441\u044c\u043e\u0433\u043e\u0434\u043d\u0456, \u0449\u043e\u0431 \u043f\u043e\u0447\u0430\u0442\u0438 \u0441\u0435\u0440\u0456\u044e', streakToday:'-\u0434\u0435\u043d\u043d\u0430 \u0441\u0435\u0440\u0456\u044f \u2014 \u043d\u0430 \u0441\u044c\u043e\u0433\u043e\u0434\u043d\u0456 \u0433\u043e\u0442\u043e\u0432\u043e!', streakKeep:'-\u0434\u0435\u043d\u043d\u0430 \u0441\u0435\u0440\u0456\u044f \u2014 \u043f\u043e\u0442\u0440\u0435\u043d\u0443\u0439\u0441\u044f \u0441\u044c\u043e\u0433\u043e\u0434\u043d\u0456', freezeBanked:'\u0437\u0430\u043c\u043e\u0440\u043e\u0437\u043a\u0430',
+  voiceSpeed:'\u0428\u0432\u0438\u0434\u043a\u0456\u0441\u0442\u044c \u0433\u043e\u043b\u043e\u0441\u0443', themeLabel:'Тема', themeNight:'🌙 Ніч', themeLight:'☀️ День', themeAuto:'◐ Авто', dueT:'Картки на сьогодні', dueS:'Три хвилини повторення зберігають серію.', dueGo:'Далі →', navStyle:'\u0421\u0442\u0438\u043b\u044c \u043c\u0435\u043d\u044e', navTiles:'▦ \u041f\u043b\u0438\u0442\u043a\u0438', navMenu2:'▾ \u041c\u0435\u043d\u044e', navTabs:'— \u0412\u043a\u043b\u0430\u0434\u043a\u0438', streakStart:'\u041f\u043e\u0442\u0440\u0435\u043d\u0443\u0439\u0441\u044f \u0441\u044c\u043e\u0433\u043e\u0434\u043d\u0456, \u0449\u043e\u0431 \u043f\u043e\u0447\u0430\u0442\u0438 \u0441\u0435\u0440\u0456\u044e', streakToday:'-\u0434\u0435\u043d\u043d\u0430 \u0441\u0435\u0440\u0456\u044f \u2014 \u043d\u0430 \u0441\u044c\u043e\u0433\u043e\u0434\u043d\u0456 \u0433\u043e\u0442\u043e\u0432\u043e!', streakKeep:'-\u0434\u0435\u043d\u043d\u0430 \u0441\u0435\u0440\u0456\u044f \u2014 \u043f\u043e\u0442\u0440\u0435\u043d\u0443\u0439\u0441\u044f \u0441\u044c\u043e\u0433\u043e\u0434\u043d\u0456', freezeBanked:'\u0437\u0430\u043c\u043e\u0440\u043e\u0437\u043a\u0430',
   tabGrammar:'📐 Граматика', tabListen:'🎧 Слухання', listenNote:'Послухай речення і скажи, що воно означає, або надрукуй його — тренує слух.', listenModeLabel:'Режим:', listenComp:'Розуміння', listenDict:'Диктант', loadingClip:'Готую запис…', listenAskMeaning:'Що це означає? (українською)', listenAskType:'Надрукуй, що почув (англійською)', phMeaning:'значення українською…', phType:'друкуй англійською…', replayWord:'Ще раз', slowWord:'Повільно', matchLabel:'збіг', micListen:'Натисни «Новий запис»', grammarNote:'Короткі уроки граматики з миттєвою практикою.', loadingGrammar:'Пишу урок…', examples:'Приклади', practice:'Практика', grammarDone:'Вправи завершено!', micGrammar:'Вправи — друкуванням', freeChat:'Вільний чат', tabPhoto:'📸 Фото', photoNote:'Сфотографуй щось і вивчи англійські слова для того, що бачиш.', photoBtnText:'Зробити фото', photoAnalyzing:'Дивлюся на фото…', photoNone:'Чітких обʼєктів не знайдено — спробуй інше фото.', photoSaveAll:'Зберегти всі', photoAnother:'Інше фото', photoSaved:'Збережено.', micPhoto:'Зроби фото, щоб вивчати слова', micWarmup:'Готую мікрофон…', listenWord:'Прослухати', qTryAgain:'Не зовсім — спробуй ще раз.', qSecondTry:'%n з другої спроби', skipOne:'Пропустити', tabQuiz:'🧠 Вікторина', micQuiz:'Натисни, щоб сказати відповідь', quizIntro:'Коротка вікторина з того, що ти нещодавно вивчав — твої слова, алфавіт, граматика та числа.', quizStart:'Почати', quizAgain:'Ще одна', quizExit:'Готово', quizDone:'Вікторину завершено!', quizEmpty:'Поки немає матеріалу — пройди урок або збережи кілька слів, потім повертайся.', qSrcWords:'Мої слова', qSrcAlpha:'Алфавіт', qSrcGrammar:'Граматика', qSrcNumbers:'Числа', qSrcSpeak:'Мовлення', qWhatMeans:'Що означає «%w»?', qWhichIs:'Що означає “%m”?', qWhichLetter:'Яка літера дає звук %s?', qHearNumber:'Натисни відтворення і вибери число, яке почув.', qSayThis:'Скажи це англійською', qSayHint:'Натисни мікрофон і скажи з памʼяті.', qTeach:'Запамʼятай:', qCorrectIs:'Правильна відповідь —', qWhyMeans:'«%w» — це слово, яке означає “%m”.', qWhySound:'«%L» дає звук %s.', qWhyDrill:'Це відповідь на інше питання: “%q”.', qWhyNumber:'Прозвучало %h, а не %p.', qLetterTeach:'«%L» дає звук %s — як у %w (%m).', qNumberTeach:'Це було число %h.', wrongLangHeard:'Телефон розпізнав це іншою мовою («%s») — це не твоя вимова. Виправлення: Gboard → Голосове введення → вимкни «Швидке голосове введення», і будь онлайн. Потім натисни мікрофон ще раз.', tapWordHint:'Торкнись будь-якого слова, щоб почути його', tabMusic:'🎵 Музика', musicNote:'Відкривай англійську музику, подкасти та шоу для свого рівня.', musicKindLabel:'Знайти:', musicKindMusic:'🎵 Музика', musicKindPod:'🎙 Подкасти', musicKindShow:'📺 Шоу', musicLoading:'Шукаю рекомендації…', musicFind:'Знайти', musicNone:'Поки немає — спробуй ще.', recommend:'Порадити', micMusic:'Музика, подкасти та шоу', compareTitle:'Порівняння з другом', compareNote:'Поділись кодом або встав код друга, щоб порівняти прогрес — без акаунтів.', compareShare:'📤 Поділитися', compareAdd:'📥 Додати код', compareYourCode:'Скопіюй і надішли другові:', copy:'Копіювати', copied:'Скопійовано!', friendAdded:'Додано %n.', friendBad:'Код не спрацював — перевір, чи скопійовано повністю.', name:'Імʼя', yourName:'Твоє імʼя', badgesTitle:'Значки', badgeEarned:'Отримано:', bW10:'10 слів', bW50:'50 слів', bW100:'100 слів', bS7:'7 днів поспіль', bS30:'30 днів поспіль', bM10:'10 засвоєно', bA50:'50 спроб', bA200:'200 спроб', bP90:'90+ середній',
   tabNumbers:'\ud83d\udd22 \u0427\u0438\u0441\u043b\u0430', tabTwisters:'\ud83d\udc3e \u0421\u043a\u043e\u0440\u043e\u043c\u043e\u0432\u043a\u0438',
   numbersNote:'\u041f\u043e\u0447\u0443\u0439 \u0447\u0438\u0441\u043b\u043e \u0442\u0430 \u0432\u0432\u0435\u0434\u0438 \u0446\u0438\u0444\u0440\u0438. \u0414\u0456\u0430\u043f\u0430\u0437\u043e\u043d \u0440\u043e\u0441\u0442\u0435 \u0437 \u0440\u0456\u0432\u043d\u0435\u043c.', numbersEyebrow:'\u042f\u043a\u0435 \u0446\u0435 \u0447\u0438\u0441\u043b\u043e?', micNumber:'\u0412\u0432\u0435\u0434\u0438 \u043f\u043e\u0447\u0443\u0442\u0435 \u0447\u0438\u0441\u043b\u043e',
@@ -765,7 +863,8 @@ uk: {
 }
 };
 function T(k){ const u = STR[uiLang()]; return (u && u[k] !== undefined) ? u[k] : STR.en[k]; }
-function applyLang(){
+function applyLang(){ try{ applyLang0(); } finally { tileizeTabs(); applyTheme(); } }
+function applyLang0(){
   { const v=document.getElementById('ver'); if(v) v.textContent = APP_V; }
   document.getElementById('tab-lessons').textContent = T('tabLessons');
   document.getElementById('tab-alphabet').textContent = T('tabAlpha');
@@ -816,6 +915,10 @@ function applyLang(){
   document.getElementById('navBtnTiles').textContent = T('navTiles');
   document.getElementById('navBtnMenu').textContent = T('navMenu2');
   document.getElementById('navBtnTabs').textContent = T('navTabs');
+  document.getElementById('themeLabel').textContent = T('themeLabel');
+  document.getElementById('themeBtn-night').textContent = T('themeNight');
+  document.getElementById('themeBtn-light').textContent = T('themeLight');
+  document.getElementById('themeBtn-auto').textContent = T('themeAuto');
   applyNav();
   syncSpeedUI();
   const lv = document.getElementById('level');
@@ -1642,12 +1745,45 @@ function parseCSV(text){
   if (cur.length || row.length){ row.push(cur); rows.push(row); }
   return rows.filter(r=>r.some(x=>String(x).trim()!==''));
 }
-function onImportFile(ev){
-  const f = ev.target.files && ev.target.files[0]; if (!f) return;
-  const rd = new FileReader();
-  rd.onload = ()=>{ document.getElementById('importText').value = String(rd.result||''); doImport(); };
-  rd.readAsText(f);
+/* One picker for both buttons: figure out what the file actually is.
+   (Android often reports .csv with a MIME type that filters would reject,
+   so we accept anything and sniff the contents instead.) */
+function onDataFile(ev){
+  const f = ev.target.files && ev.target.files[0];
   ev.target.value='';
+  if (!f) return;
+  const rd = new FileReader();
+  rd.onload = ()=>{
+    const txt = String(rd.result||'').replace(/^\uFEFF/,'').trim();
+    if (!txt){ setMicLabel(T('importEmpty')); return; }
+    // A full backup is JSON; anything else is word data.
+    if (txt[0]==='{' || txt[0]==='['){
+      try{
+        const parsed = JSON.parse(txt);
+        const incoming = (parsed && parsed.data) ? parsed.data : parsed;
+        if (incoming && incoming.profiles){ applyRestore(incoming); return; }
+      }catch(e){ /* fall through and treat it as words */ }
+    }
+    document.getElementById('importBox').classList.remove('hidden');
+    document.getElementById('importText').value = txt;
+    doImport();
+    const res=document.getElementById('importResult');
+    if (res) setMicLabel(res.textContent || '');
+  };
+  rd.onerror = ()=> setMicLabel(T('restoreFail'));
+  rd.readAsText(f);
+}
+function applyRestore(incoming){
+  try{
+    DB = incoming;
+    migrateDB();
+    saveDB();
+    document.getElementById('level').value = P().level || 'absolute beginner';
+    applyLang();
+    renderLessonGrid(); renderStats(); renderWords(); renderStreak();
+    renderAlphabet(); renderCultureGrid(); renderBadges(); renderCompare();
+    setMicLabel(T('restoreDone'));
+  }catch(e){ setMicLabel(T('restoreFail')); }
 }
 function doImport(){
   const raw = (document.getElementById('importText').value || '').replace(/^\uFEFF/,'');
@@ -1710,27 +1846,7 @@ function backupAll(){
     setMicLabel(T('backupDone'));
   }catch(e){ setMicLabel(T('backupFail')); }
 }
-function onRestoreFile(ev){
-  const f = ev.target.files && ev.target.files[0]; if (!f) return;
-  const rd = new FileReader();
-  rd.onload = ()=>{
-    try{
-      const parsed = JSON.parse(String(rd.result||''));
-      const incoming = (parsed && parsed.data) ? parsed.data : parsed;
-      if (!incoming || !incoming.profiles) throw new Error('shape');
-      DB = incoming;
-      migrateDB();
-      saveDB();
-      document.getElementById('level').value = P().level || 'absolute beginner';
-      applyLang();
-      renderLessonGrid(); renderStats(); renderWords(); renderStreak();
-      renderAlphabet(); renderCultureGrid(); renderBadges(); renderCompare();
-      setMicLabel(T('restoreDone'));
-    }catch(e){ setMicLabel(T('restoreFail')); }
-  };
-  rd.readAsText(f);
-  ev.target.value='';
-}
+
 
 /* ================= shared: fuzzy match for dictation/grammar ================= */
 function normStr(t){
@@ -2829,6 +2945,57 @@ function sendTyped(){
 
 /* ================= mode / toggles ================= */
 const MODES=[['lessons','tabLessons'],['alphabet','tabAlpha'],['culture','tabCulture'],['numbers','tabNumbers'],['twisters','tabTwisters'],['grammar','tabGrammar'],['practice','tabPractice'],['listen','tabListen'],['photo','tabPhoto'],['music','tabMusic'],['quiz','tabQuiz'],['chat','tabChat'],['review','tabReview'],['words','tabWords']];
+
+/* ---------- v37: theme, tile nav, due strip ---------- */
+function themeChoice(){ return (DB && DB.theme) || 'night'; }
+function resolveTheme(){
+  const c = themeChoice();
+  if (c==='auto') return (window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches) ? 'night' : 'light';
+  return c==='light' ? 'light' : 'night';
+}
+function applyTheme(){
+  const th = resolveTheme();
+  document.documentElement.setAttribute('data-theme', th);
+  const m = document.querySelector('meta[name="theme-color"]');
+  if (m) m.setAttribute('content', th==='night' ? '#07122a' : '#0c4ea8');
+  ['night','light','auto'].forEach(v=>{
+    const b = document.getElementById('themeBtn-'+v);
+    if (b) b.style.outline = (themeChoice()===v) ? '2.5px solid var(--sky)' : '';
+  });
+}
+function setTheme(v){ DB.theme = v; saveDB(); applyTheme(); }
+try{ if (window.matchMedia){ const __mq = matchMedia('(prefers-color-scheme: dark)'); const __f = ()=>{ if (themeChoice()==='auto') applyTheme(); }; if (__mq.addEventListener) __mq.addEventListener('change', __f); } }catch(e){}
+
+function tileizeTabs(){
+  document.querySelectorAll('#tabStrip .tab').forEach(tab=>{
+    const badge = tab.querySelector('.badge');
+    const raw = Array.from(tab.childNodes).filter(n=>n.nodeType===3).map(n=>n.textContent).join('').trim();
+    const m = raw.match(/^(\S+)\s+([\s\S]+)$/);
+    if (!m) return;
+    tab.textContent = '';
+    const ti = document.createElement('span'); ti.className='ti'; ti.textContent = m[1];
+    const tl = document.createElement('span'); tl.className='tl'; tl.textContent = m[2];
+    tab.appendChild(ti); tab.appendChild(tl);
+    if (badge) tab.appendChild(badge);
+  });
+}
+function navProgressPct(){
+  if (mode==='lessons' && lesson) return ((lesson.idx+1)/Math.max(1,lesson.phrases.length))*100;
+  if (mode==='review' && review) return (Math.min(review.idx+1, review.cards.length)/Math.max(1,review.cards.length))*100;
+  if (mode==='quiz' && quizState) return (Math.min(quizState.idx+1, quizState.qs.length)/Math.max(1,quizState.qs.length))*100;
+  return 0;
+}
+function updateDueStrip(){
+  const el = document.getElementById('dueStrip'); if (!el) return;
+  let n = 0; try{ n = dueCards().length; }catch(e){}
+  const show = n>0 && mode==='lessons' && !lesson && navOpen && (DB.nav||'grid')!=='menu';
+  el.classList.toggle('hidden', !show);
+  if (!show) return;
+  document.getElementById('dueN').textContent = n;
+  document.getElementById('dueT').textContent = T('dueT');
+  document.getElementById('dueS').textContent = T('dueS');
+  document.getElementById('dueGo').textContent = T('dueGo');
+}
 let navOpen = true;
 function activityActive(){
   return (mode==='lessons' && lesson) || (mode==='review' && review) || (mode==='quiz' && quizState);
@@ -2861,6 +3028,7 @@ function applyNav(){
   if (compact){
     compact.classList.toggle('hidden', !collapsed);
     const wh=document.getElementById('navWhere'); if (wh) wh.textContent = navWhereText();
+    const np=document.getElementById('navProg'); if (np) np.style.width = navProgressPct()+'%';
   }
   if (style==='menu'){
     const due = dueCards().length;
@@ -2869,6 +3037,7 @@ function applyNav(){
       return '<option value="'+m+'"'+(m===mode?' selected':'')+'>'+label+'</option>';
     }).join('');
   }
+  updateDueStrip();
   // reflect current nav choice on the setup buttons
   ['grid','menu','tabs'].forEach(v=>{
     const b = document.getElementById(v==='grid'?'navBtnTiles':v==='menu'?'navBtnMenu':'navBtnTabs');
