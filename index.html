@@ -451,6 +451,10 @@
   :root[data-theme="night"] .mic.listening svg{fill:#fff}
   :root[data-theme="night"] .lesson-tile,:root[data-theme="night"] .letter-tile,:root[data-theme="night"] .icon-btn{color:var(--ink)}
   :root[data-theme="night"] .small-label,:root[data-theme="night"] .typing{color:#b8c7e0}
+  /* folded header while you're working: brand + band only (tap ☰ to bring the rest back) */
+  header.compact{padding:10px 20px 30px;gap:4px}
+  header.compact::after{bottom:8px}
+  header.compact .hdr-selects,header.compact .streak,header.compact .ver{display:none}
   @media (prefers-reduced-motion:reduce){ .mic{animation:none} }
 </style>
 </head>
@@ -479,20 +483,20 @@
 </header>
 
 <div class="tabs" id="tabStrip" role="tablist">
-  <button class="tab" role="tab" id="tab-lessons" aria-selected="true" onclick="setMode('lessons')">📖 Lessons</button>
-  <button class="tab" role="tab" id="tab-alphabet" aria-selected="false" onclick="setMode('alphabet')">🔤 Alphabet</button>
-  <button class="tab" role="tab" id="tab-culture" aria-selected="false" onclick="setMode('culture')">🌍 Culture</button>
-  <button class="tab" role="tab" id="tab-numbers" aria-selected="false" onclick="setMode('numbers')">🔢 Numbers</button>
-  <button class="tab" role="tab" id="tab-twisters" aria-selected="false" onclick="setMode('twisters')">🐾 Twisters</button>
-  <button class="tab" role="tab" id="tab-grammar" aria-selected="false" onclick="setMode('grammar')">📐 Grammar</button>
-  <button class="tab" role="tab" id="tab-practice" aria-selected="false" onclick="setMode('practice')">🎯 Practice</button>
-  <button class="tab" role="tab" id="tab-listen" aria-selected="false" onclick="setMode('listen')">🎧 Listen</button>
-  <button class="tab" role="tab" id="tab-photo" aria-selected="false" onclick="setMode('photo')">📸 Photo</button>
-  <button class="tab" role="tab" id="tab-music" aria-selected="false" onclick="setMode('music')">🎵 Music</button>
-  <button class="tab" role="tab" id="tab-quiz" aria-selected="false" onclick="setMode('quiz')">🧠 Quiz</button>
-  <button class="tab" role="tab" id="tab-chat" aria-selected="false" onclick="setMode('chat')">💬 Chat</button>
-  <button class="tab" role="tab" id="tab-review" aria-selected="false" onclick="setMode('review')">🔁 Review<span class="badge zero" id="dueBadge">0</span></button>
-  <button class="tab" role="tab" id="tab-words" aria-selected="false" onclick="setMode('words')">⭐ My words</button>
+  <button class="tab" role="tab" id="tab-lessons" aria-selected="true" onclick="tabGo('lessons')">📖 Lessons</button>
+  <button class="tab" role="tab" id="tab-alphabet" aria-selected="false" onclick="tabGo('alphabet')">🔤 Alphabet</button>
+  <button class="tab" role="tab" id="tab-culture" aria-selected="false" onclick="tabGo('culture')">🌍 Culture</button>
+  <button class="tab" role="tab" id="tab-numbers" aria-selected="false" onclick="tabGo('numbers')">🔢 Numbers</button>
+  <button class="tab" role="tab" id="tab-twisters" aria-selected="false" onclick="tabGo('twisters')">🐾 Twisters</button>
+  <button class="tab" role="tab" id="tab-grammar" aria-selected="false" onclick="tabGo('grammar')">📐 Grammar</button>
+  <button class="tab" role="tab" id="tab-practice" aria-selected="false" onclick="tabGo('practice')">🎯 Practice</button>
+  <button class="tab" role="tab" id="tab-listen" aria-selected="false" onclick="tabGo('listen')">🎧 Listen</button>
+  <button class="tab" role="tab" id="tab-photo" aria-selected="false" onclick="tabGo('photo')">📸 Photo</button>
+  <button class="tab" role="tab" id="tab-music" aria-selected="false" onclick="tabGo('music')">🎵 Music</button>
+  <button class="tab" role="tab" id="tab-quiz" aria-selected="false" onclick="tabGo('quiz')">🧠 Quiz</button>
+  <button class="tab" role="tab" id="tab-chat" aria-selected="false" onclick="tabGo('chat')">💬 Chat</button>
+  <button class="tab" role="tab" id="tab-review" aria-selected="false" onclick="tabGo('review')">🔁 Review<span class="badge zero" id="dueBadge">0</span></button>
+  <button class="tab" role="tab" id="tab-words" aria-selected="false" onclick="tabGo('words')">⭐ My words</button>
 </div>
 
 <main>
@@ -501,7 +505,7 @@
     <span class="nav-where" id="navWhere"></span>
     <span class="nav-prog" aria-hidden="true"><i id="navProg"></i></span>
   </div>
-  <div class="due-strip hidden" id="dueStrip" role="button" tabindex="0" onclick="setMode('review')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();setMode('review')}">
+  <div class="due-strip hidden" id="dueStrip" role="button" tabindex="0" onclick="tabGo('review')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();tabGo('review')}">
     <span class="due-n" id="dueN">0</span>
     <span class="due-t"><b id="dueT">Cards due today</b><small id="dueS"></small></span>
     <span class="due-go" id="dueGo">Go →</span>
@@ -777,7 +781,7 @@ function migrateDB(){
     delete DB.deck; delete DB.usedPhrases; delete DB.lessons; delete DB.stats; delete DB.level;
   }
 }
-const APP_V = 'v37';
+const APP_V = 'v38';
 const STR = {
 en: {
   tagline:'Speak Ukrainian out loud. Get corrected. Improve.',
@@ -1098,8 +1102,14 @@ function clearVoiceChoice(){
 }
 
 /* ================= environment / standalone mode ================= */
+let navBeforeSetup = null;
 function toggleSetup(){
-  document.getElementById('setupPanel').classList.toggle('hidden');
+  const panel = document.getElementById('setupPanel');
+  panel.classList.toggle('hidden');
+  if ((DB.nav||'grid')==='grid'){
+    if (!panel.classList.contains('hidden')){ navBeforeSetup = navOpen; setNavOpen(false); }
+    else if (navBeforeSetup !== null){ setNavOpen(activityActive() ? false : navBeforeSetup); navBeforeSetup = null; }
+  }
   if (!DB.setupSeen){ DB.setupSeen = true; saveDB(); }
 }
 function renderEnvStatus(){
@@ -2647,6 +2657,7 @@ async function startLesson(themeId){
   document.getElementById('lessonPhraseWrap').innerHTML = '';
   document.getElementById('lessonCount').textContent = theme.emo + ' ' + theme.name;
   currentPhrase = null;
+  setNavOpen(false);
   const known = P().deck.filter(c=>c.theme===themeId).map(c=>c.ua).slice(-20);
   try{
     const arr = await callClaude(
@@ -3002,6 +3013,11 @@ function activityActive(){
 }
 function setNavOpen(v){ navOpen = !!v; applyNav(); }
 function toggleNavOpen(){ setNavOpen(!navOpen); }
+// Picking a section from the tile menu folds the menu away so the content is what you see.
+function tabGo(m){
+  setMode(m);
+  if ((DB.nav||'grid')==='grid') setNavOpen(false);
+}
 function navWhereText(){
   const entry = MODES.find(m=>m[0]===mode);
   let label = entry ? T(entry[1]) : '';
@@ -3024,6 +3040,7 @@ function applyNav(){
   const collapsed = !navOpen && style!=='menu';
   strip.classList.toggle('hidden', style==='menu' || collapsed);
   strip.classList.toggle('nav-grid', style==='grid');
+  { const hd=document.querySelector('header'); if (hd) hd.classList.toggle('compact', collapsed); }
   menu.classList.toggle('hidden', style!=='menu');
   if (compact){
     compact.classList.toggle('hidden', !collapsed);
